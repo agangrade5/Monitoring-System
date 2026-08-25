@@ -4,8 +4,8 @@ namespace App\Helpers;
 
 class UtilityHelper
 {
-    public static function test()
+    public static function returnScriptWithNonce(string $path): string
     {
-        return 'Working';
+        return '<script nonce="' . csp_nonce('script') . '" src="' . $path . '"></script>';
     }
 }
