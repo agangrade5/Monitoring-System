@@ -38,7 +38,7 @@
         <!--end::App Wrapper-->
 
         <!-- begin::ziggy routes -->
-        @routes
+        @routes(nonce: csp_nonce('script'))
         <!-- end::ziggy routes -->
 
         <!--begin::Script-->

@@ -10,6 +10,6 @@ Route::get('/admin', function () {
 });
 
 Route::controller(DashboardController::class)->group(function () {
-    Route::get('/dashboard', 'index');
+    Route::get('/dashboard', 'index')->name('dashboard');
 });
 

@@ -1,26 +1,11 @@
 <!--begin::Script-->
-<!--begin::Third Party Plugin(OverlayScrollbars)-->
-<script
-    src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
-    crossorigin="anonymous"
-></script>
-<!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-<script
-    src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-    crossorigin="anonymous"
-></script>
-<!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-    crossorigin="anonymous"
-></script>
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce("https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js") !!}
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce("https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js") !!}
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce("https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js") !!}
 
-<!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-<script src="{{ asset('assets/js/backend/admin.js') }}"></script>
-<!--end::Required Plugin(AdminLTE)-->
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/admin.js')) !!}
 
-<!--begin::OverlayScrollbars Configure-->
-<script>
+<script nonce="{{ csp_nonce('script') }}">
     const SELECTOR_SIDEBAR_WRAPPER = ".sidebar-wrapper";
     const Default = {
         scrollbarTheme: "os-theme-light",
@@ -50,14 +35,7 @@
         }
     });
 </script>
-<!--end::OverlayScrollbars Configure-->
-<!--begin::Charts follow the colour mode-->
-<script>
-    // ApexCharts draws light-theme tooltips and axis text unless told otherwise,
-    // which is unreadable in dark mode (#6105). Give it the page's colour mode as
-    // a global default before any chart is created — this runs before the chart
-    // pages' own scripts — and keep every chart that has a `chart.id` in step
-    // when the mode changes (ColorMode, the OS in auto mode, or your own code).
+<script nonce="{{ csp_nonce('script') }}">
     (() => {
         "use strict";
         const mode = () =>
@@ -65,9 +43,6 @@
             "dark"
                 ? "dark"
                 : "light";
-        // `Apex` is ApexCharts' global-options object; it must exist before the library loads.
-        // theme.mode also sets a dark chart background — keep the card's instead.
-        // eslint-disable-next-line unicorn/no-global-object-property-assignment
         globalThis.Apex ||= {};
         const apex = globalThis.Apex;
         apex.theme = { mode: mode() };
@@ -91,38 +66,12 @@
         });
     })();
 </script>
-<!--end::Charts follow the colour mode-->
 
-<!--begin::Color Mode Toggle-->
-<!-- The light/dark/auto switcher ships in adminlte.js as the ColorMode
-module (since 4.1) — no page script needed. Only the no-flash snippet
-in <head> stays inline, because it must run before first paint. -->
-<!--end::Color Mode Toggle-->
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce("https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js") !!}
+<!--end::Script-->
 
-<!-- OPTIONAL SCRIPTS -->
-
-<!-- sortablejs -->
-<script
-    src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"
-    crossorigin="anonymous"
-></script>
-<!-- sortablejs -->
-<script>
-    new Sortable(document.querySelector(".connectedSortable"), {
-        group: "shared",
-        handle: ".card-header",
-    });
-
-    const cardHeaders = document.querySelectorAll(
-        ".connectedSortable .card-header",
-    );
-    cardHeaders.forEach((cardHeader) => {
-        cardHeader.style.cursor = "move";
+<script nonce="{{ csp_nonce('script') }}">
+    document.getElementById('source-sans-css')?.addEventListener('load', function () {
+        this.media = 'all';
     });
 </script>
-<!-- jsvectormap -->
-<script
-    src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js"
-    integrity="sha256-/t1nN2956BT869E6H4V1dnt0X5pAQHPytli+1nTZm2Y="
-    crossorigin="anonymous"
-></script>

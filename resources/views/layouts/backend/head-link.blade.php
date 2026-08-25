@@ -1,12 +1,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title> @yield('title') | {{config('app.name')}} </title>
 <!--begin::Theme Init (prevents flash of incorrect theme on load, #6043)-->
-<script>
+<script nonce="{{ csp_nonce('script') }}">
     (() => {
         "use strict";
         const root = document.documentElement;
 
-        // Applications with their own theming opt out of AdminLTE's color mode
+        // Applications with their own theming opt out of theme color mode
         // entirely, here as well as in the bundle.
         if (root.getAttribute("data-lte-color-mode") === "off") {
             return;
@@ -63,16 +63,7 @@
 <!--end::Accessibility Meta Tags-->
 
 <!--begin::Primary Meta Tags-->
-<meta name="title" content="AdminLTE v4 | Dashboard" />
-<meta name="author" content="ColorlibHQ" />
-<meta
-    name="description"
-    content="AdminLTE is a free Bootstrap 5 admin dashboard template with almost 50 example pages, built with vanilla JS and designed with accessibility in mind."
-/>
-<meta
-    name="keywords"
-    content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard, accessible admin panel"
-/>
+<meta name="title" content="@yield('title') | {{config('app.name')}}" />
 <!--end::Primary Meta Tags-->
 
 <!--begin::Accessibility Features-->
@@ -83,12 +74,12 @@
 
 <!--begin::Fonts-->
 <link
+    id="source-sans-css"
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
     integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
     crossorigin="anonymous"
     media="print"
-    onload="this.media = 'all'"
 />
 <!--end::Fonts-->
 
@@ -108,9 +99,9 @@
 />
 <!--end::Third Party Plugin(Bootstrap Icons)-->
 
-<!--begin::Required Plugin(AdminLTE)-->
+<!--begin::Required Plugin-->
 <link rel="stylesheet" href="{{ asset('assets/css/backend/admin.css') }}" />
-<!--end::Required Plugin(AdminLTE)-->
+<!--end::Required Plugin-->
 
 <!-- apexcharts -->
 <link
