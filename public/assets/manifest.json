@@ -8,24 +8,8 @@
       "admin.css"
     ]
   },
-  "resources/images/backend/user1-128x128.jpg": {
-    "file": "images/backend/user1-128x128.jpg",
-    "src": "resources/images/backend/user1-128x128.jpg"
-  },
-  "resources/images/backend/user2-160x160.jpg": {
-    "file": "images/backend/user2-160x160.jpg",
-    "src": "resources/images/backend/user2-160x160.jpg"
-  },
-  "resources/images/backend/user3-128x128.jpg": {
-    "file": "images/backend/user3-128x128.jpg",
-    "src": "resources/images/backend/user3-128x128.jpg"
-  },
-  "resources/images/backend/user8-128x128.jpg": {
-    "file": "images/backend/user8-128x128.jpg",
-    "src": "resources/images/backend/user8-128x128.jpg"
-  },
   "resources/js/backend/admin.js": {
-    "file": "js/admin2.js",
+    "file": "js/backend/admin.js",
     "name": "admin",
     "src": "resources/js/backend/admin.js",
     "isEntry": true

@@ -1569,6 +1569,4 @@
     exports.initAccessibility = initAccessibility;
     exports.initialize = initialize;
     exports.teardown = teardown;
-
 }));
-//# sourceMappingURL=adminlte.js.map
