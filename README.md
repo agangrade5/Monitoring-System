@@ -20,3 +20,5 @@ DB_PASSWORD=
 #### application start process
 - Login page for admin http://{APP_URL}/login
 - after successfully login you will be redirected to a static dashboard page
+# Monitoring-System
+Monitoring System
