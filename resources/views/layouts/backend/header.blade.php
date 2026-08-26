@@ -147,7 +147,6 @@
                     </li>
                     <!--end::User Image-->
                     <!--begin::Menu Footer-->
-<<<<<<< Updated upstream
                     <li class="user-footer">
                         <a
                             href="#"
@@ -183,21 +182,6 @@
                             </button>
                         </form> --}}
                     </li>
-=======
-  <li class="user-footer d-flex align-items-center px-3 py-2">
-    <a href="#"
-        class="btn btn-outline-secondary"
-        >Profile</a
-    >
-
-    <form method="POST" action="{{ route('logout') }}" class="m-0 ms-auto">
-        @csrf
-        <button type="submit" class="btn btn-outline-danger">
-            Logout
-        </button>
-    </form>
-</li>
->>>>>>> Stashed changes
                     <!--end::Menu Footer-->
                 </ul>
             </li>
