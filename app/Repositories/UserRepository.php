@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -33,4 +34,14 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::where('email', $email)->first();
     }
+
+    /**
+     * Method to retrieve all users
+     *
+     * @return array<User>
+     */
+    public function getAllUsers(): LengthAwarePaginator
+{
+    return User::latest()->paginate(10);
+}
 }

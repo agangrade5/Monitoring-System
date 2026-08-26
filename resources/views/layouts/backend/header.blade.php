@@ -124,10 +124,10 @@
                     <img
                         src="{{ asset('assets/images/backend/user2-160x160.jpg') }}"
                         class="user-image rounded-circle shadow"
-                        alt="Alexander Pierce"
+                        alt="{{ auth()->user()->name }}"
                     />
                     <span class="d-none d-md-inline"
-                        >Alexander Pierce</span
+                        >{{ auth()->user()->name }}</span
                     >
                 </a>
                 <ul
@@ -141,8 +141,8 @@
                             alt="Alexander Pierce"
                         />
                         <p>
-                            Alexander Pierce - Web Developer
-                            <small>Member since Nov. 2023</small>
+                            {{ auth()->user()->name }}
+                            
                         </p>
                     </li>
                     <!--end::User Image-->

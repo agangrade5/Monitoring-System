@@ -35,11 +35,27 @@
                 id="navigation"
             >
                 <li class="nav-item">
-                    <a href="{{ route('dashboard') }}" class="nav-link">
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link">
                         <i class="nav-icon bi bi-speedometer"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
+
+                
+                 <li class="nav-item">
+                    <a href="{{ route('admin.users') }}" class="nav-link">
+                        <i class="nav-icon bi bi-people"></i>
+                        <p>Users</p>
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link">
+                        <i class="nav-icon bi bi-gear"></i>
+                        <p>Settings</p>
+                    </a>
+                </li>
+
+                
             </ul>
             @endrole
 
@@ -53,8 +69,15 @@
             >
                 <li class="nav-item">
                     <a href="/" class="nav-link">
-                        <i class="nav-icon bi bi-user"></i>
-                        <p>Users</p>
+                        <i class="nav-icon bi bi-speedometer"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+
+                 <li class="nav-item">
+                    <a href="/" class="nav-link">
+                        <i class="nav-icon bi bi-activity"></i>
+<p>Monitoring</p>
                     </a>
                 </li>
             </ul>
