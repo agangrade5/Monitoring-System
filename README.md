@@ -48,7 +48,7 @@ Monitoring System
 - Login page for admin http://{APP_URL}/
 - after you have seeded once you can login with the default admin credits provided 
 - inside the admin button section we will be having log that you can view from the admin account.
--  
+
 <code>
     - change
     - config\log-viewer.php
