@@ -3,6 +3,7 @@
 namespace App\Repositories\Contracts;
 
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface UserRepositoryInterface
 {
@@ -23,4 +24,11 @@ interface UserRepositoryInterface
      * @return User
      */
     public function findByEmail(string $email): ?User;
+ 
+    /**
+     * Method to retrieve all users
+     *
+     * @return array<User>
+     */
+     public function getAllUsers(): LengthAwarePaginator;
 }

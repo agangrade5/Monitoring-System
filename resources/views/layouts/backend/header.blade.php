@@ -124,10 +124,10 @@
                     <img
                         src="{{ asset('assets/images/backend/user2-160x160.jpg') }}"
                         class="user-image rounded-circle shadow"
-                        alt="Alexander Pierce"
+                        alt="{{ auth()->user()->name }}"
                     />
                     <span class="d-none d-md-inline"
-                        >Alexander Pierce</span
+                        >{{ auth()->user()->name }}</span
                     >
                 </a>
                 <ul
@@ -141,12 +141,13 @@
                             alt="Alexander Pierce"
                         />
                         <p>
-                            Alexander Pierce - Web Developer
-                            <small>Member since Nov. 2023</small>
+                            {{ auth()->user()->name }}
+                            
                         </p>
                     </li>
                     <!--end::User Image-->
                     <!--begin::Menu Footer-->
+<<<<<<< Updated upstream
                     <li class="user-footer">
                         <a
                             href="#"
@@ -182,6 +183,21 @@
                             </button>
                         </form> --}}
                     </li>
+=======
+  <li class="user-footer d-flex align-items-center px-3 py-2">
+    <a href="#"
+        class="btn btn-outline-secondary"
+        >Profile</a
+    >
+
+    <form method="POST" action="{{ route('logout') }}" class="m-0 ms-auto">
+        @csrf
+        <button type="submit" class="btn btn-outline-danger">
+            Logout
+        </button>
+    </form>
+</li>
+>>>>>>> Stashed changes
                     <!--end::Menu Footer-->
                 </ul>
             </li>
