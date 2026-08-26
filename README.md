@@ -41,7 +41,6 @@ Monitoring System
 ```
     "bepsvpt/secure-headers": "^9.1",
     "tightenco/ziggy": "^2.6",
-
 ```
 
 #### application start process
