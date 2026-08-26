@@ -52,10 +52,10 @@ class LoginController extends Controller
         $user = Auth::user();
 
         if ($user->hasRole('admin')) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('admin.dashboard')->with('success', 'Login successful!');
         }
 
-        return redirect()->route('dashboard');
+        return redirect()->route('dashboard')->with('success', 'Login successful!');
     }
 
     /**

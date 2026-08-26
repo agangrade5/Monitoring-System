@@ -153,11 +153,6 @@
                             class="btn btn-outline-secondary"
                             >Profile</a
                         >
-                        {{-- <a
-                            href="#"
-                            class="btn btn-outline-danger float-end"
-                            >Sign out</a
-                        > --}}
                         <form
                             id="logout-form"
                             method="POST"
@@ -167,20 +162,16 @@
                             @csrf
                         </form>
 
-                        <a
-                            href="{{ route('logout') }}"
+                        <button
+                            type="button"
                             class="btn btn-outline-danger float-end"
                             id="logout-button"
+                            data-confirm-title="Logout?"
+                            data-confirm-text="Are you sure you want to logout?"
+                            data-confirm-button="Yes, Logout"
                         >
                             Logout
-                        </a>
-                        {{-- <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <button type="submit" class="btn btn-outline-danger float-end">
-                                Logout
-                            </button>
-                        </form> --}}
+                        </button>
                     </li>
                     <!--end::Menu Footer-->
                 </ul>

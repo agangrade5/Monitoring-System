@@ -33,6 +33,10 @@
         <!-- begin::cookie consent -->
         {{-- @include('cookie-consent::index') --}}
         <!-- end::cookie consent -->
+
+        <!-- begin::toast message component -->
+        <x-toast />
+        <!-- end::toast message component -->
     </body>
     <!--end::Body-->
 </html>

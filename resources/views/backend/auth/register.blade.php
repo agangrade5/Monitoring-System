@@ -11,7 +11,7 @@
         <div class="card-body register-card-body">
             <p class="register-box-msg">{{$title}}</p>
 
-            <form method="POST" action="{{ route('register.submit') }}">
+            <form method="POST" action="{{ route('register.submit') }}" id="register-form">
                 @csrf
                 <label class="visually-hidden" for="name">Full Name</label>
                 <div class="input-group mb-3">

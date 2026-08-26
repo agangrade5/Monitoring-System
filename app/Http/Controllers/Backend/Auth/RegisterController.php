@@ -47,6 +47,6 @@ class RegisterController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard');
+        return redirect()->route('dashboard')->with('success', 'Register successful!');;
     }
 }

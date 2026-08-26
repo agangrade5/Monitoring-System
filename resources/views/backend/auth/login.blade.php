@@ -11,7 +11,7 @@
         <div class="card-body login-card-body">
             <p class="login-box-msg">{{$title}}</p>
 
-            <form method="POST" action="{{ route('login.submit') }}">
+            <form method="POST" action="{{ route('login.submit') }}" id="login-form">
                 @csrf
                 <label class="visually-hidden" for="email">Email</label>
                 <div class="input-group mb-3">
