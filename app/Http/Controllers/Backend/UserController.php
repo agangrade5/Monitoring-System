@@ -26,7 +26,7 @@ class UserController extends Controller
 
     $users = $this->userRepository->getAllUsers($search);
 
-    return view('backend.user.user', [
+    return view('backend.admin.user', [
         'title' => 'User',
         'bodyClassName' => 'user-page',
         'users' => $users,
