@@ -158,13 +158,29 @@
                             class="btn btn-outline-danger float-end"
                             >Sign out</a
                         > --}}
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form
+                            id="logout-form"
+                            method="POST"
+                            action="{{ route('logout') }}"
+                            class="d-none"
+                        >
+                            @csrf
+                        </form>
+
+                        <a
+                            href="{{ route('logout') }}"
+                            class="btn btn-outline-danger float-end"
+                            id="logout-button"
+                        >
+                            Logout
+                        </a>
+                        {{-- <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
                             <button type="submit" class="btn btn-outline-danger float-end">
                                 Logout
                             </button>
-                        </form>
+                        </form> --}}
                     </li>
                     <!--end::Menu Footer-->
                 </ul>

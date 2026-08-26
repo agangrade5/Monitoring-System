@@ -71,7 +71,21 @@
 <!--end::Script-->
 
 <script nonce="{{ csp_nonce('script') }}">
+    // Body Font
     document.getElementById('source-sans-css')?.addEventListener('load', function () {
         this.media = 'all';
     });
+
+    // Logout button
+    document.addEventListener('DOMContentLoaded', () => {
+    const logoutButton = document.getElementById('logout-button');
+    const logoutForm = document.getElementById('logout-form');
+
+    if (logoutButton && logoutForm) {
+        logoutButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            logoutForm.submit();
+        });
+    }
+});
 </script>
