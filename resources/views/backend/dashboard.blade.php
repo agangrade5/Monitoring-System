@@ -1,5 +1,5 @@
 @extends('layouts.backend.app')
-@section('title', 'Dashboard')
+@section('title', $title)
 @section('content')
 <!--begin::App Content Header-->
 <div class="app-content-header">
@@ -8,7 +8,7 @@
         <!--begin::Row-->
         <div class="row">
             <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">Dashboard</h1>
+                <h1 class="mb-0 fs-3">{{$title}}</h1>
             </div>
             <div class="col-sm-6">
                 <nav aria-label="breadcrumb">
@@ -20,7 +20,7 @@
                             class="breadcrumb-item active"
                             aria-current="page"
                         >
-                            Dashboard
+                            {{$title}}
                         </li>
                     </ol>
                 </nav>
