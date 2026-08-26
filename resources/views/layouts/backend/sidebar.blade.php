@@ -26,6 +26,8 @@
     <div class="sidebar-wrapper">
         <nav class="mt-2" aria-label="Main navigation">
             <!--begin::Sidebar Menu-->
+            {{-- Admin Menu --}}
+            @role('admin')
             <ul
                 class="nav sidebar-menu flex-column"
                 data-lte-toggle="treeview"
@@ -39,6 +41,25 @@
                     </a>
                 </li>
             </ul>
+            @endrole
+
+            {{-- User Menu --}}
+            @role('user')
+            <ul
+                class="nav sidebar-menu flex-column"
+                data-lte-toggle="treeview"
+                data-accordion="false"
+                id="navigation"
+            >
+                <li class="nav-item">
+                    <a href="/" class="nav-link">
+                        <i class="nav-icon bi bi-user"></i>
+                        <p>Users</p>
+                    </a>
+                </li>
+            </ul>
+            @endrole
+
             <!--end::Sidebar Menu-->
         </nav>
     </div>

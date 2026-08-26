@@ -35,7 +35,9 @@
 <div class="app-content">
     <!--begin::Container-->
     <div class="container-fluid">
-
+        <p>
+            Welcome, {{ auth()->user()->name }}
+        </p>
     </div>
     <!--end::Container-->
 </div>
