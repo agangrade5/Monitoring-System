@@ -50,26 +50,32 @@ Route::middleware('auth')->group(function () {
     | Admin Routes
     |--------------------------------------------------------------------------
     */
-    Route::middleware('role:admin')
-        ->prefix('admin')
-        ->name('admin.')
-        ->group(function () {
+ Route::middleware('role:admin')
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
-            Route::get('/dashboard', [
-                DashboardController::class,
-                'admin',
-            ])->name('dashboard');
+        Route::get('/dashboard', [
+            DashboardController::class,
+            'admin',
+        ])->name('dashboard');
 
+        Route::get('/users', [
+            UserController::class,
+            'allUsers',
+        ])->name('users');
 
-             Route::get('/users', [
-                UserController::class,
-                'allUsers',
-            ])->name('users');
+        Route::get('/settings', [
+            SettingController::class,
+            'index'
+        ])->name('settings');
 
-            Route::get('/settings', [SettingController::class, 'index'])
-    ->name('settings');
+        Route::post('/settings/notification/update', [
+            SettingController::class,
+            'updateNotification'
+        ])->name('settings.notification.update');
 
-        });
+    });
 
     /*
     |--------------------------------------------------------------------------

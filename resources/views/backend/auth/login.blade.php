@@ -1,56 +1,66 @@
 @extends('layouts.auth.app')
 @section('title', $title)
 @section('content')
+
 <!--begin:: Main Content -->
 <main class="login-box">
-    <h1 class="login-logo">
-        <a href="/"><b>{{config('app.name')}}</b></a>
-    </h1>
+    <div class="login-logo">
+        <a href="/"><b>{{ config('app.name') }}</b></a>
+    </div>
     <!-- /.login-logo -->
     <div class="card">
         <div class="card-body login-card-body">
-            <p class="login-box-msg">{{$title}}</p>
+            <h5 class="login-box-msg">{{ $title }}</h5>
 
             <form method="POST" action="{{ route('login.submit') }}" id="login-form">
                 @csrf
-                <label class="visually-hidden" for="email">Email</label>
-                <div class="input-group mb-3">
-                    <input
-                        id="email"
-                        type="email"
-                        class="form-control"
-                        placeholder="Email"
-                        name="email"
-                        value="{{ old('email') }}"
-                        required
-                    >
-                    <div class="input-group-text">
-                        <span class="bi bi-envelope"></span>
+                
+                <!-- Email field -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-secondary-emphasis small" for="email">Email Address</label>
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <span class="bi bi-envelope"></span>
+                        </div>
+                        <input
+                            id="email"
+                            type="email"
+                            class="form-control"
+                            placeholder="name@example.com"
+                            name="email"
+                            value="{{ old('email') }}"
+                            required
+                        >
                     </div>
+                    @error('email')
+                        <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                    @enderror
                 </div>
-                @error('email')
-                    <span class="text-danger">{{ $message }}</span>
-                @enderror
-                <label class="visually-hidden" for="password">Password</label>
-                <div class="input-group mb-3">
-                    <input
-                        id="password"
-                        type="password"
-                        class="form-control"
-                        placeholder="Password"
-                        name="password"
-                        required
-                    >
-                    <div class="input-group-text">
-                        <span class="bi bi-lock-fill"></span>
+
+                <!-- Password field -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-secondary-emphasis small" for="password">Password</label>
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <span class="bi bi-lock-fill"></span>
+                        </div>
+                        <input
+                            id="password"
+                            type="password"
+                            class="form-control"
+                            placeholder="••••••••"
+                            name="password"
+                            required
+                        >
                     </div>
+                    @error('password')
+                        <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                    @enderror
                 </div>
-                @error('password')
-                    <span class="text-danger">{{ $message }}</span>
-                @enderror
-                <!--begin::Row-->
-                <div class="row">
-                    <div class="col-8">
+
+                <!-- Remember & Submit -->
+                <div class="row align-items-center mb-4">
+                    <div class="col-7">
                         <div class="form-check">
                             <input
                                 id="remember"
@@ -60,40 +70,31 @@
                                 value="1"
                                 {{ old('remember') ? 'checked' : '' }}
                             >
-
-                            <label
-                                class="form-check-label"
-                                for="remember"
-                            >
+                            <label class="form-check-label" for="remember">
                                 Remember Me
                             </label>
                         </div>
                     </div>
-                    <!-- /.col -->
-                    <div class="col-4">
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                Login
-                            </button>
-                        </div>
+                    <div class="col-5">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Sign In
+                        </button>
                     </div>
-                    <!-- /.col -->
                 </div>
-                <!--end::Row-->
             </form>
 
-            <p class="mb-1">
-                <a href="/">I forgot my password</a>
-            </p>
-            <p class="mb-0">
-                <a href="{{ route('register') }}" class="text-center">
-                    Registration
-                </a>
-            </p>
+            <div class="text-center mt-3 pt-3 border-top border-white-50">
+                <p class="mb-1">
+                    <a href="/">I forgot my password</a>
+                </p>
+                <p class="mb-0">
+                    <a href="{{ route('register') }}">
+                        Create new account
+                    </a>
+                </p>
+            </div>
         </div>
-        <!-- /.login-card-body -->
     </div>
 </main>
-<!-- /.login-box -->
 <!--end:: Main Content-->
 @endsection

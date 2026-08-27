@@ -1,115 +1,123 @@
 @extends('layouts.auth.app')
 @section('title', $title)
 @section('content')
+
 <!--begin:: Main Content -->
 <main class="register-box">
-    <h1 class="register-logo">
-        <a href="/"><b>{{config('app.name')}}</b></a>
-    </h1>
-    <!-- /.login-logo -->
+    <div class="register-logo">
+        <a href="/"><b>{{ config('app.name') }}</b></a>
+    </div>
+    <!-- /.register-logo -->
     <div class="card">
         <div class="card-body register-card-body">
-            <p class="register-box-msg">{{$title}}</p>
+            <h5 class="register-box-msg">{{ $title }}</h5>
 
             <form method="POST" action="{{ route('register.submit') }}" id="register-form">
                 @csrf
-                <label class="visually-hidden" for="name">Full Name</label>
-                <div class="input-group mb-3">
-                    <input
-                        id="name"
-                        type="text"
-                        class="form-control"
-                        placeholder="Full Name"
-                        name="name"
-                        value="{{ old('name') }}"
-                        required
-                    >
-                    <div class="input-group-text">
-                        <span class="bi bi-envelope"></span>
-                    </div>
-                </div>
-                @error('name')
-                    <span class="text-danger">{{ $message }}</span>
-                @enderror
-                <label class="visually-hidden" for="email">Email</label>
-                <div class="input-group mb-3">
-                    <input
-                        id="email"
-                        type="email"
-                        class="form-control"
-                        placeholder="Email"
-                        name="email"
-                        value="{{ old('email') }}"
-                        required
-                    >
-                    <div class="input-group-text">
-                        <span class="bi bi-envelope"></span>
-                    </div>
-                </div>
-                @error('email')
-                    <span class="text-danger">{{ $message }}</span>
-                @enderror
-                <label class="visually-hidden" for="password">Password</label>
-                <div class="input-group mb-3">
-                    <input
-                        id="password"
-                        type="password"
-                        class="form-control"
-                        placeholder="Password"
-                        name="password"
-                        required
-                    >
-                    <div class="input-group-text">
-                        <span class="bi bi-lock-fill"></span>
-                    </div>
-                </div>
-                @error('password')
-                    <span class="text-danger">{{ $message }}</span>
-                @enderror
-                <label class="visually-hidden" for="password_confirmation">Confirm Password</label>
-                <div class="input-group mb-3">
-                    <input
-                        id="password_confirmation"
-                        type="password"
-                        class="form-control"
-                        placeholder="Password Confirmation"
-                        name="password_confirmation"
-                        required
-                    >
-                    <div class="input-group-text">
-                        <span class="bi bi-lock-fill"></span>
-                    </div>
-                </div>
-                @error('password_confirmation')
-                    <span class="text-danger">{{ $message }}</span>
-                @enderror
-                <!--begin::Row-->
-                <div class="row">
-                    <div class="col-8">
-
-                    </div>
-                    <!-- /.col -->
-                    <div class="col-4">
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                Register
-                            </button>
+                
+                <!-- Full name field -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-secondary-emphasis small" for="name">Full Name</label>
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <span class="bi bi-person-fill"></span>
                         </div>
+                        <input
+                            id="name"
+                            type="text"
+                            class="form-control"
+                            placeholder="John Doe"
+                            name="name"
+                            value="{{ old('name') }}"
+                            required
+                        >
                     </div>
-                    <!-- /.col -->
+                    @error('name')
+                        <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                    @enderror
                 </div>
-                <!--end::Row-->
+
+                <!-- Email field -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-secondary-emphasis small" for="email">Email Address</label>
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <span class="bi bi-envelope"></span>
+                        </div>
+                        <input
+                            id="email"
+                            type="email"
+                            class="form-control"
+                            placeholder="name@example.com"
+                            name="email"
+                            value="{{ old('email') }}"
+                            required
+                        >
+                    </div>
+                    @error('email')
+                        <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Password field -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-secondary-emphasis small" for="password">Password</label>
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <span class="bi bi-lock-fill"></span>
+                        </div>
+                        <input
+                            id="password"
+                            type="password"
+                            class="form-control"
+                            placeholder="••••••••"
+                            name="password"
+                            required
+                        >
+                    </div>
+                    @error('password')
+                        <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Password Confirmation field -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-secondary-emphasis small" for="password_confirmation">Confirm Password</label>
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <span class="bi bi-lock-fill"></span>
+                        </div>
+                        <input
+                            id="password_confirmation"
+                            type="password"
+                            class="form-control"
+                            placeholder="••••••••"
+                            name="password_confirmation"
+                            required
+                        >
+                    </div>
+                    @error('password_confirmation')
+                        <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        Create Account
+                    </button>
+                </div>
             </form>
 
-            <p class="mb-0">
-                <a href="{{ route('login') }}" class="text-center">
-                    Login
-                </a>
-            </p>
+            <div class="text-center mt-3 pt-3 border-top border-white-50">
+                <p class="mb-0">
+                    <a href="{{ route('login') }}">
+                        Already have an account? Sign In
+                    </a>
+                </p>
+            </div>
         </div>
-        <!-- /.login-card-body -->
     </div>
 </main>
-<!-- /.login-box -->
 <!--end:: Main Content-->
 @endsection
