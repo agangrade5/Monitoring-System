@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\Auth\{
 };
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\UserController;
+use App\Http\Controllers\Backend\SettingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -64,6 +65,9 @@ Route::middleware('auth')->group(function () {
                 UserController::class,
                 'allUsers',
             ])->name('users');
+
+            Route::get('/settings', [SettingController::class, 'index'])
+    ->name('settings');
 
         });
 
