@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\Auth\{
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\SettingController;
+use App\Http\Controllers\Backend\MonitorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -97,6 +98,20 @@ Route::middleware('auth')->group(function () {
             Route::get('/users', function () {
                 return 'Users';
             })->name('users');
+
+           Route::get('/monitor', [
+            MonitorController::class,
+            'index'
+        ])->name('monitor');
+       Route::delete('/monitor/{id}', [
+            MonitorController::class,
+             'destroy'
+           ])->name('monitor.destroy');
+       Route::patch('/monitor/{id}/toggle', [
+            MonitorController::class,
+            'toggleActive'
+       ])->name('monitor.toggle');
+
 
         });
 

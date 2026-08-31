@@ -73,12 +73,19 @@
                 </li>
 
                  <li class="nav-item">
-                    <a href="/" class="nav-link">
+                     <a href="{{ route('monitor') }}" class="nav-link {{ request()->routeIs('monitor') ? 'active' : '' }}">
+                   
                         <i class="nav-icon bi bi-activity"></i>
 <p>Monitoring</p>
                     </a>
                 </li>
-            </ul>
+                 <li class="nav-item">
+                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-gear"></i>
+                        <p>Settings</p>
+                    </a>
+                </li>
+            </ul> 
             @endrole
 
             <!--end::Sidebar Menu-->
