@@ -32,7 +32,7 @@
                             id="email"
                             type="email"
                             class="form-control"
-                            placeholder="name@example.com"
+                            placeholder="Email Address"
                             name="email"
                             value="{{ old('email') }}"
                             required
