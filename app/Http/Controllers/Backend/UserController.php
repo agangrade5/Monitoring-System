@@ -42,18 +42,13 @@ class UserController extends Controller
     ]);
 }
 
-    /**
-     * Store a newly created user.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function storeUser(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8 |confirmed',
+            'password' => 'required|string|min:8|confirmed',
+            'is_active' => 'required|boolean',
         ]);
 
         $user = $this->userRepository->create($validated);
@@ -64,6 +59,44 @@ class UserController extends Controller
         return redirect()
             ->back()
             ->with('success', 'User created successfully.');
+    }
+
+    /**
+     * Update an existing user.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateUser(Request $request, int $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'is_active' => 'required|boolean',
+        ]);
+
+        $this->userRepository->update($id, $validated);
+
+        return redirect()
+            ->back()
+            ->with('success', 'User updated successfully.');
+    }
+
+    /**
+     * Destroy an existing user.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroyUser(int $id)
+    {
+        $this->userRepository->delete($id);
+
+        return redirect()
+            ->back()
+            ->with('success', 'User deleted successfully.');
     }
 
 }

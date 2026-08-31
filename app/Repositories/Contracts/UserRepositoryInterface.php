@@ -31,4 +31,19 @@ interface UserRepositoryInterface
      * @return array<User>
      */
      public function getAllUsers(): LengthAwarePaginator;
+
+    /**
+     * Finds a user by ID.
+     */
+    public function findById(int $id): ?User;
+
+    /**
+     * Updates a user.
+     */
+    public function update(int $id, array $data): bool;
+
+    /**
+     * Deletes a user.
+     */
+    public function delete(int $id): bool;
 }

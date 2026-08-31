@@ -48,7 +48,7 @@
             >
         </form>
 
-        <a href="/" class="btn btn-primary btn-sm">
+        <a href="{{ route('monitor.create') }}" class="btn btn-primary btn-sm">
             <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
             New Monitor
         </a>
@@ -254,7 +254,7 @@
 
                                     {{-- Edit --}}
                                     <a
-                                        href=""
+                                        href="{{ route('monitor.edit', $monitor->id) }}"
                                         class="btn btn-outline-secondary btn-sm"
                                         title="Edit"
                                     >

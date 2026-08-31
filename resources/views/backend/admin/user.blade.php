@@ -88,20 +88,49 @@
                                                 <small class="text-muted">{{ \Carbon\Carbon::parse($user['created_at'])->format('h:i A') }}</small>
                                             </td>
 
-                                            <!-- Status Mock badge -->
+                                            <!-- Status badge -->
                                             <td>
-                                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Active</span>
+                                                @if($user['is_active'])
+                                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2 py-1">Active</span>
+                                                @else
+                                                    <span class="badge rounded-pill bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">Inactive</span>
+                                                @endif
                                             </td>
 
                                             <!-- Actions -->
                                             <td class="text-end pe-4">
-                                                <div class="d-flex justify-content-end gap-1">
-                                                    <button type="button" class="btn btn-light btn-sm text-primary p-2 rounded-circle user-action-btn" aria-label="Edit {{ $user['name'] }}">
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    {{-- Edit Button --}}
+                                                    <button 
+                                                        type="button" 
+                                                        class="btn btn-light btn-sm text-primary p-2 rounded-circle edit-user-btn" 
+                                                        data-id="{{ $user['id'] }}"
+                                                        data-name="{{ $user['name'] }}"
+                                                        data-email="{{ $user['email'] }}"
+                                                        data-active="{{ $user['is_active'] ? 1 : 0 }}"
+                                                        title="Edit User"
+                                                    >
                                                         <i class="bi bi-pencil-square"></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-light btn-sm text-danger p-2 rounded-circle user-action-btn" data-bs-toggle="modal" data-bs-target="#modal-delete-user" aria-label="Delete {{ $user['name'] }}">
-                                                        <i class="bi bi-trash3"></i>
-                                                    </button>
+
+                                                    {{-- Delete Form --}}
+                                                    <form
+                                                        action="{{ route('admin.users.destroy', $user['id']) }}"
+                                                        method="POST"
+                                                        class="d-inline"
+                                                        onsubmit="return confirm('Are you sure you want to delete user {{ $user['name'] }}?')"
+                                                    >
+                                                        @csrf
+                                                        @method('DELETE')
+
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-light btn-sm text-danger p-2 rounded-circle"
+                                                            title="Delete User"
+                                                        >
+                                                            <i class="bi bi-trash3"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
@@ -208,10 +237,81 @@
                             <input type="password" name="password_confirmation" id="user_confirm_password" class="form-control" placeholder="••••••••" required>
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="user_status">Status</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-toggle-on"></i></span>
+                            <select name="is_active" id="user_status" class="form-select" required>
+                                <option value="1" {{ old('is_active') === '1' || old('is_active') === null ? 'selected' : '' }}>Active</option>
+                                <option value="0" {{ old('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer border-top-0 p-3 bg-light-subtle">
                     <button type="button" class="btn btn-outline-secondary px-3" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary px-4">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content settings-card border-0">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="editUserModalLabel">
+                    <i class="bi bi-pencil-square text-primary me-2"></i>Edit User Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="POST" id="edit-user-form">
+                @csrf
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="edit_user_name">Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" name="name" id="edit_user_name" class="form-control" placeholder="Enter full name" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="edit_user_email">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" name="email" id="edit_user_email" class="form-control" placeholder="name@example.com" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="edit_user_status">Status</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-toggle-on"></i></span>
+                            <select name="is_active" id="edit_user_status" class="form-select" required>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="edit_user_password">New Password (Optional)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" name="password" id="edit_user_password" class="form-control" placeholder="Leave blank to keep current">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="edit_user_confirm_password">Confirm New Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" name="password_confirmation" id="edit_user_confirm_password" class="form-control" placeholder="Leave blank to keep current">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 p-3 bg-light-subtle">
+                    <button type="button" class="btn btn-outline-secondary px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -254,6 +354,26 @@ document.addEventListener('DOMContentLoaded', () => {
             addUserModal.show();
         }
     @endif
+
+    // Edit user button modal handler
+    document.querySelectorAll('.edit-user-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.dataset.id;
+            const name = this.dataset.name;
+            const email = this.dataset.email;
+            const active = this.dataset.active;
+
+            const form = document.getElementById('edit-user-form');
+            form.action = `/admin/users/update/${id}`;
+
+            document.getElementById('edit_user_name').value = name;
+            document.getElementById('edit_user_email').value = email;
+            document.getElementById('edit_user_status').value = active;
+
+            const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            editModal.show();
+        });
+    });
 });
 </script>
 @endpush

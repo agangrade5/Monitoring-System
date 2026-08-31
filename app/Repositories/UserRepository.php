@@ -44,4 +44,44 @@ class UserRepository implements UserRepositoryInterface
 {
     return User::latest()->paginate(10);
 }
+
+    /**
+     * Finds a user by ID.
+     */
+    public function findById(int $id): ?User
+    {
+        return User::find($id);
+    }
+
+    /**
+     * Updates a user.
+     */
+    public function update(int $id, array $data): bool
+    {
+        $user = $this->findById($id);
+        if (!$user) {
+            return false;
+        }
+
+        if (isset($data['password']) && !empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        return $user->update($data);
+    }
+
+    /**
+     * Deletes a user.
+     */
+    public function delete(int $id): bool
+    {
+        $user = $this->findById($id);
+        if (!$user) {
+            return false;
+        }
+
+        return $user->delete();
+    }
 }

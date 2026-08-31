@@ -71,6 +71,16 @@ Route::middleware('auth')->group(function () {
             'storeUser'
         ])->name('users.store');
 
+        Route::post('/users/update/{id}', [
+            UserController::class,
+            'updateUser'
+        ])->name('users.update');
+
+        Route::delete('/users/destroy/{id}', [
+            UserController::class,
+            'destroyUser'
+        ])->name('users.destroy');
+
         Route::get('/settings', [
             SettingController::class,
             'index'
@@ -121,18 +131,34 @@ Route::middleware('auth')->group(function () {
             UserController::class,
             'profile'
         ])->name('profile');
-           Route::get('/monitor', [
-            MonitorController::class,
-            'index'
-        ])->name('monitor');
-       Route::delete('/monitor/{id}', [
-            MonitorController::class,
-             'destroy'
-           ])->name('monitor.destroy');
-       Route::patch('/monitor/{id}/toggle', [
-            MonitorController::class,
-            'toggleActive'
-       ])->name('monitor.toggle');
+            Route::get('/monitor', [
+             MonitorController::class,
+             'index'
+         ])->name('monitor');
+            Route::get('/monitor/create', [
+             MonitorController::class,
+             'create'
+         ])->name('monitor.create');
+            Route::post('/monitor/store', [
+             MonitorController::class,
+             'store'
+         ])->name('monitor.store');
+            Route::get('/monitor/{id}/edit', [
+             MonitorController::class,
+             'edit'
+         ])->name('monitor.edit');
+            Route::post('/monitor/{id}/update', [
+             MonitorController::class,
+             'update'
+         ])->name('monitor.update');
+        Route::delete('/monitor/{id}', [
+             MonitorController::class,
+              'destroy'
+            ])->name('monitor.destroy');
+        Route::patch('/monitor/{id}/toggle', [
+             MonitorController::class,
+             'toggleActive'
+        ])->name('monitor.toggle');
 
 
         });

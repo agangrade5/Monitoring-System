@@ -62,16 +62,19 @@ class MonitorController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'mobile' => 'nullable|string|max:255',
             'url' => 'nullable|url|max:255',
-            'ip_address' => 'nullable|ip',
+            'ip_address' => 'nullable|string|max:255',
             'type' => 'required|in:website,server,api',
-            'check_interval' => 'required|integer|min:10',
+            'check_interval' => 'required|integer',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $this->monitorRepository->create($validated);
 
         return redirect()
-            ->route('admin.monitors.index')
+            ->route('monitor')
             ->with('success', 'Monitor created successfully.');
     }
 
@@ -108,17 +111,19 @@ class MonitorController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'mobile' => 'nullable|string|max:255',
             'url' => 'nullable|url|max:255',
-            'ip_address' => 'nullable|ip',
+            'ip_address' => 'nullable|string|max:255',
             'type' => 'required|in:website,server,api',
-            'check_interval' => 'required|integer|min:10',
+            'check_interval' => 'required|integer',
             'is_active' => 'nullable|boolean',
         ]);
 
         $this->monitorRepository->update($id, $validated);
 
         return redirect()
-            ->route('admin.monitors.index')
+            ->route('monitor')
             ->with('success', 'Monitor updated successfully.');
     }
 
