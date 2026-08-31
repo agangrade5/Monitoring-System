@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 use App\Rules\{NoScripts, ValidEmailDomain, WithoutSpacesRule, StrictPasswordRule};
 
-class RegisterRequest extends FormRequest
+class ResetPasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,20 +25,13 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
+            'token' => [
                 'required',
-                'string',
-                'min:3',
-                'max:50',
-                new NoScripts(),
             ],
 
             'email' => [
                 'required',
-                'string',
                 'email',
-                'max:50',
-                'unique:users,email',
                 new NoScripts(),
                 new ValidEmailDomain(),
             ],
@@ -46,7 +39,6 @@ class RegisterRequest extends FormRequest
             'password' => [
                 'required',
                 'confirmed',
-                new NoScripts(),
                 new WithoutSpacesRule(),
                 new StrictPasswordRule(),
             ],
@@ -61,11 +53,10 @@ class RegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => trans('validation.required'),
+            'token.required' => trans('validation.required'),
 
             'email.required' => trans('validation.required'),
             'email.email' => trans('validation.email'),
-            'email.unique' => trans('validation.unique'),
 
             'password.required' => trans('validation.required'),
             'password.confirmed' => trans('validation.password.confirmed'),

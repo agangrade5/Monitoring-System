@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Notifications\CustomResetPasswordNotification;
 
 #[Fillable(['name', 'email', 'password', 'phone_number', 'image', 'is_active', 'is_deleted'])]
 #[Hidden(['password', 'remember_token'])]
@@ -31,5 +32,18 @@ class User extends Authenticatable
             'is_active' => 'boolean',
             'is_deleted' => 'boolean',
         ];
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(
+            new CustomResetPasswordNotification($token)
+        );
     }
 }

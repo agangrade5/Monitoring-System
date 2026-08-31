@@ -188,8 +188,14 @@
 </div>
 
 <!-- Add User Modal -->
-<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<div class="modal fade"
+     id="addUserModal"
+     tabindex="-1"
+     aria-labelledby="addUserModalLabel"
+     aria-hidden="true"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+         <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content settings-card border-0">
             <div class="modal-header bg-light">
                 <h5 class="modal-title fw-bold" id="addUserModalLabel">
@@ -258,7 +264,9 @@
 </div>
 
 <!-- Edit User Modal -->
-<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content settings-card border-0">
             <div class="modal-header bg-light">

@@ -24,7 +24,7 @@ interface UserRepositoryInterface
      * @return User
      */
     public function findByEmail(string $email): ?User;
- 
+
     /**
      * Method to retrieve all users
      *
@@ -46,4 +46,12 @@ interface UserRepositoryInterface
      * Deletes a user.
      */
     public function delete(int $id): bool;
+
+    /**
+     * Update user password.
+     */
+    public function updatePassword(
+        User $user,
+        string $password
+    ): bool;
 }

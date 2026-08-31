@@ -41,9 +41,9 @@ class UserRepository implements UserRepositoryInterface
      * @return array<User>
      */
     public function getAllUsers(): LengthAwarePaginator
-{
-    return User::latest()->paginate(10);
-}
+    {
+        return User::latest()->paginate(10);
+    }
 
     /**
      * Finds a user by ID.
@@ -83,5 +83,17 @@ class UserRepository implements UserRepositoryInterface
         }
 
         return $user->delete();
+    }
+
+    /**
+     * Update user password.
+     */
+    public function updatePassword(
+        User $user,
+        string $password
+    ): bool {
+        return $user->update([
+            'password' => Hash::make($password),
+        ]);
     }
 }
