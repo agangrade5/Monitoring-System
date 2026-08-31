@@ -20,4 +20,12 @@ interface SettingRepositoryInterface
      * 
      */
      public function updateNotification(string $setting, bool $value);
+
+     /**
+      * Method updateSettings
+      * 
+      * @param array $data
+      * @return Setting
+      */
+     public function updateSettings(array $data);
 }

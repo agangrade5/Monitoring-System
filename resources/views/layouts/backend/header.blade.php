@@ -74,7 +74,7 @@
                     <!--begin::Menu Footer-->
                     <li class="user-footer">
                         <a
-                            href="#"
+                            href="{{ route('profile') }}"
                             class="btn btn-outline-secondary"
                             >Profile</a
                         >

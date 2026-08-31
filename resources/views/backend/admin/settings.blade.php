@@ -29,10 +29,7 @@
             <div class="col-lg-3 col-md-4">
                 <div class="card settings-card mb-4">
                     <div class="card-body p-3">
-                        <div class="settings-search-wrapper mb-3">
-                            <i class="bi bi-search"></i>
-                            <input type="text" class="form-control settings-search-input" id="settings-search" placeholder="Search tabs...">
-                        </div>
+                       
                         <div class="settings-sidebar-nav nav flex-column" id="settings-nav" role="tablist">
                             <a href="#account" class="settings-nav-link active mb-1" data-bs-toggle="pill" role="tab" aria-selected="true">
                                 <i class="bi bi-person me-2"></i>Account
@@ -44,9 +41,7 @@
                                 <i class="bi bi-shield-lock me-2"></i>Security
                             </a>
                            
-                            <a href="#danger" class="settings-nav-link text-danger mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-exclamation-triangle me-2"></i>Danger Zone
-                            </a>
+                           
                         </div>
                     </div>
                 </div>
@@ -138,29 +133,70 @@
                                                     <i class="bi bi-envelope-fill text-primary me-2"></i>
                                                     E-mail
                                                 </p>
-   <input type="hidden"
-                       name="email_notification"
-                       value="0">
+                                                <input type="hidden" name="email_notification" value="0">
                                                 <small class="text-muted">
                                                     Receive important updates, notifications, and account-related information via email.
                                                 </small>
-                                                                                        </div>
+                                            </div>
                                             <div class="form-check form-switch fs-5">
-                                                  <input type="hidden"
-                       name="email_notification"
-                       value="0">
-
-                <input class="form-check-input notification-switch"
-       type="checkbox"
-       role="switch"
-       id="email_notification"
-       data-type="email_notification"
-       {{ $settings->email_notification ? 'checked' : '' }}>
+                                                <input type="hidden" name="email_notification" value="0">
+                                                <input class="form-check-input notification-switch"
+                                                    type="checkbox"
+                                                    role="switch"
+                                                    id="email_notification"
+                                                    data-type="email_notification"
+                                                    {{ $settings->email_notification ? 'checked' : '' }}>
                                             </div>
                                         </div>
+
+                                        <!-- SMTP Configuration Form -->
+                                        <div id="smtp-config-container" style="display: {{ $settings->email_notification ? 'block' : 'none' }};" class="mt-3 mb-4 p-4 bg-light rounded border border-light-subtle">
+                                            <h6 class="fw-bold mb-3 text-secondary"><i class="bi bi-envelope-open text-primary me-2"></i>SMTP Settings</h6>
+                                            <form action="{{ route('admin.settings.smtp.update') }}" method="POST">
+                                                @csrf
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label small fw-semibold text-secondary" for="smtp_host">SMTP Host</label>
+                                                        <input type="text" name="smtp_host" id="smtp_host" class="form-control" value="{{ $settings->smtp_host }}" placeholder="e.g. smtp.mailtrap.io" required>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small fw-semibold text-secondary" for="smtp_port">SMTP Port</label>
+                                                        <input type="number" name="smtp_port" id="smtp_port" class="form-control" value="{{ $settings->smtp_port }}" placeholder="587" required>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label small fw-semibold text-secondary" for="smtp_encryption">Encryption</label>
+                                                        <select name="smtp_encryption" id="smtp_encryption" class="form-select">
+                                                            <option value="tls" {{ $settings->smtp_encryption == 'tls' ? 'selected' : '' }}>TLS</option>
+                                                            <option value="ssl" {{ $settings->smtp_encryption == 'ssl' ? 'selected' : '' }}>SSL</option>
+                                                            <option value="none" {{ $settings->smtp_encryption == 'none' ? 'selected' : '' }}>None</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label small fw-semibold text-secondary" for="smtp_username">SMTP Username</label>
+                                                        <input type="text" name="smtp_username" id="smtp_username" class="form-control" value="{{ $settings->smtp_username }}" placeholder="Username">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label small fw-semibold text-secondary" for="smtp_password">SMTP Password</label>
+                                                        <input type="password" name="smtp_password" id="smtp_password" class="form-control" value="{{ $settings->smtp_password }}" placeholder="Password">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label small fw-semibold text-secondary" for="smtp_from_address">From Email Address</label>
+                                                        <input type="email" name="smtp_from_address" id="smtp_from_address" class="form-control" value="{{ $settings->smtp_from_address }}" placeholder="e.g. sender@example.com" required>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label small fw-semibold text-secondary" for="smtp_from_name">From Name</label>
+                                                        <input type="text" name="smtp_from_name" id="smtp_from_name" class="form-control" value="{{ $settings->smtp_from_name }}" placeholder="e.g. Monitor Alerts" required>
+                                                    </div>
+                                                    <div class="col-12 mt-4">
+                                                        <button type="submit" class="btn btn-primary px-4">Save SMTP Settings</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
                                         <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
                                             <div>
-                                                                                    <p class="mb-0 fw-semibold">
+                                                 <p class="mb-0 fw-semibold">
                                                 <i class="bi bi-phone-fill text-warning me-2"></i>
                                                 SMS
                                             </p>
@@ -168,19 +204,52 @@
                                             <small class="text-muted">
                                                 Receive important alerts and notifications directly on your mobile phone.
                                             </small>
-                                                                                    </div>
+                                            </div>
                                             <div class="form-check form-switch fs-5">
-                                                 <input type="hidden"
-                       name="sms_notification"
-                       value="0">
-<input class="form-check-input notification-switch"
-       type="checkbox"
-       role="switch"
-       id="sms_notification"
-       data-type="sms_notification"
-       {{ $settings->sms_notification ? 'checked' : '' }}>
+                                                 <input type="hidden" name="sms_notification" value="0">
+                                                <input class="form-check-input notification-switch"
+                                                   type="checkbox"
+                                                   role="switch"
+                                                   id="sms_notification"
+                                                   data-type="sms_notification"
+                                                   {{ $settings->sms_notification ? 'checked' : '' }}>
                                             </div>
                                         </div>
+
+                                        <!-- SMS Configuration Form -->
+                                        <div id="sms-config-container" style="display: {{ $settings->sms_notification ? 'block' : 'none' }};" class="mt-3 mb-4 p-4 bg-light rounded border border-light-subtle">
+                                            <h6 class="fw-bold mb-3 text-secondary"><i class="bi bi-chat-left-text text-warning me-2"></i>SMS Settings</h6>
+                                            <form action="{{ route('admin.settings.sms.update') }}" method="POST">
+                                                @csrf
+                                                <div class="row g-3">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label small fw-semibold text-secondary" for="sms_provider">SMS Provider</label>
+                                                        <select name="sms_provider" id="sms_provider" class="form-select">
+                                                            <option value="twilio" {{ $settings->sms_provider == 'twilio' ? 'selected' : '' }}>Twilio</option>
+                                                            <option value="nexmo" {{ $settings->sms_provider == 'nexmo' ? 'selected' : '' }}>Vonage (Nexmo)</option>
+                                                            <option value="vonage" {{ $settings->sms_provider == 'vonage' ? 'selected' : '' }}>Vonage API</option>
+                                                            <option value="other" {{ $settings->sms_provider == 'other' ? 'selected' : '' }}>Other Provider</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <label class="form-label small fw-semibold text-secondary" for="sms_api_key">API Key / Account SID</label>
+                                                        <input type="text" name="sms_api_key" id="sms_api_key" class="form-control" value="{{ $settings->sms_api_key }}" placeholder="Twilio Account SID / API Key" required>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label small fw-semibold text-secondary" for="sms_api_secret">Auth Token / API Secret</label>
+                                                        <input type="password" name="sms_api_secret" id="sms_api_secret" class="form-control" value="{{ $settings->sms_api_secret }}" placeholder="Twilio Auth Token / API Secret" required>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label small fw-semibold text-secondary" for="sms_from_number">From Number / Sender ID</label>
+                                                        <input type="text" name="sms_from_number" id="sms_from_number" class="form-control" value="{{ $settings->sms_from_number }}" placeholder="e.g. +1234567890" required>
+                                                    </div>
+                                                    <div class="col-12 mt-4">
+                                                        <button type="submit" class="btn btn-warning text-white px-4">Save SMS Settings</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
                                         <!-- <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
                                             <div>
                                                 <p class="mb-0 fw-semibold"><i class="bi bi-calendar3 text-info me-2"></i>Weekly digest</p>
@@ -259,60 +328,10 @@
                         </div>
 
                         <!-- MFA Card -->
-                        <div class="card settings-card mb-4">
-                            <div class="card-header d-flex align-items-center">
-                                <i class="bi bi-shield-check fs-4 me-2 text-success"></i>
-                                <div>
-                                    <h5 class="mb-0 fw-bold">Two-Factor Authentication</h5>
-                                    <small class="text-muted">Add an extra layer of protection to your account</small>
-                                </div>
-                            </div>
-                            <div class="card-body d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
-                                <div>
-                                    <p class="mb-1 fw-semibold">Authenticator App</p>
-                                    <small class="text-muted">Use a mobile authenticator app (like Google Authenticator or Authy) to generate codes.</small>
-                                </div>
-                                <button class="btn btn-outline-primary" id="enable-mfa-btn">Set up 2FA</button>
-                            </div>
-                        </div>
+                      
                     </div>
 
-                  
-                    <!-- Danger Zone Tab -->
-                    <div class="tab-pane fade" id="danger" role="tabpanel">
-                        <div class="card settings-card danger-card">
-                            <div class="card-header d-flex align-items-center">
-                                <i class="bi bi-exclamation-triangle fs-4 me-2 text-danger"></i>
-                                <div>
-                                    <h5 class="mb-0 text-danger fw-bold">Danger Zone</h5>
-                                    <small class="text-muted">Destructive operations that cannot be undone</small>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <!-- Warning Banner -->
-                                <div class="alert alert-danger d-flex align-items-start gap-3 rounded-3 mb-4" role="alert">
-                                    <i class="bi bi-shield-slash fs-4 text-danger flex-shrink-0"></i>
-                                    <div>
-                                        <h6 class="alert-heading fw-bold mb-1">Proceed with Caution</h6>
-                                        <small>These settings can permanently impact your monitoring dashboard, delete historical logs, or shut down active alerts.</small>
-                                    </div>
-                                </div>
-
-                               
-
-                                <!-- Delete Account Box -->
-                                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center py-3 gap-3">
-                                    <div>
-                                        <p class="mb-1 fw-bold text-danger">Delete Account Permanently</p>
-                                        <small class="text-muted">This action permanently deletes your user credentials, configurations, and all server monitors.</small>
-                                    </div>
-                                    <button type="button" class="btn btn-danger" id="delete-account-btn">
-                                        Delete Account
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                 
                     
                 </div>
             </div>
@@ -436,6 +455,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const checkbox = this;
         const setting = checkbox.dataset.type;
         const value = checkbox.checked ? 1 : 0;
+
+        // Toggle configurations view container dynamically
+        if (setting === 'email_notification') {
+            const container = document.getElementById('smtp-config-container');
+            if (container) {
+                if (checkbox.checked) {
+                    $(container).slideDown(250);
+                } else {
+                    $(container).slideUp(250);
+                }
+            }
+        }
+        if (setting === 'sms_notification') {
+            const container = document.getElementById('sms-config-container');
+            if (container) {
+                if (checkbox.checked) {
+                    $(container).slideDown(250);
+                } else {
+                    $(container).slideUp(250);
+                }
+            }
+        }
+
         $.ajax({
             url: "{{ route('admin.settings.notification.update') }}",
             type: "POST",
@@ -461,6 +503,15 @@ document.addEventListener('DOMContentLoaded', () => {
             error: function () {
                 // Restore previous state
                 checkbox.checked = !checkbox.checked;
+                // Re-toggle visibility back on error
+                if (setting === 'email_notification') {
+                    const container = document.getElementById('smtp-config-container');
+                    if (container) $(container).slideToggle(250);
+                }
+                if (setting === 'sms_notification') {
+                    const container = document.getElementById('sms-config-container');
+                    if (container) $(container).slideToggle(250);
+                }
                 toastr.error('Unable to update notification setting.');
             }
         });

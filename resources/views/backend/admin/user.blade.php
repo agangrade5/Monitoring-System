@@ -39,7 +39,7 @@
                                         <i class="bi bi-search"></i>
                                         <input type="text" class="form-control settings-search-input" id="user-search" placeholder="Search user directory...">
                                     </div>
-                                    <button class="btn btn-primary d-flex align-items-center gap-2" id="add-user-btn">
+                                    <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
                                         <i class="bi bi-person-plus"></i>Add User
                                     </button>
                                 </div>
@@ -62,6 +62,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse($users as $user)
+                                  
                                         <tr>
                                             <!-- User Info with Avatar -->
                                             <td class="ps-4">
@@ -71,7 +72,7 @@
                                                     </div>
                                                     <div>
                                                         <span class="fw-bold text-secondary-emphasis d-block">{{ $user['name'] }}</span>
-                                                        <span class="badge bg-secondary-subtle text-secondary py-1 px-2">System User</span>
+                                                     
                                                     </div>
                                                 </div>
                                             </td>
@@ -157,6 +158,66 @@
     </div>
 </div>
 
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content settings-card border-0">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="addUserModalLabel">
+                    <i class="bi bi-person-plus text-primary me-2"></i>Add New User
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('admin.users.store') }}" method="POST" id="add-user-form">
+                @csrf
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="user_name">Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" name="name" id="user_name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Enter full name" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="user_email">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" name="email" id="user_email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="name@example.com" required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="user_password">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" name="password" id="user_password" class="form-control @error('password') is-invalid @enderror" placeholder="••••••••" required>
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                     <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="user_confirm_password">Confirm Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" name="password_confirmation" id="user_confirm_password" class="form-control" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 p-3 bg-light-subtle">
+                    <button type="button" class="btn btn-outline-secondary px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script nonce="{{ csp_nonce('script') }}">
 document.addEventListener('DOMContentLoaded', () => {
@@ -185,17 +246,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Add user button mock toast
-    const addUserBtn = document.getElementById('add-user-btn');
-    if (addUserBtn) {
-        addUserBtn.addEventListener('click', () => {
-            if (window.toastr) {
-                toastr.info("New User creation module loading...");
-            } else {
-                alert("New User creation module loading...");
-            }
-        });
-    }
+    // Auto-open modal if validation errors exist
+    @if($errors->hasAny(['name', 'email', 'password']))
+        const modalEl = document.getElementById('addUserModal');
+        if (modalEl) {
+            const addUserModal = new bootstrap.Modal(modalEl);
+            addUserModal.show();
+        }
+    @endif
 });
 </script>
 @endpush

@@ -42,4 +42,14 @@ class SettingRepository implements SettingRepositoryInterface
 
         return $settings;
     }
+
+    /**
+     * Updates settings with the given data.
+     */
+    public function updateSettings(array $data)
+    {
+        $settings = $this->getSettings();
+        $settings->update($data);
+        return $settings;
+    }
 }

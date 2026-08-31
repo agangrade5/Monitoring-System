@@ -33,4 +33,37 @@ class UserController extends Controller
     ]);
 }
 
+    public function profile(): View
+{
+    return view('backend.user.settings', [
+        'title' => 'Settings',
+        'bodyClassName' => 'Settings',
+        'Settings' => ''
+    ]);
+}
+
+    /**
+     * Store a newly created user.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function storeUser(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8 |confirmed',
+        ]);
+
+        $user = $this->userRepository->create($validated);
+        
+        // Assign default 'user' role
+        $user->assignRole('user');
+
+        return redirect()
+            ->back()
+            ->with('success', 'User created successfully.');
+    }
+
 }

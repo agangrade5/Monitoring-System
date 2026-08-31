@@ -106,7 +106,7 @@
                                     <span class="text-secondary">-</span>
                                 @endif
                             </td>
- <td class="ps-3">
+                           <td class="ps-3">
                                 <span class="fw-semibold">
                                     {{ $monitor->email }}
                                 </span>
@@ -289,7 +289,7 @@
                     @empty
 
                         <tr>
-                            <td colspan="10" class="text-center py-5">
+                            <td colspan="12" class="text-center py-5">
                                 <div class="text-secondary">
                                     <i class="bi bi-display fs-2 d-block mb-2"></i>
                                     No monitors found.

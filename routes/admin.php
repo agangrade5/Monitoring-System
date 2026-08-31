@@ -66,6 +66,11 @@ Route::middleware('auth')->group(function () {
             'allUsers',
         ])->name('users');
 
+        Route::post('/users/store', [
+            UserController::class,
+            'storeUser'
+        ])->name('users.store');
+
         Route::get('/settings', [
             SettingController::class,
             'index'
@@ -75,6 +80,16 @@ Route::middleware('auth')->group(function () {
             SettingController::class,
             'updateNotification'
         ])->name('settings.notification.update');
+
+        Route::post('/settings/smtp/update', [
+            SettingController::class,
+            'updateSmtp'
+        ])->name('settings.smtp.update');
+
+        Route::post('/settings/sms/update', [
+            SettingController::class,
+            'updateSms'
+        ])->name('settings.sms.update');
 
     });
 
@@ -98,7 +113,14 @@ Route::middleware('auth')->group(function () {
             Route::get('/users', function () {
                 return 'Users';
             })->name('users');
+         Route::get('/profile', function () {
+                return 'profile';
+            })->name('profile');
 
+               Route::get('/profile', [
+            UserController::class,
+            'profile'
+        ])->name('profile');
            Route::get('/monitor', [
             MonitorController::class,
             'index'
