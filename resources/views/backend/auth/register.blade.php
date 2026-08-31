@@ -12,7 +12,7 @@
         <div class="card-body register-card-body">
             <h5 class="register-box-msg">{{ $title }}</h5>
 
-            <form method="POST" action="{{ route('register.submit') }}" id="register-form">
+            <form method="POST" action="{{ route('register.submit') }}" id="register-form" class="needs-validation" novalidate>
                 @csrf
 
                 <!-- Full name field -->

@@ -16,7 +16,7 @@
             <p class="login-box-msg mb-1 fs-6">
                 Create a new password for your account.
             </p>
-            <form method="POST" action="{{ route('password.update') }}" class="auth-submit-form">
+            <form method="POST" action="{{ route('password.update') }}" class="auth-submit-form" class="needs-validation" novalidate>
                 @csrf
 
                 <input type="hidden" name="token" value="{{ $token }}">

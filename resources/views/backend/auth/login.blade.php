@@ -12,7 +12,7 @@
         <div class="card-body login-card-body">
             <h5 class="login-box-msg">{{ $title }}</h5>
 
-            <form method="POST" action="{{ route('login.submit') }}" id="login-form">
+            <form method="POST" action="{{ route('login.submit') }}" id="login-form" class="needs-validation" novalidate>
                 @csrf
 
                 <!-- Email field -->
