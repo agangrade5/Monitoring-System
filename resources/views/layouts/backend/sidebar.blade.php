@@ -33,7 +33,7 @@
                 id="navigation"
             >
                 <li class="nav-item">
-                    <a href="{{ route('admin.dashboard') }}" class="nav-link">
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-speedometer"></i>
                         <p>Dashboard</p>
                     </a>
@@ -41,13 +41,13 @@
 
                 
                  <li class="nav-item">
-                    <a href="{{ route('admin.users') }}" class="nav-link">
+                    <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-people"></i>
                         <p>Users</p>
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="{{ route('admin.settings') }}" class="nav-link">
+                    <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-gear"></i>
                         <p>Settings</p>
                     </a>
@@ -66,7 +66,7 @@
                 id="navigation"
             >
                 <li class="nav-item">
-                    <a href="{{ route('dashboard') }}" class="nav-link">
+                    <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-speedometer"></i>
                         <p>Dashboard</p>
                     </a>

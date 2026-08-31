@@ -67,6 +67,51 @@
     })();
 </script>
 
+<script nonce="{{ csp_nonce('script') }}">
+document.addEventListener("DOMContentLoaded", () => {
+    const themeBtn = document.getElementById("theme-toggle-btn");
+    const lightIcon = document.getElementById("theme-icon-light");
+    const darkIcon = document.getElementById("theme-icon-dark");
+
+    const getStoredTheme = () => localStorage.getItem("lte-theme");
+    
+    const getPreferredTheme = () => {
+        const storedTheme = getStoredTheme();
+        if (storedTheme) {
+            return storedTheme;
+        }
+        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    };
+
+    const setTheme = (theme) => {
+        document.documentElement.setAttribute("data-bs-theme", theme);
+        localStorage.setItem("lte-theme", theme);
+        updateIcons(theme);
+    };
+
+    const updateIcons = (theme) => {
+        if (theme === "dark") {
+            if (lightIcon) lightIcon.classList.add("d-none");
+            if (darkIcon) darkIcon.classList.remove("d-none");
+        } else {
+            if (lightIcon) lightIcon.classList.remove("d-none");
+            if (darkIcon) darkIcon.classList.add("d-none");
+        }
+    };
+
+    // Initialize
+    const currentTheme = getPreferredTheme();
+    setTheme(currentTheme);
+
+    if (themeBtn) {
+        themeBtn.addEventListener("click", () => {
+            const nextTheme = getStoredTheme() === "dark" ? "light" : "dark";
+            setTheme(nextTheme);
+        });
+    }
+});
+</script>
+
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce("https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js") !!}
 <!--end::Script-->
 
