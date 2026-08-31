@@ -5,7 +5,7 @@ namespace App\Http\Requests\Backend\Auth;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-use App\Rules\{NoScripts, AlphaSpacesRule, WithoutSpacesRule, StrictPasswordRule};
+use App\Rules\{NoScripts, ValidEmailDomain, WithoutSpacesRule, StrictPasswordRule};
 
 class RegisterRequest extends FormRequest
 {
@@ -30,24 +30,23 @@ class RegisterRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:50',
-                new NoScripts('name'),
-                new AlphaSpacesRule(),
+                new NoScripts(),
             ],
 
             'email' => [
                 'required',
                 'string',
                 'email',
-                'min:3',
                 'max:50',
                 'unique:users,email',
-                new NoScripts('email'),
+                new NoScripts(),
+                new ValidEmailDomain(),
             ],
 
             'password' => [
                 'required',
                 'confirmed',
-                new NoScripts('password'),
+                new NoScripts(),
                 new WithoutSpacesRule(),
                 new StrictPasswordRule(),
             ],
@@ -62,13 +61,14 @@ class RegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Name is required.',
-            'email.required' => 'Email address is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'email.unique' => 'This email address is already registered.',
-            'password.required' => 'Password is required.',
-            'password.min' => 'Password must be at least 8 characters.',
-            'password.confirmed' => 'Password confirmation does not match.',
+            'name.required' => trans('validation.required'),
+
+            'email.required' => trans('validation.required'),
+            'email.email' => trans('validation.email'),
+            'email.unique' => trans('validation.unique'),
+
+            'password.required' => trans('validation.required'),
+            'password.confirmed' => trans('validation.password.confirmed'),
         ];
     }
 }

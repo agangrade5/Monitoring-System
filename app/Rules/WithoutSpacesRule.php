@@ -16,7 +16,7 @@ class WithoutSpacesRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (preg_match('/\s/', $value)) {
-            $fail('validation.custom.password.remove_space');
+            $fail('validation.custom.password.remove_space')->translate();
         }
     }
 }

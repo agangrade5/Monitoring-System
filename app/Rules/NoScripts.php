@@ -8,17 +8,22 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 
 class NoScripts implements ValidationRule
 {
-    /**
+     /**
      * Run the validation rule.
      *
-     * @param  Closure(string, ?string=): PotentiallyTranslatedString  $fail
+     * @param Closure(string, ?string=): PotentiallyTranslatedString $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!preg_match('/<script\b[^>]*>(.*?)<\/script>|<\?php\b.*?\?>/i', $value)) {
+        if (!is_string($value)) {
             return;
         }
 
-        $fail('The :attribute contains invalid script content.');
+        if (preg_match(
+            '/<script\b[^>]*>(.*?)<\/script>|<\?php\b.*?\?>/is',
+            $value
+        )) {
+            $fail('validation.no_scripts')->translate();
+        }
     }
 }

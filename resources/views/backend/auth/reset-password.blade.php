@@ -10,10 +10,16 @@
     <!-- /.login-logo -->
     <div class="card">
         <div class="card-body login-card-body">
-            <h5 class="login-box-msg">{{ $title }}</h5>
-
-            <form method="POST" action="{{ route('login.submit') }}" id="login-form">
+            <p class="login-box-msg">
+                Reset Password
+            </p>
+            <p class="login-box-msg mb-1 fs-6">
+                Create a new password for your account.
+            </p>
+            <form method="POST" action="{{ route('password.update') }}" class="auth-submit-form">
                 @csrf
+
+                <input type="hidden" name="token" value="{{ $token }}">
 
                 <!-- Email field -->
                 <div class="mb-3">
@@ -38,7 +44,7 @@
                 </div>
 
                 <!-- Password field -->
-                <div class="mb-4">
+                <div class="mb-3">
                     <label class="form-label fw-semibold text-secondary-emphasis small" for="password">Password</label>
                     <div class="input-group">
                         <div class="input-group-text">
@@ -58,39 +64,36 @@
                     @enderror
                 </div>
 
-                <!-- Remember & Submit -->
-                <div class="row align-items-center mb-4">
-                    <div class="col-7">
-                        <div class="form-check">
-                            <input
-                                id="remember"
-                                type="checkbox"
-                                class="form-check-input"
-                                name="remember"
-                                value="1"
-                                {{ old('remember') ? 'checked' : '' }}
-                            >
-                            <label class="form-check-label" for="remember">
-                                Remember Me
-                            </label>
+                <!-- Password Confirmation field -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-secondary-emphasis small" for="password_confirmation">Confirm Password</label>
+                    <div class="input-group">
+                        <div class="input-group-text">
+                            <span class="bi bi-lock-fill"></span>
                         </div>
+                        <input
+                            id="password_confirmation"
+                            type="password"
+                            class="form-control"
+                            placeholder="••••••••"
+                            name="password_confirmation"
+                            required
+                        >
                     </div>
-                    <div class="col-5">
-                        <button type="submit" class="btn btn-primary w-100">
-                            Sign In
-                        </button>
-                    </div>
+                    @error('password_confirmation')
+                        <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                    @enderror
+                </div>
+                <!-- Submit Button -->
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        Reset Password
+                    </button>
                 </div>
             </form>
-
             <div class="text-center mt-3 pt-3 border-top border-white-50">
                 <p class="mb-1">
-                    <a href="{{ route('password.request') }}">I forgot my password</a>
-                </p>
-                <p class="mb-0">
-                    <a href="{{ route('register') }}">
-                        Create new account
-                    </a>
+                    <a href="{{ route('login') }}">Back to Login</a>
                 </p>
             </div>
         </div>

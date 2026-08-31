@@ -16,7 +16,7 @@ class AlphaSpacesRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (preg_match('/^[\pL\s]+$/u', $value)) {
-            $fail('validation.alpha');
+            $fail('validation.alpha')->translate();
         }
     }
 }

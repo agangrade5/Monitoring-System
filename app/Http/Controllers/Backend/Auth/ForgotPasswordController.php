@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Backend\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Backend\Auth\ForgotPasswordRequest;
-use App\Http\Requests\Backend\Auth\ResetPasswordRequest;
+use App\Http\Requests\Backend\Auth\{ForgotPasswordRequest, ResetPasswordRequest};
+use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\{Auth, Password};
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ForgotPasswordController extends Controller
 {
+    public function __construct(
+        protected UserRepositoryInterface $userRepository
+    ) {
+    }
+
     /**
      * Show forgot password page.
      */
@@ -36,7 +41,7 @@ class ForgotPasswordController extends Controller
         if ($status === Password::RESET_LINK_SENT) {
             return back()->with(
                 'success',
-                'Password reset link has been sent to your email address.'
+                'If an account exists for this email address, a password reset link has been sent.'
             );
         }
 
@@ -48,11 +53,11 @@ class ForgotPasswordController extends Controller
     }
 
     /**
-     * Show password reset form.
+     * Show reset password page.
      */
     public function showResetForm(
         string $token
-    ): View|RedirectResponse {
+    ): View {
         return view('backend.auth.reset-password', [
             'title' => 'Reset Password',
             'token' => $token,
@@ -62,22 +67,27 @@ class ForgotPasswordController extends Controller
     }
 
     /**
-     * Reset password.
+     * Reset user password.
      */
     public function resetPassword(
         ResetPasswordRequest $request
     ): RedirectResponse {
         $status = Password::reset(
             $request->validated(),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => $password,
-                    'remember_token' => Str::random(60),
-                ])->save();
-            }
-        );
+                function ($user, $password) {
+                    $this->userRepository->updatePassword(
+                        $user,
+                        $password
+                    );
+
+                    $user->forceFill([
+                        'remember_token' => Str::random(60),
+                    ])->save();
+                }
+            );
 
         if ($status === Password::PASSWORD_RESET) {
+            Auth::logout();
             return redirect()
                 ->route('login')
                 ->with(

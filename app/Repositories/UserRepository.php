@@ -41,7 +41,19 @@ class UserRepository implements UserRepositoryInterface
      * @return array<User>
      */
     public function getAllUsers(): LengthAwarePaginator
-{
-    return User::latest()->paginate(10);
-}
+    {
+        return User::latest()->paginate(10);
+    }
+
+    /**
+     * Update user password.
+     */
+    public function updatePassword(
+        User $user,
+        string $password
+    ): bool {
+        return $user->update([
+            'password' => Hash::make($password),
+        ]);
+    }
 }

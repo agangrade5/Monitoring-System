@@ -24,11 +24,19 @@ interface UserRepositoryInterface
      * @return User
      */
     public function findByEmail(string $email): ?User;
- 
+
     /**
      * Method to retrieve all users
      *
      * @return array<User>
      */
      public function getAllUsers(): LengthAwarePaginator;
+
+    /**
+     * Update user password.
+     */
+    public function updatePassword(
+        User $user,
+        string $password
+    ): bool;
 }

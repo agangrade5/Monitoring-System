@@ -18,7 +18,7 @@ class StrictPasswordRule implements ValidationRule
         $pattern = '/^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$/u';
 
         if (!is_string($value) || !preg_match($pattern, $value)) {
-            $fail('validation.password.strict');
+            $fail('validation.password.strict')->translate();
         }
     }
 }

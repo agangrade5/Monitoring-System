@@ -5,7 +5,7 @@ namespace App\Http\Requests\Backend\Auth;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-use App\Rules\NoScripts;
+use App\Rules\{NoScripts, ValidEmailDomain};
 
 class LoginRequest extends FormRequest
 {
@@ -28,13 +28,14 @@ class LoginRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                new NoScripts('email'),
+                new NoScripts(),
+                new ValidEmailDomain(),
             ],
 
             'password' => [
                 'required',
                 'string',
-                new NoScripts('password'),
+                new NoScripts(),
             ],
 
             'remember' => [
@@ -52,9 +53,12 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'Email address is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'password.required' => 'Password is required.',
+            'email.required' => trans(
+                'validation.required',
+                ['attribute' => 'Email address']
+            ),
+            'email.email' => trans('validation.email'),
+            'password.required' => trans('validation.required'),
         ];
     }
 }

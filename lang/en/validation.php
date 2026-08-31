@@ -203,6 +203,12 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'email' => 'Email',
+        'password' => 'Password'
+    ],
 
+    'no_scripts' => 'The :attribute contains invalid script content.',
+    'email_validation' => 'Please enter a valid email address.',
+    'email_domain' => 'The :attribute must contain a valid email domain.',
 ];

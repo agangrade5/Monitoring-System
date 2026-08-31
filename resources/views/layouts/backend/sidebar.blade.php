@@ -6,12 +6,12 @@
     <!--begin::Sidebar Brand-->
     <div class="sidebar-brand">
         <!--begin::Brand Link-->
-        
+
      <a href="@role('admin'){{ route('admin.dashboard') }}@elserole('user'){{ route('dashboard') }}@endrole" class="brand-link">
 
     <!--begin::Brand Text-->
     <span class="brand-text fw-light">
-        {{ config('app.name') }}
+        {{ config('app.name', 'Monitoring System') }}
     </span>
     <!--end::Brand Text-->
 
@@ -39,7 +39,7 @@
                     </a>
                 </li>
 
-                
+
                  <li class="nav-item">
                     <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-people"></i>
@@ -53,7 +53,7 @@
                     </a>
                 </li>
 
-                
+
             </ul>
             @endrole
 

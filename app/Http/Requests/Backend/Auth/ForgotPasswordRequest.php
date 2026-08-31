@@ -5,7 +5,7 @@ namespace App\Http\Requests\Backend\Auth;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-use App\Rules\NoScripts;
+use App\Rules\{NoScripts, ValidEmailDomain};
 
 class ForgotPasswordRequest extends FormRequest
 {
@@ -28,8 +28,8 @@ class ForgotPasswordRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                'exists:users,email',
-                new NoScripts('email'),
+                new NoScripts(),
+                new ValidEmailDomain(),
             ],
         ];
     }
@@ -42,7 +42,8 @@ class ForgotPasswordRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'email' => 'email address',
+            'email.email' => trans('validation.email'),
+            'email.required' => trans('validation.required'),
         ];
     }
 }
