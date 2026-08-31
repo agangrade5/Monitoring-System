@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 use App\Rules\NoScripts;
 
-class LoginRequest extends FormRequest
+class ForgotPasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,18 +28,8 @@ class LoginRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
+                'exists:users,email',
                 new NoScripts('email'),
-            ],
-
-            'password' => [
-                'required',
-                'string',
-                new NoScripts('password'),
-            ],
-
-            'remember' => [
-                'nullable',
-                'boolean',
             ],
         ];
     }
@@ -49,12 +39,10 @@ class LoginRequest extends FormRequest
      *
      * @return array
      */
-    public function messages(): array
+    public function attributes(): array
     {
         return [
-            'email.required' => 'Email address is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'password.required' => 'Password is required.',
+            'email' => 'email address',
         ];
     }
 }

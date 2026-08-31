@@ -5,6 +5,8 @@ namespace App\Http\Requests\Backend\Auth;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+use App\Rules\{NoScripts, AlphaSpacesRule, WithoutSpacesRule, StrictPasswordRule};
+
 class RegisterRequest extends FormRequest
 {
     /**
@@ -26,22 +28,28 @@ class RegisterRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
-                'max:100',
+                'min:3',
+                'max:50',
+                new NoScripts('name'),
+                new AlphaSpacesRule(),
             ],
 
             'email' => [
                 'required',
                 'string',
                 'email',
-                'max:255',
+                'min:3',
+                'max:50',
                 'unique:users,email',
+                new NoScripts('email'),
             ],
 
             'password' => [
                 'required',
-                'string',
-                'min:8',
                 'confirmed',
+                new NoScripts('password'),
+                new WithoutSpacesRule(),
+                new StrictPasswordRule(),
             ],
         ];
     }

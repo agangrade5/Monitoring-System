@@ -5,9 +5,9 @@ namespace App\Http\Requests\Backend\Auth;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-use App\Rules\NoScripts;
+use App\Rules\{NoScripts, AlphaSpacesRule, WithoutSpacesRule, StrictPasswordRule};
 
-class LoginRequest extends FormRequest
+class ResetPasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,6 +25,10 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'token' => [
+                'required',
+            ],
+
             'email' => [
                 'required',
                 'email',
@@ -33,28 +37,10 @@ class LoginRequest extends FormRequest
 
             'password' => [
                 'required',
-                'string',
-                new NoScripts('password'),
+                'confirmed',
+                new WithoutSpacesRule(),
+                new StrictPasswordRule(),
             ],
-
-            'remember' => [
-                'nullable',
-                'boolean',
-            ],
-        ];
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return array
-     */
-    public function messages(): array
-    {
-        return [
-            'email.required' => 'Email address is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'password.required' => 'Password is required.',
         ];
     }
 }

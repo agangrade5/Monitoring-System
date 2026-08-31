@@ -2,11 +2,14 @@
 
 use App\Http\Controllers\Backend\Auth\{
     LoginController,
-    RegisterController
+    RegisterController,
+    ForgotPasswordController
 };
-use App\Http\Controllers\Backend\DashboardController;
-use App\Http\Controllers\Backend\UserController;
-use App\Http\Controllers\Backend\SettingController;
+use App\Http\Controllers\Backend\{
+    DashboardController,
+    UserController,
+    SettingController
+};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,16 +18,25 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Login Routes
+    |--------------------------------------------------------------------------
+    */
     Route::get('/', [
         LoginController::class,
         'index',
     ])->name('login');
-
     Route::post('/login', [
         LoginController::class,
         'login',
     ])->name('login.submit');
-
+    /*
+    |--------------------------------------------------------------------------
+    | Register Routes
+    |--------------------------------------------------------------------------
+    */
     Route::get('/register', [
         RegisterController::class,
         'index',
@@ -34,6 +46,30 @@ Route::middleware('guest')->group(function () {
         RegisterController::class,
         'register',
     ])->name('register.submit');
+    /*
+    |--------------------------------------------------------------------------
+    | Forgot Password Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/forgot-password', [
+        ForgotPasswordController::class,
+        'index',
+    ])->name('password.request');
+
+    Route::post('/forgot-password', [
+        ForgotPasswordController::class,
+        'sendResetLink',
+    ])->name('password.email');
+
+    Route::get('/reset-password/{token}', [
+        ForgotPasswordController::class,
+        'showResetForm',
+    ])->name('password.reset');
+
+    Route::post('/reset-password', [
+        ForgotPasswordController::class,
+        'resetPassword',
+    ])->name('password.update');
 });
 
 
@@ -50,32 +86,32 @@ Route::middleware('auth')->group(function () {
     | Admin Routes
     |--------------------------------------------------------------------------
     */
- Route::middleware('role:admin')
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
+    Route::middleware('role:admin')
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(function () {
 
-        Route::get('/dashboard', [
-            DashboardController::class,
-            'admin',
-        ])->name('dashboard');
+            Route::get('/dashboard', [
+                DashboardController::class,
+                'admin',
+            ])->name('dashboard');
 
-        Route::get('/users', [
-            UserController::class,
-            'allUsers',
-        ])->name('users');
+            Route::get('/users', [
+                UserController::class,
+                'allUsers',
+            ])->name('users');
 
-        Route::get('/settings', [
-            SettingController::class,
-            'index'
-        ])->name('settings');
+            Route::get('/settings', [
+                SettingController::class,
+                'index'
+            ])->name('settings');
 
-        Route::post('/settings/notification/update', [
-            SettingController::class,
-            'updateNotification'
-        ])->name('settings.notification.update');
+            Route::post('/settings/notification/update', [
+                SettingController::class,
+                'updateNotification'
+            ])->name('settings.notification.update');
 
-    });
+        });
 
     /*
     |--------------------------------------------------------------------------
