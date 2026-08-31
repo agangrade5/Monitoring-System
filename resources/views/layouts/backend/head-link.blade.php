@@ -1,5 +1,5 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title> @yield('title') | {{config('app.name')}} </title>
+<title> @yield('title') | {{ config('app.name', 'Monitoring System') }} </title>
 <!--begin::Theme Init (prevents flash of incorrect theme on load, #6043)-->
 <script nonce="{{ csp_nonce('script') }}">
     (() => {
@@ -63,7 +63,7 @@
 <!--end::Accessibility Meta Tags-->
 
 <!--begin::Primary Meta Tags-->
-<meta name="title" content="@yield('title') | {{config('app.name')}}" />
+<meta name="title" content="@yield('title') | {{ config('app.name', 'Monitoring System') }}" />
 <!--end::Primary Meta Tags-->
 
 <!--begin::Accessibility Features-->

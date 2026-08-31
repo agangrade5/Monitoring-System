@@ -5,7 +5,7 @@
 <!--begin:: Main Content -->
 <main class="register-box">
     <div class="register-logo">
-        <a href="/"><b>{{ config('app.name') }}</b></a>
+        <a href="/"><b>{{ config('app.name', 'Monitoring System') }}</b></a>
     </div>
     <!-- /.register-logo -->
     <div class="card">
@@ -14,7 +14,7 @@
 
             <form method="POST" action="{{ route('register.submit') }}" id="register-form">
                 @csrf
-                
+
                 <!-- Full name field -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold text-secondary-emphasis small" for="name">Full Name</label>
