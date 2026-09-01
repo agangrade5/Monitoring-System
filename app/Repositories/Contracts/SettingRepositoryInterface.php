@@ -4,13 +4,6 @@ namespace App\Repositories\Contracts;
 
 interface SettingRepositoryInterface
 {
-    /**
-     * Method getSettings
-     * 
-     * @return array
-     * 
-     */
-    public function getSettings();
 
     /**
      * Method updateNotification
@@ -29,3 +22,4 @@ interface SettingRepositoryInterface
       */
      public function updateSettings(array $data);
 }
+

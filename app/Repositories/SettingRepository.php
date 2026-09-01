@@ -7,23 +7,6 @@ use App\Repositories\Contracts\SettingRepositoryInterface;
 
 class SettingRepository implements SettingRepositoryInterface
 {
-    /**
-     * Method getSettings
-     * 
-     * @return Setting
-     * 
-     */
-   public function getSettings()
-    {
-        return Setting::firstOrCreate(
-        [],
-        [
-            'email_notification' => 0,
-            'sms_notification' => 0,
-            'two_factor_authentication' => 0
-        ]
-    );
-    }
 
     /**
      * Method updateNotification
@@ -53,3 +36,4 @@ class SettingRepository implements SettingRepositoryInterface
         return $settings;
     }
 }
+

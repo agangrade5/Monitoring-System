@@ -20,12 +20,6 @@
 
         <!--begin::End Navbar Links-->
         <ul class="navbar-nav ms-auto">
-            <!--begin::Fullscreen Toggle-->
-            <!-- <li class="nav-item">
-                <a class="nav-link" href="#" data-lte-toggle="fullscreen" aria-label="Toggle fullscreen"><i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i><i data-lte-icon="minimize" class="bi bi-fullscreen-exit d-none"></i></a>
-            </li> -->
-            <!--end::Fullscreen Toggle-->
-
             <!--begin::Color Mode Toggle-->
             <li class="nav-item">
                 <button
@@ -47,12 +41,14 @@
                     data-bs-toggle="dropdown"
                 >
                     <img
-                        src="{{ asset('assets/images/backend/user2-160x160.jpg') }}"
+                        src="{{ $user->image
+                            ? Storage::disk(config('filesystems.default'))->url($user->image)
+                            : asset('assets/images/backend/user2-160x160.jpg') }}"
+                        alt="{{ $user->name }}"
                         class="user-image rounded-circle shadow"
-                        alt="{{ auth()->user()->name }}"
-                    />
+                    >
                     <span class="d-none d-md-inline"
-                        >{{ auth()->user()->name }}</span
+                        >{{ $user->name }}</span
                     >
                 </a>
                 <ul
@@ -61,20 +57,26 @@
                     <!--begin::User Image-->
                     <li class="user-header text-bg-primary">
                         <img
-                            src="{{ asset('assets/images/backend/user2-160x160.jpg') }}"
+                            src="{{ $user->image
+                                ? Storage::disk(config('filesystems.default'))->url($user->image)
+                                : asset('assets/images/backend/user2-160x160.jpg') }}"
+                            alt="{{ $user->name }}"
                             class="rounded-circle shadow"
-                            alt="Alexander Pierce"
                         />
                         <p>
-                            {{ auth()->user()->name }}
-                            
+                            {{ $user->name }}
                         </p>
                     </li>
                     <!--end::User Image-->
+
                     <!--begin::Menu Footer-->
                     <li class="user-footer">
                         <a
+<<<<<<< HEAD
                             href="{{ route('profile') }}"
+=======
+                            href="{{ route('admin.settings') }}"
+>>>>>>> 71e4a2511dddedd3c60659b4e366b733517d84cb
                             class="btn btn-outline-secondary"
                             >Profile</a
                         >

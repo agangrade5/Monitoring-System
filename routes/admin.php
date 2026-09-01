@@ -19,13 +19,11 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
-
     /*
     |--------------------------------------------------------------------------
     | Login Routes
     |--------------------------------------------------------------------------
     */
-
     Route::get('/', function () {
         return redirect()->route('login');
     });
@@ -39,6 +37,7 @@ Route::middleware('guest')->group(function () {
         LoginController::class,
         'login',
     ])->name('login.submit');
+
     /*
     |--------------------------------------------------------------------------
     | Register Routes
@@ -87,7 +86,6 @@ Route::middleware('guest')->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
-
     /*
     |--------------------------------------------------------------------------
     | Admin Routes
@@ -97,36 +95,15 @@ Route::middleware('auth')->group(function () {
         ->prefix('admin')
         ->name('admin.')
         ->group(function () {
-
+            /*
+            |--------------------------------------------------------------------------
+            | Dashboard Routes
+            |--------------------------------------------------------------------------
+            */
             Route::get('/dashboard', [
                 DashboardController::class,
                 'admin',
             ])->name('dashboard');
-
-            /*
-            |--------------------------------------------------------------------------
-            | Users Routes
-            |--------------------------------------------------------------------------
-            */
-            Route::get('/users', [
-                UserController::class,
-                'allUsers',
-            ])->name('users');
-
-            Route::post('/users/store', [
-                UserController::class,
-                'storeUser'
-            ])->name('users.store');
-
-            Route::post('/users/update/{id}', [
-                UserController::class,
-                'updateUser'
-            ])->name('users.update');
-
-            Route::delete('/users/destroy/{id}', [
-                UserController::class,
-                'destroyUser'
-            ])->name('users.destroy');
 
             /*
             |--------------------------------------------------------------------------
@@ -137,25 +114,16 @@ Route::middleware('auth')->group(function () {
                 SettingController::class,
                 'index'
             ])->name('settings');
-            Route::get('/settings', [
-                SettingController::class,
-                'index'
-            ])->name('settings');
 
-            Route::post('/settings/notification/update', [
-                SettingController::class,
-                'updateNotification'
-            ])->name('settings.notification.update');
-
-            Route::post('/settings/smtp/update', [
-                SettingController::class,
-                'updateSmtp'
-            ])->name('settings.smtp.update');
-
-            Route::post('/settings/sms/update', [
-                SettingController::class,
-                'updateSms'
-            ])->name('settings.sms.update');
+            /*
+            |--------------------------------------------------------------------------
+            | Users Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/users', [
+                UserController::class,
+                'allUsers',
+            ])->name('users');
         });
 
     /*
@@ -165,54 +133,34 @@ Route::middleware('auth')->group(function () {
     */
     Route::middleware('role:user')
         ->group(function () {
-
+            /*
+            |--------------------------------------------------------------------------
+            | Dashboard Routes
+            |--------------------------------------------------------------------------
+            */
             Route::get('/dashboard', [
                 DashboardController::class,
                 'user',
             ])->name('dashboard');
 
-            Route::get('/users', function () {
-                return 'Users';
-            })->name('users');
-
-            Route::get('/profile', [
-                UserController::class,
-                'profile'
-            ])->name('profile');
+            /*
+            |--------------------------------------------------------------------------
+            | Settings Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/settings', [
+                SettingController::class,
+                'index'
+            ])->name('settings');
 
             /*
             |--------------------------------------------------------------------------
-            | Monitors Routes
+            | Users Routes
             |--------------------------------------------------------------------------
             */
-            Route::get('/monitor', [
-                MonitorController::class,
-                'index'
-            ])->name('monitor');
-            Route::get('/monitor/create', [
-                MonitorController::class,
-                'create'
-            ])->name('monitor.create');
-            Route::post('/monitor/store', [
-                MonitorController::class,
-                'store'
-            ])->name('monitor.store');
-            Route::get('/monitor/{id}/edit', [
-                MonitorController::class,
-                'edit'
-            ])->name('monitor.edit');
-            Route::post('/monitor/{id}/update', [
-                MonitorController::class,
-                'update'
-            ])->name('monitor.update');
-            Route::delete('/monitor/{id}', [
-                MonitorController::class,
-                'destroy'
-            ])->name('monitor.destroy');
-            Route::patch('/monitor/{id}/toggle', [
-                MonitorController::class,
-                'toggleActive'
-            ])->name('monitor.toggle');
+            Route::get('/users', function () {
+                return 'Users';
+            })->name('users');
         });
 
     /*
@@ -224,4 +172,14 @@ Route::middleware('auth')->group(function () {
         LoginController::class,
         'logout',
     ])->name('logout');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/profile', [
+        UserController::class,
+        'updateProfile',
+    ])->name('profile.update');
 });

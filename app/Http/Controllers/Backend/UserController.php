@@ -3,16 +3,20 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Repositories\Contracts\UserRepositoryInterface;
-
 use Illuminate\View\View;
+use App\Http\Requests\Backend\User\ProfileUpdateRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+
 class UserController extends Controller
 {
     /**
-     * UserController constructor.
+     * Create a new controller instance.
      *
      * @param UserRepositoryInterface $userRepository
+     *
+     * @return void
      */
     public function __construct(
         protected UserRepositoryInterface $userRepository
@@ -20,6 +24,8 @@ class UserController extends Controller
     }
 
     /**
+     * List all users
+     *
      * @return View
      */
     public function allUsers(): View
@@ -35,70 +41,23 @@ class UserController extends Controller
         ]);
     }
 
-    public function profile(): View
-{
-    return view('backend.user.settings', [
-        'title' => 'Settings',
-        'bodyClassName' => 'Settings',
-        'Settings' => ''
-    ]);
-}
-
-    public function storeUser(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'is_active' => 'required|boolean',
-        ]);
-
-        $user = $this->userRepository->create($validated);
-        
-        // Assign default 'user' role
-        $user->assignRole('user');
-
-        return redirect()
-            ->back()
-            ->with('success', 'User created successfully.');
-    }
-
     /**
-     * Update an existing user.
+     * Update user profile
      *
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function updateUser(Request $request, int $id)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'is_active' => 'required|boolean',
-        ]);
-
-        $this->userRepository->update($id, $validated);
-
-        return redirect()
-            ->back()
-            ->with('success', 'User updated successfully.');
-    }
-
-    /**
-     * Destroy an existing user.
+     * @param ProfileUpdateRequest $request
      *
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function destroyUser(int $id)
-    {
-        $this->userRepository->delete($id);
-
-        return redirect()
-            ->back()
-            ->with('success', 'User deleted successfully.');
+    public function updateProfile(
+        ProfileUpdateRequest $request
+    ): RedirectResponse {
+        $this->userRepository->updateProfile(
+            $request->user(),
+            $request->validated()
+        );
+        return back()->with(
+            'success',
+            'Profile updated successfully.'
+        );
     }
-
 }
