@@ -43,7 +43,7 @@ class CustomResetPasswordNotification extends Notification
         );
 
         return (new MailMessage)
-            ->subject('Reset Your Password - ' . config('app.name', 'Monitoring System'))
+            ->subject('Reset Your Password - ' . config('app.name'))
             ->view('emails.auth.password-reset', [
                 'user' => $notifiable,
                 'url' => $url,

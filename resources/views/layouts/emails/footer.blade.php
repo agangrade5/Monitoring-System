@@ -10,7 +10,7 @@
         "
     >
         <div>
-            © {{ date('Y') }} {{ config('app.name', 'Monitoring System') }}.
+            © {{ date('Y') }} {{ config('app.name') }}.
             All rights reserved.
         </div>
 

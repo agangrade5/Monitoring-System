@@ -9,7 +9,7 @@
 
 <p>
     We received a request to reset the password for your
-    <strong>{{ config('app.name', 'Monitoring System') }}</strong>
+    <strong>{{ config('app.name') }}</strong>
     account.
 </p>
 
@@ -65,7 +65,7 @@
 
 <p style="margin-top: 25px">
     Regards,<br />
-    <strong>{{ config('app.name', 'Monitoring System') }}</strong>
+    <strong>{{ config('app.name') }}</strong>
 </p>
 
 @endsection
