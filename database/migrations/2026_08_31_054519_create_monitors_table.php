@@ -6,44 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-     public function up(): void
+    public function up(): void
     {
         Schema::create('monitors', function (Blueprint $table) {
-    $table->id();
+            $table->id();
 
-    $table->foreignId('user_id')
-        ->constrained()
-        ->cascadeOnDelete();
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
-    $table->string('name');
+            $table->string('name');
+            $table->string('email')->nullable();
+            $table->string('mobile')->nullable();
+            $table->string('url')->nullable();
 
-    $table->string('email')->nullable();
-    $table->string('mobile')->nullable();
+            $table->unsignedInteger('check_interval')->default(60);
 
-    $table->string('url')->nullable();
-    $table->string('ip_address')->nullable();
+            $table->timestamp('last_checked_at')->nullable();
+            $table->timestamp('last_up_at')->nullable();
+            $table->timestamp('last_down_at')->nullable();
 
-    $table->enum('type', ['website', 'server', 'api'])
-        ->default('website');
+            $table->decimal('uptime_percentage', 5, 2)->default(100);
 
-    $table->enum('status', ['up', 'down'])
-        ->default('up');
+            $table->string('status')->nullable();
 
-    $table->unsignedInteger('check_interval')
-        ->default(60);
+            // No ->after() here
+            $table->unsignedInteger('response_time')->nullable();
 
-    $table->timestamp('last_checked_at')->nullable();
-    $table->timestamp('last_up_at')->nullable();
-    $table->timestamp('last_down_at')->nullable();
+            $table->boolean('is_active')->default(true);
 
-    $table->decimal('uptime_percentage', 5, 2)
-        ->default(100);
-
-    $table->boolean('is_active')
-        ->default(true);
-
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     public function down(): void

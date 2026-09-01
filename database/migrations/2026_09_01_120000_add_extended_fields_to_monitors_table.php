@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('monitors', function (Blueprint $table) {
-            $table->unsignedInteger('response_time')->nullable()->after('status');
             $table->string('ssl_status')->nullable()->after('response_time');
-            $table->date('ssl_expires_at')->nullable()->after('ssl_status');
+            $table->boolean('ssl_enabled')->default(false);    
+            $table->integer('ssl_days_remaining')->nullable()->after('ssl_enabled');                                         
+            $table->date('ssl_expires_at')->nullable()->after('ssl_days_remaining');
             $table->string('ssl_issuer')->nullable()->after('ssl_expires_at');
             $table->date('domain_expires_at')->nullable()->after('ssl_issuer');
             $table->string('security_grade')->nullable()->after('domain_expires_at');

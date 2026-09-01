@@ -163,12 +163,29 @@
 
                                     {{-- 5. Domain Expiry --}}
                                     <td>
-                                        <!-- <div class="fw-semibold text-dark">
-                                            {{ $monitor->domain_expires_at}}
-                                        </div>
-                                        <div class="small text-danger fw-medium">
-                                            {{ $monitor->domain_expires_at}}
-                                        </div> -->
+
+                                      @if($monitor->domain_status === 'active')
+                                    
+
+                                      <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                                                  <i class="bi bi-check-circle-fill"></i>  {{ $monitor->domain_status}} 
+                                                </span>
+                                @elseif($monitor->domain_status === 'warning')
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-yellow-950/50 text-yellow-400 border border-yellow-800/40">
+                                         {{ $monitor->domain_status}}
+                                    </span>
+                                @elseif($monitor->domain_status === 'expired')
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-950/50 text-red-400 border border-red-800/40">
+                                         {{ $monitor->domain_status}}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-950 text-slate-400 border border-slate-800">
+                                        No expiry
+                                    </span>
+                                @endif
+                                        <div class="text-muted small text-slate-400 mt-1 text-secondary">
+                                                Exp: {{ $monitor->domain_expires_at?->format('Y-m-d') }}
+                                            </div>
                                     </td>
 
                                     {{-- 5. Security Grade --}}
