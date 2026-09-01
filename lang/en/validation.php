@@ -190,6 +190,7 @@ return [
         'password' => [
             'remove_space' => 'Space is not allowed in password.',
         ],
+        
     ],
 
     /*
@@ -211,4 +212,5 @@ return [
     'no_scripts' => 'The :attribute contains invalid script content.',
     'email_validation' => 'Please enter a valid email address.',
     'email_domain' => 'The :attribute must contain a valid email domain.',
+    'mobile_validation' => 'Please enter a valid mobile number.',
 ];

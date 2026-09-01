@@ -28,7 +28,10 @@ class MonitorRepository implements MonitorRepositoryInterface
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
                       ->orWhere('url', 'like', "%{$search}%")
-                      ->orWhere('ip_address', 'like', "%{$search}%");
+                      ->orWhere('ip_address', 'like', "%{$search}%")
+                      ->orWhere('server_info', 'like', "%{$search}%")
+                      ->orWhere('ssl_issuer', 'like', "%{$search}%")
+                      ->orWhere('security_grade', 'like', "%{$search}%");
                 });
             })
             ->latest()

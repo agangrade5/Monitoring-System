@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Backend;
-
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\MonitorRepositoryInterface;
-use App\Models\Monitor;
 use Illuminate\Http\Request;
-
+use App\Rules\{NoScripts, ValidEmailDomain, ValidUrl, ValidMobile};
+use App\Jobs\CheckUptimeJob;
+use App\Jobs\CheckSslCertificateJob;
+use App\Jobs\CheckPhpVersionJob;
+use App\Jobs\CheckDomainExpiryJob;
 class MonitorController extends Controller
 {
 /**
@@ -26,17 +28,14 @@ class MonitorController extends Controller
  * This method fetches all monitors from the repository
  * and passes them to the view.
  */
-  public function index()
-{
-    $monitors = $this->monitorRepository->getAll(request('search'));
-
-    $title = 'Settings';
-
-    return view(
-        'backend.user.monitor',
-        compact('monitors', 'title')
-    );
-}
+    public function index(){
+        $monitors = $this->monitorRepository->getAll(request('search'));
+        $title = 'Monitor Websites & Domains';
+        return view(
+            'backend.user.monitor.index',
+            compact('monitors', 'title')
+        );
+    }
 
 /**
  * This method renders the view to create a new monitor.
@@ -45,7 +44,7 @@ class MonitorController extends Controller
  */
     public function create()
     {
-        return view('backend.monitor.create');
+        return view('backend.user.monitor.create');
     }
 
 /**
@@ -53,29 +52,63 @@ class MonitorController extends Controller
  *
  * @param  Request  $request
  * @return RedirectResponse
- *
- * This method validates the request data and creates a new monitor
- * using the validated data. It then redirects to the index page with
- * a success message.
  */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'mobile' => 'nullable|string|max:255',
-            'url' => 'nullable|url|max:255',
-            'ip_address' => 'nullable|string|max:255',
-            'type' => 'required|in:website,server,api',
-            'check_interval' => 'required|integer',
-            'is_active' => 'nullable|boolean',
-        ]);
+         $validated = $request->validate([
+        'name' => [
+            'required',
+            'string',
+            'max:255',
+            new NoScripts(),
+        ],
 
-        $this->monitorRepository->create($validated);
+        'email' => [
+            'nullable',
+            'string',
+            'email',
+            'max:50',
+            'required_without:mobile',
+            new NoScripts(),
+            new ValidEmailDomain(),
+        ],
 
+        'mobile' => [
+            'nullable',
+            'string',
+            'max:15',
+            'required_without:email',
+            new ValidMobile(),
+        ],
+
+        'url' => [
+            'nullable',
+            'string',
+            'max:255',
+            new ValidUrl(),
+        ],
+
+        'is_active' => [
+            'nullable',
+            'boolean',
+        ],
+    ]);
+
+        $validated['user_id'] = auth()->id() ?? 1;
+        $monitor = $this->monitorRepository->create($validated);
+        /*
+        * Dispatch jobs to check uptime, ssl certificate, php version and domain expiry
+        */
+        CheckUptimeJob::dispatchSync($monitor->id);
+        CheckSslCertificateJob::dispatchSync($monitor->id);
+        CheckPhpVersionJob::dispatchSync($monitor->id);
+        CheckDomainExpiryJob::dispatchSync($monitor->id);
+        /*
+        * Redirect to index page with success message
+        */
         return redirect()
             ->route('monitor')
-            ->with('success', 'Monitor created successfully.');
+            ->with('success', 'Website / Monitor created successfully.');
     }
 
 /**
@@ -83,17 +116,12 @@ class MonitorController extends Controller
  *
  * @param int $id
  * @return View
- *
- * This method fetches a monitor by its ID and renders the edit view.
- * If the monitor is not found, it aborts with a 404 status code.
  */
     public function edit(int $id)
     {
         $monitor = $this->monitorRepository->findById($id);
-
         abort_if(!$monitor, 404);
-
-        return view('backend.monitor.edit', compact('monitor'));
+        return view('backend.user.monitor.edit', compact('monitor'));
     }
 
 /**
@@ -102,29 +130,63 @@ class MonitorController extends Controller
  * @param  Request  $request
  * @param int $id
  * @return RedirectResponse
- *
- * This method validates the request data and updates a monitor
- * using the validated data. It then redirects to the index page with
- * a success message.
  */
     public function update(Request $request, int $id)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'mobile' => 'nullable|string|max:255',
-            'url' => 'nullable|url|max:255',
-            'ip_address' => 'nullable|string|max:255',
-            'type' => 'required|in:website,server,api',
-            'check_interval' => 'required|integer',
-            'is_active' => 'nullable|boolean',
-        ]);
+        'name' => [
+            'required',
+            'string',
+            'max:255',
+            new NoScripts(),
+        ],
+
+        'email' => [
+            'nullable',
+            'string',
+            'email',
+            'max:50',
+            'required_without:mobile',
+            new NoScripts(),
+            new ValidEmailDomain(),
+        ],
+
+        'mobile' => [
+            'nullable',
+            'string',
+            'max:15',
+            'required_without:email',
+            new ValidMobile(),
+        ],
+
+        'url' => [
+            'nullable',
+            'string',
+            'max:255',
+            new ValidUrl(),
+        ],
+
+        'is_active' => [
+            'nullable',
+            'boolean',
+        ],
+    ]);
 
         $this->monitorRepository->update($id, $validated);
-
+        // Run checks after update
+        /*
+        * Dispatch jobs to check uptime, ssl certificate, php version and domain expiry
+        */
+    CheckUptimeJob::dispatchSync($id);
+    CheckSslCertificateJob::dispatchSync($id);
+    CheckPhpVersionJob::dispatchSync($id);
+    CheckDomainExpiryJob::dispatchSync($id);
+    /*
+    * Redirect to index page with success message
+    */
         return redirect()
             ->route('monitor')
-            ->with('success', 'Monitor updated successfully.');
+            ->with('success', 'Website / Monitor updated successfully.');
     }
 
 /**
@@ -152,13 +214,10 @@ class MonitorController extends Controller
     public function toggleActive(int $id)
     {
         $monitor = $this->monitorRepository->findById($id);
-
         abort_if(!$monitor, 404);
-
         $this->monitorRepository->update($id, [
             'is_active' => !$monitor->is_active
         ]);
-
         return redirect()
             ->back()
             ->with('success', 'Monitor status updated successfully.');
