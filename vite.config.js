@@ -26,7 +26,9 @@ export default defineConfig({
             input: [
                 'resources/css/backend/admin.css',
                 'resources/js/backend/admin.js',
+                'resources/js/backend/image-cropper.js',
             ],
+            buildDirectory: 'assets',
             refresh: true,
         }),
         tailwindcss(),
@@ -36,13 +38,15 @@ export default defineConfig({
     build: {
         outDir: 'public/assets',
         emptyOutDir: true,
+        manifest: true,
         rollupOptions: {
             output: {
                 entryFileNames: (chunkInfo) => {
                     if (chunkInfo.facadeModuleId && chunkInfo.facadeModuleId.endsWith('.css')) {
                         return 'js/backend/admin-style.js';
                     }
-                    return 'js/backend/admin.js';
+                    // chunkInfo.facadeModuleId is set for entry points and dynamic imports
+                    return 'js/backend/[name].js';
                 },
                 chunkFileNames: 'js/backend/[name].js',
                 assetFileNames: (assetInfo) => {
