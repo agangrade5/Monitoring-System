@@ -11,7 +11,7 @@
 
     <!--begin::Brand Text-->
     <span class="brand-text fw-light">
-        {{ config('app.name', 'Monitoring System') }}
+        {{ config('app.name') }}
     </span>
     <!--end::Brand Text-->
 

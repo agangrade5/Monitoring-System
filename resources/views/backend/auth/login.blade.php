@@ -5,14 +5,14 @@
 <!--begin:: Main Content -->
 <main class="login-box">
     <div class="login-logo">
-        <a href="/"><b>{{ config('app.name', 'Monitoring System') }}</b></a>
+        <a href="/"><b>{{ config('app.name') }}</b></a>
     </div>
     <!-- /.login-logo -->
     <div class="card">
         <div class="card-body login-card-body">
             <h5 class="login-box-msg">{{ $title }}</h5>
 
-            <form method="POST" action="{{ route('login.submit') }}" id="login-form">
+            <form method="POST" action="{{ route('login.submit') }}" id="login-form" class="needs-validation" novalidate>
                 @csrf
 
                 <!-- Email field -->
@@ -26,7 +26,7 @@
                             id="email"
                             type="email"
                             class="form-control"
-                            placeholder="name@example.com"
+                            placeholder="Email Address"
                             name="email"
                             value="{{ old('email') }}"
                             required

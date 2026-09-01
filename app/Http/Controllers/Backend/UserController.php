@@ -9,11 +9,13 @@ use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\View\View;
 class UserController extends Controller
 {
-     /**
+    /**
+     * UserController constructor.
+     *
      * @param UserRepositoryInterface $userRepository
      */
     public function __construct(
-        private readonly UserRepositoryInterface $userRepository
+        protected UserRepositoryInterface $userRepository
     ) {
     }
 
@@ -21,17 +23,17 @@ class UserController extends Controller
      * @return View
      */
     public function allUsers(): View
-{
-    $search = request('search');
+    {
+        $search = request('search');
 
-    $users = $this->userRepository->getAllUsers($search);
+        $users = $this->userRepository->getAllUsers($search);
 
-    return view('backend.admin.user', [
-        'title' => 'User',
-        'bodyClassName' => 'user-page',
-        'users' => $users,
-    ]);
-}
+        return view('backend.admin.user', [
+            'title' => 'User',
+            'bodyClassName' => 'user-page',
+            'users' => $users,
+        ]);
+    }
 
     public function profile(): View
 {

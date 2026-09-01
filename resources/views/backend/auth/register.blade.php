@@ -5,14 +5,14 @@
 <!--begin:: Main Content -->
 <main class="register-box">
     <div class="register-logo">
-        <a href="/"><b>{{ config('app.name', 'Monitoring System') }}</b></a>
+        <a href="/"><b>{{ config('app.name') }}</b></a>
     </div>
     <!-- /.register-logo -->
     <div class="card">
         <div class="card-body register-card-body">
             <h5 class="register-box-msg">{{ $title }}</h5>
 
-            <form method="POST" action="{{ route('register.submit') }}" id="register-form">
+            <form method="POST" action="{{ route('register.submit') }}" id="register-form" class="needs-validation" novalidate>
                 @csrf
 
                 <!-- Full name field -->
@@ -48,7 +48,7 @@
                             id="email"
                             type="email"
                             class="form-control"
-                            placeholder="name@example.com"
+                            placeholder="Email Address"
                             name="email"
                             value="{{ old('email') }}"
                             required
