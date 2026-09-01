@@ -10,7 +10,7 @@
         <div class="page-header d-flex justify-content-between align-items-center">
             <div>
                 <h4 class="page-title pt-2">System Settings</h4>
-                <p class="page-subtitle text-muted mb-0">Configure and manage your account preferences, security options, notifications, and billing details.</p>
+                <p class="page-subtitle text-muted mb-0">Configure and manage your account preferences.</p>
             </div>
             <div class="text-muted d-none d-sm-block">
                 <i class="bi bi-gear-fill me-1"></i>Settings
@@ -24,7 +24,7 @@
 <div class="app-content">
     <div class="container-fluid">
         <div class="row g-4">
-            
+
             <!-- Left Navigation Sidebar -->
             <div class="col-lg-3 col-md-4">
                 <div class="card settings-card mb-4">
@@ -40,12 +40,11 @@
                             <a href="#notifications" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                 <i class="bi bi-bell me-2"></i>Notifications
                             </a>
+                            <a href="#change-password" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
+                                <i class="bi bi-key me-2"></i>Change Password
+                            </a>
                             <a href="#security" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                 <i class="bi bi-shield-lock me-2"></i>Security
-                            </a>
-                           
-                            <a href="#danger" class="settings-nav-link text-danger mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-exclamation-triangle me-2"></i>Danger Zone
                             </a>
                         </div>
                     </div>
@@ -55,313 +54,29 @@
             <!-- Tab Content -->
             <div class="col-lg-9 col-md-8">
                 <div class="tab-content">
-                    
+
                     <!-- Account Tab -->
                     <div class="tab-pane fade show active" id="account" role="tabpanel">
-                        <div class="card settings-card">
-                            <div class="card-header d-flex align-items-center">
-                                <i class="bi bi-person-circle fs-4 me-2 text-primary"></i>
-                                <div>
-                                    <h5 class="mb-0 fw-bold">Account Information</h5>
-                                    <small class="text-muted">Update your profile details and preferences</small>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <!-- Profile Avatar Section -->
-                                <div class="d-flex flex-column flex-sm-row align-items-center gap-4 mb-5 pb-4 border-bottom">
-                                    <div class="avatar-preview-wrapper">
-                                        <img src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/assets/img/avatar.png" alt="Avatar" class="avatar-preview-img" id="avatar-preview">
-                                        <label for="avatar-file-input" class="avatar-upload-overlay">
-                                            <i class="bi bi-camera"></i>
-                                        </label>
-                                        <input type="file" id="avatar-file-input" class="d-none" accept="image/*">
-                                    </div>
-                                    <div class="text-center text-sm-start">
-                                        <h6 class="mb-1 fw-bold">Profile Picture</h6>
-                                        <p class="text-muted small mb-3">PNG, JPG, or GIF. Max size 2MB.</p>
-                                        <div class="d-flex gap-2 justify-content-center justify-content-sm-start">
-                                            <label for="avatar-file-input" class="btn btn-outline-primary btn-sm px-3">
-                                                Upload Photo
-                                            </label>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm" id="remove-avatar-btn">
-                                                Remove
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Profile Form -->
-                                <form id="account-settings-form" class="row g-4" onsubmit="event.preventDefault();">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold text-secondary small" for="settings-name">Full Name</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                            <input type="text" class="form-control" id="settings-name" value="Jane Doe" placeholder="Enter full name" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold text-secondary small" for="settings-email">Email Address</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                            <input type="email" class="form-control" id="settings-email" value="jane@example.com" placeholder="Enter email" required disabled>
-                                        </div>
-                                    </div>
-                                    
-                                    
-                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary px-4 py-2" id="save-account-btn">
-                                            Save Changes
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        @include('backend.admin.settings.account')
                     </div>
 
                     <!-- Notifications Tab -->
                     <div class="tab-pane fade" id="notifications" role="tabpanel">
-                        <div class="card settings-card">
-                            <div class="card-header d-flex align-items-center">
-                                <i class="bi bi-bell fs-4 me-2 text-primary"></i>
-                                <div>
-                                    <h5 class="mb-0 fw-bold">Alert notification channels.</h5>
-                                    <small class="text-muted">Choose when and how you want to be notified</small>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                               
-                                    <!-- System Alerts Section -->
-                                    <div class="mb-4">
-                                        <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-                                            <div>
-                                                 <p class="mb-0 fw-semibold">
-                                                    <i class="bi bi-envelope-fill text-primary me-2"></i>
-                                                    E-mail
-                                                </p>
-   <input type="hidden"
-                       name="email_notification"
-                       value="0">
-                                                <small class="text-muted">
-                                                    Receive important updates, notifications, and account-related information via email.
-                                                </small>
-                                                                                        </div>
-                                            <div class="form-check form-switch fs-5">
-                                                  <input type="hidden"
-                       name="email_notification"
-                       value="0">
+                        @include('backend.admin.settings.notifications')
+                    </div>
 
-                <input class="form-check-input notification-switch"
-       type="checkbox"
-       role="switch"
-       id="email_notification"
-       data-type="email_notification"
-       {{ $settings->email_notification ? 'checked' : '' }}>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-                                            <div>
-                                                                                    <p class="mb-0 fw-semibold">
-                                                <i class="bi bi-phone-fill text-warning me-2"></i>
-                                                SMS
-                                            </p>
-
-                                            <small class="text-muted">
-                                                Receive important alerts and notifications directly on your mobile phone.
-                                            </small>
-                                                                                    </div>
-                                            <div class="form-check form-switch fs-5">
-                                                 <input type="hidden"
-                       name="sms_notification"
-                       value="0">
-<input class="form-check-input notification-switch"
-       type="checkbox"
-       role="switch"
-       id="sms_notification"
-       data-type="sms_notification"
-       {{ $settings->sms_notification ? 'checked' : '' }}>
-                                            </div>
-                                        </div>
-                                        <!-- <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-                                            <div>
-                                                <p class="mb-0 fw-semibold"><i class="bi bi-calendar3 text-info me-2"></i>Weekly digest</p>
-                                                <small class="text-muted">Get a weekly summary email of metrics and activities in your workspace.</small>
-                                            </div>
-                                            <div class="form-check form-switch fs-5">
-                                                <input class="form-check-input" type="checkbox" role="switch" id="notif-weekly-digest">
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-                                            <div>
-                                                <p class="mb-0 fw-semibold"><i class="bi bi-chat-left-quote text-success me-2"></i>Mentions</p>
-                                                <small class="text-muted">Be notified when a teammate mentions you in discussions or comments.</small>
-                                            </div>
-                                            <div class="form-check form-switch fs-5">
-                                                <input class="form-check-input" type="checkbox" role="switch" id="notif-mentions">
-                                            </div>
-                                        </div> -->
-                                    </div>
-                                  
-                            </div>
-                        </div>
+                    <!-- Change Password Tab -->
+                    <div class="tab-pane fade" id="change-password" role="tabpanel">
+                        @include('backend.admin.settings.change-password')
                     </div>
 
                     <!-- Security Tab -->
                     <div class="tab-pane fade" id="security" role="tabpanel">
-                        <!-- Password Card -->
-                        <div class="card settings-card mb-4">
-                            <div class="card-header d-flex align-items-center">
-                                <i class="bi bi-shield-lock fs-4 me-2 text-primary"></i>
-                                <div>
-                                    <h5 class="mb-0 fw-bold">Change Password</h5>
-                                    <small class="text-muted">Ensure your account is using a secure password</small>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <form id="change-password-form" class="row g-4" onsubmit="event.preventDefault();">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-semibold text-secondary small" for="pwd-current">Current Password</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-key"></i></span>
-                                            <input type="password" class="form-control" id="pwd-current" placeholder="Enter current password" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold text-secondary small" for="pwd-new">New Password</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                            <input type="password" class="form-control" id="pwd-new" placeholder="Enter new password" required>
-                                        </div>
-                                        <!-- Password Strength Visualizer -->
-                                        <div class="mt-2">
-                                            <div class="d-flex gap-1 mb-1">
-                                                <div class="flex-grow-1 strength-meter-bar bg-secondary-subtle" id="bar-1"></div>
-                                                <div class="flex-grow-1 strength-meter-bar bg-secondary-subtle" id="bar-2"></div>
-                                                <div class="flex-grow-1 strength-meter-bar bg-secondary-subtle" id="bar-3"></div>
-                                                <div class="flex-grow-1 strength-meter-bar bg-secondary-subtle" id="bar-4"></div>
-                                            </div>
-                                            <small class="text-muted" id="strength-text">Password must be at least 8 characters</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold text-secondary small" for="pwd-confirm">Confirm New Password</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                                            <input type="password" class="form-control" id="pwd-confirm" placeholder="Confirm new password" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary px-4 py-2" id="update-password-btn">
-                                            Update Password
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <!-- MFA Card -->
-                        <div class="card settings-card mb-4">
-                            <div class="card-header d-flex align-items-center">
-                                <i class="bi bi-shield-check fs-4 me-2 text-success"></i>
-                                <div>
-                                    <h5 class="mb-0 fw-bold">Two-Factor Authentication</h5>
-                                    <small class="text-muted">Add an extra layer of protection to your account</small>
-                                </div>
-                            </div>
-                            <div class="card-body d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
-                                <div>
-                                    <p class="mb-1 fw-semibold">Authenticator App</p>
-                                    <small class="text-muted">Use a mobile authenticator app (like Google Authenticator or Authy) to generate codes.</small>
-                                </div>
-                                <button class="btn btn-outline-primary" id="enable-mfa-btn">Set up 2FA</button>
-                            </div>
-                        </div>
+                        @include('backend.admin.settings.security')
                     </div>
-
-                  
-                    <!-- Danger Zone Tab -->
-                    <div class="tab-pane fade" id="danger" role="tabpanel">
-                        <div class="card settings-card danger-card">
-                            <div class="card-header d-flex align-items-center">
-                                <i class="bi bi-exclamation-triangle fs-4 me-2 text-danger"></i>
-                                <div>
-                                    <h5 class="mb-0 text-danger fw-bold">Danger Zone</h5>
-                                    <small class="text-muted">Destructive operations that cannot be undone</small>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <!-- Warning Banner -->
-                                <div class="alert alert-danger d-flex align-items-start gap-3 rounded-3 mb-4" role="alert">
-                                    <i class="bi bi-shield-slash fs-4 text-danger flex-shrink-0"></i>
-                                    <div>
-                                        <h6 class="alert-heading fw-bold mb-1">Proceed with Caution</h6>
-                                        <small>These settings can permanently impact your monitoring dashboard, delete historical logs, or shut down active alerts.</small>
-                                    </div>
-                                </div>
-
-                               
-
-                                <!-- Delete Account Box -->
-                                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center py-3 gap-3">
-                                    <div>
-                                        <p class="mb-1 fw-bold text-danger">Delete Account Permanently</p>
-                                        <small class="text-muted">This action permanently deletes your user credentials, configurations, and all server monitors.</small>
-                                    </div>
-                                    <button type="button" class="btn btn-danger" id="delete-account-btn">
-                                        Delete Account
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
                 </div>
             </div>
-            
-        </div>
-    </div>
-</div>
 
-<!-- Modals -->
-<!-- Export Modal -->
-<div class="modal fade" id="exportDataModal" tabindex="-1" aria-labelledby="exportDataModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content settings-card border-0">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title fw-bold" id="exportDataModalLabel"><i class="bi bi-cloud-download text-primary me-2"></i>Export System Data</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center p-4">
-                <div class="display-3 text-primary mb-3"><i class="bi bi-file-zip"></i></div>
-                <h6 class="fw-bold mb-2">Prepare ZIP Download Package</h6>
-                <p class="text-muted small mb-4">We are compiling your configurations, log actions, and alert records. This process might take up to 2 minutes depending on database size.</p>
-                <div class="progress mb-3" style="height: 10px; display: none;" id="export-progress-container">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <button type="button" class="btn btn-primary w-100 py-2" id="start-export-btn">Start Compilation</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Account Modal -->
-<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content settings-card border-danger">
-            <div class="modal-header bg-danger-subtle text-danger">
-                <h5 class="modal-title fw-bold" id="deleteAccountModalLabel"><i class="bi bi-exclamation-octagon text-danger me-2"></i>Irreversible Action</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <div class="text-center mb-3">
-                    <div class="display-4 text-danger"><i class="bi bi-trash3-fill"></i></div>
-                    <h6 class="fw-bold text-danger mt-2">Confirm Account Deletion</h6>
-                </div>
-                <p class="text-muted small">Please note that all server metrics, alert logs, and system data will be removed forever. Type your email <strong class="text-dark">admin@example.com</strong> to verify your identity.</p>
-                <div class="mb-3">
-                    <input type="text" class="form-control" id="delete-confirm-email" placeholder="admin@example.com">
-                </div>
-                <button type="button" class="btn btn-danger w-100 py-2" id="confirm-delete-account-btn" disabled>Permanently Delete My Account</button>
-            </div>
         </div>
     </div>
 </div>
@@ -372,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Search settings list filter
     const searchInput = document.getElementById('settings-search');
     const navLinks = document.querySelectorAll('.settings-nav-link');
-    
+
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
@@ -431,42 +146,42 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Notification Switches
      */
-  document.querySelectorAll('.notification-switch').forEach(function (toggle) {
-    toggle.addEventListener('change', function () {
-        const checkbox = this;
-        const setting = checkbox.dataset.type;
-        const value = checkbox.checked ? 1 : 0;
-        $.ajax({
-            url: "{{ route('admin.settings.notification.update') }}",
-            type: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                setting: setting,
-                value: value
-            },
-            success: function (response) {
-                let message = '';
-                if (setting === 'email_notification') {
-                    message = value === 1
-                        ? 'Email Notification enabled successfully.'
-                        : 'Email Notification disabled successfully.';
+    document.querySelectorAll('.notification-switch').forEach(function (toggle) {
+        toggle.addEventListener('change', function () {
+            const checkbox = this;
+            const setting = checkbox.dataset.type;
+            const value = checkbox.checked ? 1 : 0;
+            $.ajax({
+                url: "{{ route('admin.settings.notification.update') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    setting: setting,
+                    value: value
+                },
+                success: function (response) {
+                    let message = '';
+                    if (setting === 'email_notification') {
+                        message = value === 1
+                            ? 'Email Notification enabled successfully.'
+                            : 'Email Notification disabled successfully.';
+                    }
+                    if (setting === 'sms_notification') {
+                        message = value === 1
+                            ? 'SMS Notification enabled successfully.'
+                            : 'SMS Notification disabled successfully.';
+                    }
+                    toastr.success(message);
+                },
+                error: function () {
+                    // Restore previous state
+                    checkbox.checked = !checkbox.checked;
+                    toastr.error('Unable to update notification setting.');
                 }
-                if (setting === 'sms_notification') {
-                    message = value === 1
-                        ? 'SMS Notification enabled successfully.'
-                        : 'SMS Notification disabled successfully.';
-                }
-                toastr.success(message);
-            },
-            error: function () {
-                // Restore previous state
-                checkbox.checked = !checkbox.checked;
-                toastr.error('Unable to update notification setting.');
-            }
-        });
+            });
 
+        });
     });
-});
     // Password strength indicator logic
     const pwdNew = document.getElementById('pwd-new');
     const bars = [
@@ -476,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('bar-4')
     ];
     const strengthText = document.getElementById('strength-text');
-    
+
     if (pwdNew) {
         pwdNew.addEventListener('input', (e) => {
             const val = e.target.value;
@@ -485,18 +200,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (/[A-Z]/.test(val)) score++;
             if (/[0-9]/.test(val)) score++;
             if (/[^A-Za-z0-9]/.test(val)) score++;
-            
+
             // Reset strength meters classes
             bars.forEach(bar => {
                 bar.className = 'flex-grow-1 strength-meter-bar bg-secondary-subtle';
             });
-            
+
             if (val.length === 0) {
                 strengthText.textContent = "Password must be at least 8 characters";
                 strengthText.className = "text-muted";
                 return;
             }
-            
+
             if (score === 1) {
                 bars[0].className = 'flex-grow-1 strength-meter-bar bg-danger';
                 strengthText.textContent = "Weak password";
@@ -519,33 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-
-
-  
-
-    const deleteBtn = document.getElementById('delete-account-btn');
-    if (deleteBtn) {
-        deleteBtn.addEventListener('click', () => {
-            const modal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
-            modal.show();
-        });
-    }
-
-    // Confirm email delete validator
-    const deleteEmailInput = document.getElementById('delete-confirm-email');
-    const deleteSubmitBtn = document.getElementById('confirm-delete-account-btn');
-    if (deleteEmailInput && deleteSubmitBtn) {
-        deleteEmailInput.addEventListener('input', (e) => {
-            if (e.target.value === 'admin@example.com') {
-                deleteSubmitBtn.removeAttribute('disabled');
-            } else {
-                deleteSubmitBtn.setAttribute('disabled', 'true');
-            }
-        });
-    }
 });
 </script>
 @endpush
-
 @endsection
