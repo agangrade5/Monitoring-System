@@ -5,7 +5,7 @@
 <!--begin:: Main Content -->
 <main class="register-box">
     <div class="register-logo">
-        <a href="/"><b>{{ config('app.name', 'Monitoring System') }}</b></a>
+        <a href="/"><b>{{ config('app.name') }}</b></a>
     </div>
     <!-- /.register-logo -->
     <div class="card">

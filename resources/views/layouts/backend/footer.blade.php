@@ -8,7 +8,7 @@
     <!--begin::Copyright-->
     <strong>
         Copyright &copy; <?php echo date('Y'); ?>&nbsp;
-        <a href="{{ route('dashboard') }}" class="text-decoration-none">{{ config('app.name', 'Monitoring System') }}</a>.
+        <a href="{{ route('dashboard') }}" class="text-decoration-none">{{ config('app.name') }}</a>.
     </strong>
     All rights reserved.
     <!--end::Copyright-->
