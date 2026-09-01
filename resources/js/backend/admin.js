@@ -2,12 +2,15 @@ import $ from 'jquery';
 import 'admin-lte';
 import toastr from 'toastr';
 import Swal from 'sweetalert2';
+import Cropper from 'cropperjs';
 
 window.$ = $;
 window.jQuery = $;
 
 window.toastr = toastr;
 window.Swal = Swal;
+
+window.Cropper = Cropper;
 
 
 // ========================================

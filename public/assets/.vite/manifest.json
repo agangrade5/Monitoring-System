@@ -13,5 +13,11 @@
     "name": "admin",
     "src": "resources/js/backend/admin.js",
     "isEntry": true
+  },
+  "resources/js/backend/image-cropper.js": {
+    "file": "js/backend/image-cropper.js",
+    "name": "image-cropper",
+    "src": "resources/js/backend/image-cropper.js",
+    "isEntry": true
   }
 }

@@ -34,9 +34,27 @@ interface UserRepositoryInterface
 
     /**
      * Update user password.
+     *
+     * @param User $user
+     * @param string $password
+     *
+     * @return bool
      */
     public function updatePassword(
         User $user,
         string $password
+    ): bool;
+
+    /**
+     * Update user profile.
+     *
+     * @param User $user
+     * @param array $data
+     *
+     * @return bool
+     */
+    public function updateProfile(
+        User $user,
+        array $data
     ): bool;
 }

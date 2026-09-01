@@ -13,6 +13,7 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 - php artisan key:generate
+- php artisan storage:link
 - php artisan migrate --seed
 - npm install
 - npm run build

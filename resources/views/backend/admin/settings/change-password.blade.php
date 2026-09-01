@@ -47,3 +47,61 @@
         </form>
     </div>
 </div>
+@push('scripts')
+<script nonce="{{ csp_nonce('script') }}">
+document.addEventListener('DOMContentLoaded', () => {
+    // Password strength indicator logic
+    const pwdNew = document.getElementById('pwd-new');
+    const bars = [
+        document.getElementById('bar-1'),
+        document.getElementById('bar-2'),
+        document.getElementById('bar-3'),
+        document.getElementById('bar-4')
+    ];
+    const strengthText = document.getElementById('strength-text');
+
+    if (pwdNew) {
+        pwdNew.addEventListener('input', (e) => {
+            const val = e.target.value;
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            // Reset strength meters classes
+            bars.forEach(bar => {
+                bar.className = 'flex-grow-1 strength-meter-bar bg-secondary-subtle';
+            });
+
+            if (val.length === 0) {
+                strengthText.textContent = "Password must be at least 8 characters";
+                strengthText.className = "text-muted";
+                return;
+            }
+
+            if (score === 1) {
+                bars[0].className = 'flex-grow-1 strength-meter-bar bg-danger';
+                strengthText.textContent = "Weak password";
+                strengthText.className = "text-danger small";
+            } else if (score === 2) {
+                bars[0].className = 'flex-grow-1 strength-meter-bar bg-warning';
+                bars[1].className = 'flex-grow-1 strength-meter-bar bg-warning';
+                strengthText.textContent = "Fair password";
+                strengthText.className = "text-warning small";
+            } else if (score === 3) {
+                bars[0].className = 'flex-grow-1 strength-meter-bar bg-info';
+                bars[1].className = 'flex-grow-1 strength-meter-bar bg-info';
+                bars[2].className = 'flex-grow-1 strength-meter-bar bg-info';
+                strengthText.textContent = "Strong password";
+                strengthText.className = "text-info small";
+            } else if (score === 4) {
+                bars.forEach(bar => bar.className = 'flex-grow-1 strength-meter-bar bg-success');
+                strengthText.textContent = "Very secure password";
+                strengthText.className = "text-success small";
+            }
+        });
+    }
+});
+</script>
+@endpush

@@ -18,13 +18,11 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
-
     /*
     |--------------------------------------------------------------------------
     | Login Routes
     |--------------------------------------------------------------------------
     */
-
     Route::get('/', function () {
         return redirect()->route('login');
     });
@@ -38,6 +36,7 @@ Route::middleware('guest')->group(function () {
         LoginController::class,
         'login',
     ])->name('login.submit');
+
     /*
     |--------------------------------------------------------------------------
     | Register Routes
@@ -86,7 +85,6 @@ Route::middleware('guest')->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
-
     /*
     |--------------------------------------------------------------------------
     | Admin Routes
@@ -96,27 +94,35 @@ Route::middleware('auth')->group(function () {
         ->prefix('admin')
         ->name('admin.')
         ->group(function () {
-
+            /*
+            |--------------------------------------------------------------------------
+            | Dashboard Routes
+            |--------------------------------------------------------------------------
+            */
             Route::get('/dashboard', [
                 DashboardController::class,
                 'admin',
             ])->name('dashboard');
 
-            Route::get('/users', [
-                UserController::class,
-                'allUsers',
-            ])->name('users');
-
+            /*
+            |--------------------------------------------------------------------------
+            | Settings Routes
+            |--------------------------------------------------------------------------
+            */
             Route::get('/settings', [
                 SettingController::class,
                 'index'
             ])->name('settings');
 
-            Route::post('/settings/notification/update', [
-                SettingController::class,
-                'updateNotification'
-            ])->name('settings.notification.update');
-
+            /*
+            |--------------------------------------------------------------------------
+            | Users Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/users', [
+                UserController::class,
+                'allUsers',
+            ])->name('users');
         });
 
     /*
@@ -126,20 +132,34 @@ Route::middleware('auth')->group(function () {
     */
     Route::middleware('role:user')
         ->group(function () {
-
+            /*
+            |--------------------------------------------------------------------------
+            | Dashboard Routes
+            |--------------------------------------------------------------------------
+            */
             Route::get('/dashboard', [
                 DashboardController::class,
                 'user',
             ])->name('dashboard');
 
-            Route::get('/profile', function () {
-                return 'Profile';
-            })->name('profile');
+            /*
+            |--------------------------------------------------------------------------
+            | Settings Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/settings', [
+                SettingController::class,
+                'index'
+            ])->name('settings');
 
+            /*
+            |--------------------------------------------------------------------------
+            | Users Routes
+            |--------------------------------------------------------------------------
+            */
             Route::get('/users', function () {
                 return 'Users';
             })->name('users');
-
         });
 
     /*
@@ -151,4 +171,14 @@ Route::middleware('auth')->group(function () {
         LoginController::class,
         'logout',
     ])->name('logout');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profile Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/profile', [
+        UserController::class,
+        'updateProfile',
+    ])->name('profile.update');
 });
