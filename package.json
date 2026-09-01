@@ -18,6 +18,7 @@
     },
     "dependencies": {
         "admin-lte": "^4.8.5",
+        "cropperjs": "^1.6.2",
         "jquery": "^4.0.0",
         "sweetalert2": "^11.26.25",
         "toastr": "^2.1.4"

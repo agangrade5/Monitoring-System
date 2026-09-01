@@ -3,16 +3,20 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Repositories\Contracts\UserRepositoryInterface;
-
 use Illuminate\View\View;
+use App\Http\Requests\Backend\User\ProfileUpdateRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+
 class UserController extends Controller
 {
     /**
-     * UserController constructor.
+     * Create a new controller instance.
      *
      * @param UserRepositoryInterface $userRepository
+     *
+     * @return void
      */
     public function __construct(
         protected UserRepositoryInterface $userRepository
@@ -20,6 +24,8 @@ class UserController extends Controller
     }
 
     /**
+     * List all users
+     *
      * @return View
      */
     public function allUsers(): View
@@ -35,4 +41,23 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Update user profile
+     *
+     * @param ProfileUpdateRequest $request
+     *
+     * @return RedirectResponse
+     */
+    public function updateProfile(
+        ProfileUpdateRequest $request
+    ): RedirectResponse {
+        $this->userRepository->updateProfile(
+            $request->user(),
+            $request->validated()
+        );
+        return back()->with(
+            'success',
+            'Profile updated successfully.'
+        );
+    }
 }

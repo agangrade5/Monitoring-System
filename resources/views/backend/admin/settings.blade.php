@@ -33,15 +33,9 @@
                             <a href="#account" class="settings-nav-link active mb-1" data-bs-toggle="pill" role="tab" aria-selected="true">
                                 <i class="bi bi-person me-2"></i>Account
                             </a>
-                            {{-- <a href="#notifications" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-bell me-2"></i>Notifications
-                            </a> --}}
                             <a href="#change-password" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                 <i class="bi bi-key me-2"></i>Change Password
                             </a>
-                            {{-- <a href="#security" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-shield-lock me-2"></i>Security
-                            </a> --}}
                         </div>
                     </div>
                 </div>
@@ -50,25 +44,13 @@
             <!-- Tab Content -->
             <div class="col-lg-9 col-md-8">
                 <div class="tab-content">
-
                     <!-- Account Tab -->
                     <div class="tab-pane fade show active" id="account" role="tabpanel">
                         @include('backend.admin.settings.account')
                     </div>
-
-                    <!-- Notifications Tab -->
-                    <div class="tab-pane fade" id="notifications" role="tabpanel">
-                        @include('backend.admin.settings.notifications')
-                    </div>
-
                     <!-- Change Password Tab -->
                     <div class="tab-pane fade" id="change-password" role="tabpanel">
                         @include('backend.admin.settings.change-password')
-                    </div>
-
-                    <!-- Security Tab -->
-                    <div class="tab-pane fade" id="security" role="tabpanel">
-                        @include('backend.admin.settings.security')
                     </div>
                 </div>
             </div>
@@ -76,4 +58,5 @@
         </div>
     </div>
 </div>
+@include('backend.admin.settings.crop-profile-image-modal')
 @endsection

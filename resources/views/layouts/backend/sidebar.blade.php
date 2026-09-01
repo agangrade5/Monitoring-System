@@ -46,14 +46,12 @@
                         <p>Users</p>
                     </a>
                 </li>
-                 <li class="nav-item">
+                <li class="nav-item">
                     <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-gear"></i>
                         <p>Settings</p>
                     </a>
                 </li>
-
-
             </ul>
             @endrole
 
@@ -71,11 +69,16 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
-
-                 <li class="nav-item">
+                <li class="nav-item">
                     <a href="/" class="nav-link">
                         <i class="nav-icon bi bi-activity"></i>
-<p>Monitoring</p>
+                        <p>Monitoring</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-gear"></i>
+                        <p>Settings</p>
                     </a>
                 </li>
             </ul>
