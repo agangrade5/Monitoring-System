@@ -54,3 +54,38 @@
         </form>
     </div>
 </div>
+@push('scripts')
+<script nonce="{{ csp_nonce('script') }}">
+document.addEventListener('DOMContentLoaded', () => {
+    // Avatar preview update helper
+    const avatarInput = document.getElementById('avatar-file-input');
+    const avatarPreview = document.getElementById('avatar-preview');
+    if (avatarInput && avatarPreview) {
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    avatarPreview.src = event.target.result;
+                    if (window.toastr) {
+                        toastr.success("Avatar preview updated. Save changes to commit.");
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Remove avatar mock
+    const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+    if (removeAvatarBtn && avatarPreview) {
+        removeAvatarBtn.addEventListener('click', () => {
+            avatarPreview.src = 'https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta2/dist/assets/img/avatar.png';
+            if (window.toastr) {
+                toastr.info("Avatar reset to default profile.");
+            }
+        });
+    }
+});
+</script>
+@endpush
