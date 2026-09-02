@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Auth;
 
+use App\Helpers\UtilityHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backend\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
@@ -40,6 +41,21 @@ class LoginController extends Controller
         $remember = $request->boolean('remember');
 
         if (!Auth::attempt($credentials, $remember)) {
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - login Failed
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'Failed login attempt.',
+                null,
+                [
+                    'email' => $request->email,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
             return back()
                 ->withErrors([
                     'email' => 'The provided credentials are incorrect.',
@@ -51,11 +67,40 @@ class LoginController extends Controller
 
         $user = Auth::user();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log - Loggin Success
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'auth',
+            $user->hasRole('admin')
+                ? 'Admin logged in successfully.'
+                : 'User logged in successfully.',
+            $user,
+            [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'remember' => $remember,
+            ]
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect
+        |--------------------------------------------------------------------------
+        */
         if ($user->hasRole('admin')) {
-            return redirect()->route('admin.dashboard')->with('success', 'Login successful!');
+            return redirect()
+                ->route('admin.dashboard')
+                ->with('success', 'Login successful!');
         }
 
-        return redirect()->route('dashboard')->with('success', 'Login successful!');
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'Login successful!');
     }
 
     /**
@@ -65,6 +110,25 @@ class LoginController extends Controller
      */
     public function logout(): RedirectResponse
     {
+        $user = Auth::user();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'auth',
+            $user->hasRole('admin')
+                ? 'Admin logged out successfully.'
+                : 'User logged out successfully.',
+            $user,
+            [
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]
+        );
+
         Auth::logout();
 
         request()->session()->invalidate();

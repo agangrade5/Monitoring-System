@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\Backend;
+use App\Helpers\UtilityHelper;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\View\View;
@@ -41,13 +42,13 @@ class UserController extends Controller
         ]);
     }
     public function profile(): View
-{
-    return view('backend.user.settings', [
-        'title' => 'Settings',
-        'bodyClassName' => 'Settings',
-        'Settings' => ''
-    ]);
-}
+    {
+        return view('backend.user.settings', [
+            'title' => 'Settings',
+            'bodyClassName' => 'Settings',
+            'Settings' => ''
+        ]);
+    }
 
   public function storeUser(UserRequest $request)
     {
@@ -59,7 +60,7 @@ class UserController extends Controller
             ->back()
             ->with('success', 'User created successfully.');
     }
-/**
+     /**
      * Update an existing user.
      *
      * @param Request $request
@@ -76,7 +77,7 @@ class UserController extends Controller
             ->with('success', 'User updated successfully.');
     }
 
- /**
+     /**
      * Destroy an existing user.
      *
      * @param int $id
@@ -104,6 +105,22 @@ class UserController extends Controller
             $request->user(),
             $request->validated()
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'user',
+            'Profile updated successfully.',
+            $user,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
+
         return back()->with(
             'success',
             'Profile updated successfully.'
@@ -123,6 +140,21 @@ class UserController extends Controller
         $this->userRepository->updatePassword(
             $request->user(),
             $request->validated('password')
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'auth',
+            'Password changed successfully.',
+            $user,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
         );
 
         return response()->json([

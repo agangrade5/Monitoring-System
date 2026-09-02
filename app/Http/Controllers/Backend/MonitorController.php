@@ -6,6 +6,7 @@ use App\Repositories\Contracts\MonitorRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Http\Requests\Backend\User\Monitor\MonitorUserRequest;
 use App\Services\MonitorService;
+use App\Helpers\UtilityHelper;
 
 class MonitorController extends Controller
 {
@@ -63,23 +64,31 @@ class MonitorController extends Controller
         return view('backend.user.monitor.show', compact('monitor', 'title'));
     }
 
-/**
- * Store a newly created monitor in storage.
- *
- * @param  Request  $request
- * @return RedirectResponse
- */
+    /**
+     * Store a newly created monitor in storage.
+     *
+     * @param  Request  $request
+     * @return RedirectResponse
+     */
     public function store(MonitorUserRequest $request)
     {
         $validated = $request->validated();
         $validated['user_id'] = auth()->user()->id;
         $monitor = $this->monitorRepository->create($validated);
-        if (function_exists('activity')) {
-            activity('monitor')
-                ->causedBy(auth()->user())
-                ->performedOn($monitor)
-                ->log("Created monitor: {$monitor->name}");
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+       UtilityHelper::customActivityLog(
+            'monitor',
+            'New monitor created successfully.',
+            $monitor,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
 
         /*
         * Run all background monitor health checks via Service layer
@@ -94,12 +103,12 @@ class MonitorController extends Controller
             ->with('success', 'Website / Monitor created successfully.');
     }
 
-/**
- * Edit the specified resource.
- *
- * @param int $id
- * @return View
- */
+    /**
+     * Edit the specified resource.
+     *
+     * @param int $id
+     * @return View
+     */
     public function edit(int $id)
     {
         $monitor = $this->monitorRepository->findById($id);
@@ -107,25 +116,34 @@ class MonitorController extends Controller
         return view('backend.user.monitor.edit', compact('monitor'));
     }
 
-/**
- * Update the specified monitor in storage.
- *
- * @param  Request  $request
- * @param int $id
- * @return RedirectResponse
- */
+    /**
+     * Update the specified monitor in storage.
+     *
+     * @param  Request  $request
+     * @param int $id
+     * @return RedirectResponse
+     */
     public function update(MonitorUserRequest $request, int $id)
     {
         $validated = $request->validated();
         $this->monitorRepository->update($id, $validated);
         $monitor = $this->monitorRepository->findById($id);
 
-        if (function_exists('activity') && $monitor) {
-            activity('monitor')
-                ->causedBy(auth()->user())
-                ->performedOn($monitor)
-                ->log("Updated monitor: {$monitor->name}");
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+       UtilityHelper::customActivityLog(
+            'monitor',
+            'Monitor updated successfully.',
+            $monitor,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
+
 
         // Run checks after update
         /*
@@ -141,21 +159,30 @@ class MonitorController extends Controller
             ->with('success', 'Website / Monitor updated successfully.');
     }
 
-/**
- * Deletes a monitor by its ID.
- *
- * @param int $id The ID of the monitor to delete.
- *
- * @return RedirectResponse Redirects to the index page with a success message.
- */
+    /**
+     * Deletes a monitor by its ID.
+     *
+     * @param int $id The ID of the monitor to delete.
+     *
+     * @return RedirectResponse Redirects to the index page with a success message.
+     */
     public function destroy(int $id)
     {
         $monitor = $this->monitorRepository->findById($id);
-        if (function_exists('activity')) {
-            activity('monitor')
-                ->causedBy(auth()->user())
-                ->log("Deleted monitor: " . ($monitor->name ?? "#{$id}"));
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+       UtilityHelper::customActivityLog(
+            'monitor',
+            'Monitor deleted successfully.',
+            $monitor,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
 
         $this->monitorRepository->delete($id);
 
@@ -179,12 +206,26 @@ class MonitorController extends Controller
             'is_active' => $newStatus
         ]);
 
-        if (function_exists('activity')) {
-            activity('monitor')
-                ->causedBy(auth()->user())
-                ->performedOn($monitor)
-                ->log(($newStatus ? "Resumed" : "Paused") . " monitor: {$monitor->name}");
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+      /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+       UtilityHelper::customActivityLog(
+            'monitor',
+            'Monitor status updated successfully.',
+            $monitor,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
+
 
         return redirect()
             ->back()
@@ -197,17 +238,26 @@ class MonitorController extends Controller
      * @param int $id
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function triggerCheck(int $id)
+    public function triggerCheck(Request $request,int $id)
     {
         $monitor = $this->monitorRepository->findById($id);
         abort_if(!$monitor, 404);
 
-        if (function_exists('activity')) {
-            activity('monitor')
-                ->causedBy(auth()->user())
-                ->performedOn($monitor)
-                ->log("Triggered instant health check for: {$monitor->name}");
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+       UtilityHelper::customActivityLog(
+            'monitor',
+            'Monitor check triggered successfully.',
+            $monitor,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
+
 
         try {
             $this->monitorService->runAllChecks($id);
