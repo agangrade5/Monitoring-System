@@ -10,7 +10,7 @@
                 <h4 class="page-title pt-1 fw-bold">Edit Monitor Website & Monitor</h4>
                 <small class="text-secondary">Update monitoring configurations, SSL parameters, domain expiration, and security settings.</small>
             </div>
-            <div class="text-muted bg-light px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
+            <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb float-sm-end mb-0">
                         <li class="breadcrumb-item"><a href="{{ route('monitor') }}">Monitor Websites & Domains</a></li>
@@ -32,7 +32,7 @@
                     
                     {{-- 1. Website & Server Information --}}
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
-                        <div class="card-header bg-white border-bottom py-3">
+                        <div class="card-header border-bottom py-3">
                             <div class="d-flex align-items-center">
                                 <span class="btn btn-light-warning btn-sm rounded-3 me-3 p-2">
                                     <i class="bi bi-globe2 text-warning fs-5"></i>
@@ -81,10 +81,10 @@
                   
                     {{-- 5. Alert Contacts & Settings --}}
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
-                        <div class="card-header bg-white border-bottom py-3">
+                        <div class="card-header border-bottom py-3">
                             <div class="d-flex align-items-center">
                                 <span class="btn btn-light-secondary btn-sm rounded-3 me-3 p-2">
-                                    <i class="bi bi-bell text-dark fs-5"></i>
+                                    <i class="bi bi-bell text-body fs-5"></i>
                                 </span>
                                 <div>
                                     <h6 class="fw-bold mb-0">Alert Notifications & Intervals</h6>

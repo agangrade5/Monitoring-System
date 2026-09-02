@@ -33,6 +33,16 @@ body {
 }
 
 /* Custom Scrollbar */
+
+.bg-body-secondary {
+    --bs-bg-opacity: 1;
+    background-color: #0b0f19 !important;
+    background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, .15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(244, 63, 94, .12) 0px, transparent 50%), radial-gradient(at 50% 0%, rgba(13, 110, 253, .12) 0px, transparent 50%) !important;
+    background-size: cover !important;
+    position: relative !important;
+}
+
+
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -876,3 +886,71 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
     color: #cbd5e1 !important;
 }
 
+    .uptime-bar-container {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+        width: 100%;
+        overflow-x: auto;
+        padding: 4px 0;
+    }
+    .uptime-bar-pill {
+        flex: 1;
+        min-width: 5px;
+        height: 28px;
+        border-radius: 3px;
+        background-color: var(--bs-success);
+        transition: all 0.2s ease;
+        opacity: 0.9;
+        cursor: pointer;
+    }
+    .uptime-bar-pill:hover {
+        opacity: 1;
+        transform: scaleY(1.15);
+    }
+    .uptime-bar-pill.down {
+        background-color: var(--bs-danger);
+    }
+    .uptime-bar-pill.warning {
+        background-color: var(--bs-warning);
+    }
+    .stat-badge-soft {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.6rem;
+        font-weight: 600;
+        border-radius: 50rem;
+    }
+    .status-pulse {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        position: relative;
+    }
+    .status-pulse.up {
+        background-color: #198754;
+        box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7);
+        animation: pulseUp 2s infinite;
+    }
+    .status-pulse.down {
+        background-color: #dc3545;
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        animation: pulseDown 2s infinite;
+    }
+    @keyframes pulseUp {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(25, 135, 84, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(25, 135, 84, 0); }
+    }
+    @keyframes pulseDown {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(220, 53, 69, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+    }
+
+.hover-primary {
+    transition: color 0.15s ease-in-out;
+}
+.hover-primary:hover {
+    color: var(--bs-primary) !important;
+}

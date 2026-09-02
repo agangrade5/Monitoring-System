@@ -48,6 +48,22 @@ class MonitorController extends Controller
         return view('backend.user.monitor.create');
     }
 
+    /**
+     * Display the specified monitor single detail overview.
+     *
+     * @param int $id
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function show(int $id)
+    {
+        $monitor = $this->monitorRepository->findById($id);
+        abort_if(!$monitor, 404);
+
+        $title = $monitor->name . ' - Health & Performance Overview';
+
+        return view('backend.user.monitor.show', compact('monitor', 'title'));
+    }
+
 /**
  * Store a newly created monitor in storage.
  *
@@ -97,6 +113,14 @@ class MonitorController extends Controller
 
         $validated['user_id'] = auth()->id() ?? 1;
         $monitor = $this->monitorRepository->create($validated);
+
+        if (function_exists('activity')) {
+            activity('monitor')
+                ->causedBy(auth()->user())
+                ->performedOn($monitor)
+                ->log("Created monitor: {$monitor->name}");
+        }
+
         /*
         * Dispatch jobs to check uptime, ssl certificate, php version and domain expiry
         */
@@ -175,18 +199,27 @@ class MonitorController extends Controller
     ]);
 
         $this->monitorRepository->update($id, $validated);
+        $monitor = $this->monitorRepository->findById($id);
+
+        if (function_exists('activity') && $monitor) {
+            activity('monitor')
+                ->causedBy(auth()->user())
+                ->performedOn($monitor)
+                ->log("Updated monitor: {$monitor->name}");
+        }
+
         // Run checks after update
         /*
         * Dispatch jobs to check uptime, ssl certificate, php version and domain expiry
         */
-    CheckUptimeJob::dispatchSync($id);
-    CheckSslCertificateJob::dispatchSync($id);
-    CheckPhpVersionJob::dispatchSync($id);
-    CheckDomainExpiryJob::dispatchSync($id);
-     CheckSecurityHeadersJob ::dispatchSync($id);
-    /*
-    * Redirect to index page with success message
-    */
+        CheckUptimeJob::dispatchSync($id);
+        CheckSslCertificateJob::dispatchSync($id);
+        CheckPhpVersionJob::dispatchSync($id);
+        CheckDomainExpiryJob::dispatchSync($id);
+        CheckSecurityHeadersJob ::dispatchSync($id);
+        /*
+        * Redirect to index page with success message
+        */
         return redirect()
             ->route('monitor')
             ->with('success', 'Website / Monitor updated successfully.');
@@ -201,6 +234,13 @@ class MonitorController extends Controller
  */
     public function destroy(int $id)
     {
+        $monitor = $this->monitorRepository->findById($id);
+        if (function_exists('activity')) {
+            activity('monitor')
+                ->causedBy(auth()->user())
+                ->log("Deleted monitor: " . ($monitor->name ?? "#{$id}"));
+        }
+
         $this->monitorRepository->delete($id);
 
         return redirect()
@@ -218,11 +258,73 @@ class MonitorController extends Controller
     {
         $monitor = $this->monitorRepository->findById($id);
         abort_if(!$monitor, 404);
+        $newStatus = !$monitor->is_active;
         $this->monitorRepository->update($id, [
-            'is_active' => !$monitor->is_active
+            'is_active' => $newStatus
         ]);
+
+        if (function_exists('activity')) {
+            activity('monitor')
+                ->causedBy(auth()->user())
+                ->performedOn($monitor)
+                ->log(($newStatus ? "Resumed" : "Paused") . " monitor: {$monitor->name}");
+        }
+
         return redirect()
             ->back()
             ->with('success', 'Monitor status updated successfully.');
+    }
+
+    /**
+     * Trigger an immediate check for a specific monitor.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function triggerCheck(int $id)
+    {
+        $monitor = $this->monitorRepository->findById($id);
+        abort_if(!$monitor, 404);
+
+        if (function_exists('activity')) {
+            activity('monitor')
+                ->causedBy(auth()->user())
+                ->performedOn($monitor)
+                ->log("Triggered instant health check for: {$monitor->name}");
+        }
+
+        try {
+            CheckUptimeJob::dispatchSync($id);
+            CheckSslCertificateJob::dispatchSync($id);
+            CheckPhpVersionJob::dispatchSync($id);
+            CheckDomainExpiryJob::dispatchSync($id);
+            CheckSecurityHeadersJob::dispatchSync($id);
+
+            $message = "Website checks triggered and updated successfully for {$monitor->name}.";
+
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                ]);
+            }
+
+            return redirect()
+                ->back()
+                ->with('success', $message);
+        } catch (\Throwable $e) {
+            $errorMsg = 'An error occurred while running the checks: ' . $e->getMessage();
+
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorMsg,
+                ], 500);
+            }
+
+            return redirect()
+                ->back()
+                ->with('error', $errorMsg);
+        }
     }
 }

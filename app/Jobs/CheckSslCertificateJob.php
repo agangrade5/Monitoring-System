@@ -87,7 +87,7 @@ class CheckSslCertificateJob implements ShouldQueue
             $certificate['validTo_time_t']
         );
 
-        $daysRemaining = now()->diffInDays($expiresAt, false);
+        $daysRemaining = (int) ceil(now()->diffInDays($expiresAt, false));
 
         $status = match (true) {
             $daysRemaining < 0 => 'expired',

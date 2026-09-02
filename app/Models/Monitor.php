@@ -30,6 +30,8 @@ class Monitor extends Model
     'domain_expires_at',
 'domain_status',
 'domain_checked_at',
+'security_headers',
+'status'
 ];
 
  protected $casts = [
@@ -69,4 +71,6 @@ class Monitor extends Model
 
         return $this->domain_expires_at->diffForHumans();
     }
+
+    
 }

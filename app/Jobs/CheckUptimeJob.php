@@ -25,30 +25,37 @@ class CheckUptimeJob implements ShouldQueue
         }
 
         $checkedAt = now();
+        $startTime = microtime(true);
 
         try {
             $response = Http::timeout(10)
                 ->withoutVerifying()
                 ->get($monitor->url);
 
+            $responseTimeMs = max(1, (int) round((microtime(true) - $startTime) * 1000));
+
             if ($response->successful()) {
                 $monitor->update([
                     'status' => 'up',
+                    'response_time' => $responseTimeMs,
                     'last_checked_at' => $checkedAt,
                     'last_up_at' => $checkedAt,
                 ]);
             } else {
                 $monitor->update([
                     'status' => 'down',
+                    'response_time' => $responseTimeMs,
                     'last_checked_at' => $checkedAt,
                     'last_down_at' => $checkedAt,
                 ]);
             }
 
         } catch (Throwable $e) {
+            $responseTimeMs = max(1, (int) round((microtime(true) - $startTime) * 1000));
 
             $monitor->update([
                 'status' => 'down',
+                'response_time' => $responseTimeMs,
                 'last_checked_at' => $checkedAt,
                 'last_down_at' => $checkedAt,
             ]);

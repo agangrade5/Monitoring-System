@@ -10,10 +10,10 @@
                 <h4 class="page-title pt-2">Profile Settings</h4>
                 <p class="page-subtitle text-muted mb-0">Configure your personal information, security options, notifications, and danger zone preferences.</p>
              </div>
-             <div class="text-muted bg-light px-3 py-2 rounded-3 border d-none d-sm-flex align-items-center gap-2">
+             <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-none d-sm-flex align-items-center gap-2">
                 <nav aria-label="breadcrumb">
                   <ol class="breadcrumb float-sm-end mb-0">
-                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Profile Settings</li>
                   </ol>
                 </nav>

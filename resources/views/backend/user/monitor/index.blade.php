@@ -9,7 +9,7 @@
                 <h4 class="page-title pt-2">Monitor Websites & Domains</h4>
                 <p class="page-subtitle text-muted mb-0">Monitor status, SSL validations, domain expiration dates, PHP versions, and security configurations.</p>
              </div>
-             <div class="text-muted bg-light px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
+             <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
                 <nav aria-label="breadcrumb">
                   <ol class="breadcrumb float-sm-end mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
@@ -26,14 +26,14 @@
     <div class="container-fluid">
 
         <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-white py-3 d-flex flex-wrap gap-2 align-items-center">
+            <div class="card-header border-bottom py-3 d-flex flex-wrap gap-2 align-items-center">
                 <div class="me-auto">
                     <h5 class="card-title fw-bold mb-0">Monitor Websites & Domains
 </h5> 
                 </div>
 
                 <form action="{{ route('monitor') }}" method="GET" class="settings-search-wrapper w-auto me-1">
-                    <div class="class="settings-search-wrapper w-auto ">
+                    <div class="settings-search-wrapper w-auto">
                        <i class="bi bi-search"></i>
                         <input
                             type="search"
@@ -57,14 +57,14 @@
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
+                        <thead>
                             <tr>
                                 <th class="ps-3" style="min-width: 220px;">Website Details</th>
                                 <th style="min-width: 160px;">Uptime Status</th>
                                 <th style="min-width: 150px;">SSL Status</th>
                                  <th style="min-width: 150px;">PHP Version</th>
                                 <th style="min-width: 150px;">Domain Expiry</th>
-                                <th style="min-width: 160px;">Security Grade</th>
+                                <th style="min-width: 160px;">Security Headers</th>
                                 <th class="text-end pe-3" style="min-width: 100px;">Actions</th>
                             </tr>
                         </thead>
@@ -74,8 +74,10 @@
                                 <tr>
                                     {{-- 1. Website Details --}}
                                     <td class="ps-3">
-                                        <div class="fw-semibold text-dark fs-6">
-                                            {{ $monitor->name }}
+                                        <div class="fw-semibold text-body-emphasis fs-6">
+                                            <a href="{{ route('monitor.show', $monitor->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
+                                                {{ $monitor->name }}
+                                            </a>
                                         </div>
                                         @if($monitor->url)
                                             <div class="my-1">
@@ -115,97 +117,103 @@
                                     </td>
 
                                     {{-- 3. SSL Status --}}
-                                      <!-- SSL Status -->
-                            <td class="py-4 px-6">
-                                @if($monitor->ssl_status === 'valid')
-                                    
+                                {{-- 3. SSL Status --}}
+                                <td>
+                                    @if($monitor->ssl_status === 'valid')
+                                        <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-check-circle-fill"></i> Valid 
+                                        </span>
+                                    @elseif($monitor->ssl_status === 'warning')
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> Warning
+                                        </span>
+                                    @elseif($monitor->ssl_status === 'expired')
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-x-circle-fill"></i> Expired
+                                        </span>
+                                    @else
+                                        <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-shield-slash"></i> No SSL
+                                        </span>
+                                    @endif
 
-                                      <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                                  <i class="bi bi-check-circle-fill"></i> Valid 
-                                                </span>
-                                @elseif($monitor->ssl_status === 'warning')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-yellow-950/50 text-yellow-400 border border-yellow-800/40">
-                                        Warning
-                                    </span>
-                                @elseif($monitor->ssl_status === 'expired')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-950/50 text-red-400 border border-red-800/40">
-                                        Expired
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-950 text-slate-400 border border-slate-800">
-                                        No SSL
-                                    </span>
-                                @endif
-
-                                @if($monitor->ssl_expires_at)
-                                           <div class="text-muted small text-slate-400 mt-1 text-secondary">
-                                                Exp: {{ $monitor->ssl_expires_at->format('Y-m-d') }}
-                                            </div>
-
-                                            <div class="text-muted small text-slate-500 font-mono text-secondary">
-                                                {{ Str::limit($monitor->ssl_issuer, 20) }}
-                                            </div>
-
-                                            <div class="text-muted small text-slate-500 font-mono text-secondary">
-                                                {{ $monitor->ssl_days_remaining }} days remaining
-                                            </div>
-                                        @endif
-                            </td>
-
-                                 {{-- 4. PHP Version --}}
-                                    <td>
-                                        <div class="fw-semibold text-dark">
-                                            {{ $monitor->php_version}}
+                                    @if($monitor->ssl_expires_at)
+                                        <div class="text-muted small mt-1">
+                                            Exp: {{ $monitor->ssl_expires_at->format('Y-m-d') }}
                                         </div>
-                                       
-                                    </td>
 
-                                    {{-- 5. Domain Expiry --}}
-                                    <td>
+                                        <div class="text-muted small font-mono">
+                                            {{ Str::limit($monitor->ssl_issuer, 20) }}
+                                        </div>
 
-                                      @if($monitor->domain_status === 'active')
-                                    
+                                        <div class="text-muted small font-mono">
+                                            {{ $monitor->ssl_days_remaining }} days remaining
+                                        </div>
+                                    @endif
+                                </td>
 
-                                      <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                                  <i class="bi bi-check-circle-fill"></i>  {{ $monitor->domain_status}} 
-                                                </span>
-                                @elseif($monitor->domain_status === 'warning')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-yellow-950/50 text-yellow-400 border border-yellow-800/40">
-                                         {{ $monitor->domain_status}}
-                                    </span>
-                                @elseif($monitor->domain_status === 'expired')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-950/50 text-red-400 border border-red-800/40">
-                                         {{ $monitor->domain_status}}
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-950 text-slate-400 border border-slate-800">
-                                        No expiry
-                                    </span>
-                                @endif
-                                        <div class="text-muted small text-slate-400 mt-1 text-secondary">
-                                                Exp: {{ $monitor->domain_expires_at?->format('Y-m-d') }}
-                                            </div>
-                                    </td>
+                                {{-- 4. PHP Version --}}
+                                <td>
+                                    @if($monitor->php_version && strtolower($monitor->php_version) !== 'unknown')
+                                        <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle d-inline-flex align-items-center gap-1 fw-semibold">
+                                            <i class="bi bi-filetype-php"></i> PHP {{ $monitor->php_version }}
+                                        </span>
+                                    @elseif(strtolower($monitor->php_version ?? '') === 'unknown')
+                                        <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-question-circle"></i> Unknown
+                                        </span>
+                                    @else
+                                        <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-dash"></i> N/A
+                                        </span>
+                                    @endif
+                                </td>
+
+                                {{-- 5. Domain Expiry --}}
+                                <td>
+                                    @if($monitor->domain_status === 'active')
+                                        <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-check-circle-fill"></i> {{ $monitor->domain_status }} 
+                                        </span>
+                                    @elseif($monitor->domain_status === 'warning')
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> {{ $monitor->domain_status }}
+                                        </span>
+                                    @elseif($monitor->domain_status === 'expired')
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-x-circle-fill"></i> {{ $monitor->domain_status }}
+                                        </span>
+                                    @else
+                                        <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-dash"></i> No expiry
+                                        </span>
+                                    @endif
+                                    @if($monitor->domain_expires_at)
+                                        <div class="text-muted small mt-1">
+                                            Exp: {{ $monitor->domain_expires_at?->format('Y-m-d') }}
+                                        </div>
+                                    @endif
+                                </td>
 
                                     {{-- 6. Security Grade --}}
                                     <td>
-                                        <!-- @php
-                                            $grade = strtoupper(trim($monitor->security_grade));
-                                            $badgeClass = 'bg-danger-subtle text-danger border border-danger-subtle';
-                                            if (in_array($grade, ['A+', 'A', 'A-'])) {
-                                                $badgeClass = 'bg-success-subtle text-success border border-success-subtle';
-                                            } elseif (in_array($grade, ['B+', 'B', 'B-', 'C+', 'C'])) {
-                                                $badgeClass = 'bg-warning-subtle text-warning-emphasis border border-warning-subtle';
-                                            }
+                                        @php
+                                            $headers = $monitor->security_headers ?? [];
                                         @endphp
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="badge {{ $badgeClass }} px-2 py-1 fs-6 fw-bold">
-                                                {{ $grade }}
-                                            </span>
-                                            <span class="text-secondary small">
-                                                {{ $monitor->server_info ?: 'PHP Express' }}
-                                            </span>
-                                        </div> -->
+
+                                        <div class="d-flex flex-wrap gap-1">
+                                            @foreach($headers as $header)
+                                                @if($header['present'] ?? false)
+                                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
+                                                        {{ $header['name'] }}
+                                                    </span>
+                                                @else
+                                                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle">
+                                                        {{ $header['name'] }}
+                                                    </span>
+                                                @endif
+                                            @endforeach
+                                        </div>
                                     </td>
 
                                  
@@ -213,6 +221,23 @@
                                     {{-- 7. Actions --}}
                                     <td class="text-end pe-3">
                                         <div class="d-inline-flex align-items-center gap-1">
+                                            {{-- View Details --}}
+                                            <a
+                                                href="{{ route('monitor.show', $monitor->id) }}"
+                                                class="btn btn-outline-primary btn-sm"
+                                                title="View Health Overview"
+                                            >
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+
+                                            {{-- Trigger check --}}
+                                            <form action="{{ route('monitor.check', $monitor->id) }}" method="POST" class="d-inline trigger-check-form">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-secondary btn-sm trigger-btn" title="Trigger Check">
+                                                    <i class="bi bi-arrow-clockwise icon-idle"></i>
+                                                    <span class="spinner-border spinner-border-sm icon-spin d-none" role="status" aria-hidden="true" style="width: 0.85rem; height: 0.85rem; border-width: 0.15em;"></span>
+                                                </button>
+                                            </form>
                                             {{-- Edit --}}
                                             <a
                                                 href="{{ route('monitor.edit', $monitor->id) }}"
@@ -247,7 +272,7 @@
                                     <td colspan="7" class="text-center py-5">
                                         <div class="text-secondary">
                                             <i class="bi bi-display fs-1 d-block mb-2 text-muted"></i>
-                                            <h5 class="text-dark">No websites or monitors found</h5>
+                                            <h5 class="text-body-emphasis">No websites or monitors found</h5>
                                             <p class="small text-muted mb-3">Add your first website to start monitoring status, SSL, and domain health.</p>
                                             <a href="{{ route('monitor.create') }}" class="btn btn-primary btn-sm">
                                                 <i class="bi bi-plus-lg me-1"></i> Add Website
@@ -325,6 +350,60 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // Handle AJAX Trigger Check
+    document.querySelectorAll('.trigger-check-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const btn = this.querySelector('.trigger-btn');
+            const iconIdle = this.querySelector('.icon-idle');
+            const iconSpin = this.querySelector('.icon-spin');
+
+            // Hide icon, show spinner, disable button
+            if (iconIdle) iconIdle.classList.add('d-none');
+            if (iconSpin) iconSpin.classList.remove('d-none');
+            if (btn) btn.disabled = true;
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(async response => {
+                const data = await response.json().catch(() => ({}));
+                return { ok: response.ok, data };
+            })
+            .then(({ ok, data }) => {
+                if (ok && data.success) {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success(data.message || 'Check completed successfully.');
+                    }
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(data.message || 'Failed to complete check.');
+                    }
+                    if (iconIdle) iconIdle.classList.remove('d-none');
+                    if (iconSpin) iconSpin.classList.add('d-none');
+                    if (btn) btn.disabled = false;
+                }
+            })
+            .catch(() => {
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('An unexpected error occurred while running check.');
+                }
+                if (iconIdle) iconIdle.classList.remove('d-none');
+                if (iconSpin) iconSpin.classList.add('d-none');
+                if (btn) btn.disabled = false;
+            });
+        });
+    });
 });
 </script>
 @endpush

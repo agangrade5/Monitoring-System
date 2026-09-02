@@ -10,7 +10,7 @@
      <a href="@role('admin'){{ route('admin.dashboard') }}@elserole('user'){{ route('dashboard') }}@endrole" class="brand-link">
 
     <!--begin::Brand Text-->
-    <span class="brand-text fw-light">
+    <span class="brand-text font-weight-bold ">
         {{ config('app.name') }}
     </span>
     <!--end::Brand Text-->
@@ -77,18 +77,13 @@
                         <p>Monitoring</p>
                     </a>
                 </li>
-                <!-- <li class="nav-item">
-                    <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
+                <li class="nav-item">
+                    <a href="{{ route('settings') }}" class="nav-link {{ request()->routeIs('settings') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-gear"></i>
                         <p>Settings</p>
                     </a>
-                </li> -->
-                 <li class="nav-item">
-                    <a href="{{ route('profile') }}" class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-gear"></i>
-                        <p>Settings</p>
-                    </a>
-                </li>
+                </li> 
+                
             </ul> 
             @endrole
 

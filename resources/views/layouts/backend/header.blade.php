@@ -74,11 +74,10 @@
 
                     <!--begin::Menu Footer-->
                     <li class="user-footer">
-                        <a
-                            href="{{ route('admin.settings') }}"
-                            class="btn btn-outline-secondary"
-                            >Profile</a
-                        >
+                        @php
+                            $settingsRoute = auth()->user()->hasRole('admin') ? 'admin.settings' : 'settings';
+                        @endphp
+                        <a href="{{ route($settingsRoute) }}" class="btn btn-outline-secondary">Profile</a>
                         <form
                             id="logout-form"
                             method="POST"

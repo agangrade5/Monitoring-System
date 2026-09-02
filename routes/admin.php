@@ -178,6 +178,10 @@ Route::get('/profile', [
                 MonitorController::class,
                 'create'
             ])->name('monitor.create');
+            Route::get('/monitor/{id}', [
+                MonitorController::class,
+                'show'
+            ])->name('monitor.show');
             Route::post('/monitor/store', [
                 MonitorController::class,
                 'store'
@@ -198,6 +202,10 @@ Route::get('/profile', [
                 MonitorController::class,
                 'toggleActive'
             ])->name('monitor.toggle');
+            Route::post('/monitor/{id}/check', [
+                MonitorController::class,
+                'triggerCheck'
+            ])->name('monitor.check');
         });
 
     /*
