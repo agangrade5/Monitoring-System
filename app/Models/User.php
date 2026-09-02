@@ -46,4 +46,12 @@ class User extends Authenticatable
             new CustomResetPasswordNotification($token)
         );
     }
+
+    /**
+     * Get the monitors created by the user.
+     */
+    public function monitors()
+    {
+        return $this->hasMany(Monitor::class);
+    }
 }

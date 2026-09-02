@@ -134,10 +134,10 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | User Routes
+    | User & Monitoring Routes
     |--------------------------------------------------------------------------
     */
-    Route::middleware('role:user')
+    Route::middleware('role:user|admin')
         ->group(function () {
             /*
             |--------------------------------------------------------------------------

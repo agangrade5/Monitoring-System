@@ -72,5 +72,11 @@ class Monitor extends Model
         return $this->domain_expires_at->diffForHumans();
     }
 
-    
+    /**
+     * Get the user that owns the monitor.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -5,13 +5,15 @@ namespace App\Providers;
 use App\Repositories\Contracts\{
     UserRepositoryInterface,
     SettingRepositoryInterface,
-    MonitorRepositoryInterface
+    MonitorRepositoryInterface,
+    DashboardRepositoryInterface
 };
 
 use App\Repositories\{
     UserRepository,
     SettingRepository,
-    MonitorRepository
+    MonitorRepository,
+    DashboardRepository
 };
 
 use Illuminate\Support\ServiceProvider;
@@ -31,10 +33,17 @@ class RepositoryServiceProvider extends ServiceProvider
             SettingRepositoryInterface::class,
             SettingRepository::class
         );
+
         /* Monitor Repository Binding */
         $this->app->bind(
             MonitorRepositoryInterface::class,
             MonitorRepository::class
+        );
+
+        /* Dashboard Repository Binding */
+        $this->app->bind(
+            DashboardRepositoryInterface::class,
+            DashboardRepository::class
         );
     }
 
