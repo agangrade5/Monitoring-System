@@ -28,6 +28,7 @@ export default defineConfig({
                 'resources/js/backend/admin.js',
                 'resources/js/backend/image-cropper.js',
                 'resources/js/backend/change-password.js',
+                'resources/js/backend/monitor.js',
             ],
             buildDirectory: 'assets',
             refresh: true,
