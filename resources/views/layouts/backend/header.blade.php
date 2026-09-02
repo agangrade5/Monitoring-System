@@ -1,4 +1,7 @@
 <!--begin::Header-->
+@php
+    $user = auth()->user();
+@endphp
 <nav class="app-header navbar navbar-expand bg-body">
     <!--begin::Container-->
     <div class="container-fluid">
@@ -72,11 +75,7 @@
                     <!--begin::Menu Footer-->
                     <li class="user-footer">
                         <a
-<<<<<<< HEAD
-                            href="{{ route('profile') }}"
-=======
                             href="{{ route('admin.settings') }}"
->>>>>>> 71e4a2511dddedd3c60659b4e366b733517d84cb
                             class="btn btn-outline-secondary"
                             >Profile</a
                         >

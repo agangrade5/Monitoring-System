@@ -29,10 +29,6 @@
             <div class="col-lg-3 col-md-4">
                 <div class="card settings-card mb-4">
                     <div class="card-body p-3">
-<<<<<<< HEAD
-                       
-=======
->>>>>>> 71e4a2511dddedd3c60659b4e366b733517d84cb
                         <div class="settings-sidebar-nav nav flex-column" id="settings-nav" role="tablist">
                             <a href="#account" class="settings-nav-link active mb-1" data-bs-toggle="pill" role="tab" aria-selected="true">
                                 <i class="bi bi-person me-2"></i>Account

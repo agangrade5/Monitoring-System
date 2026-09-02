@@ -9,6 +9,7 @@ use App\Jobs\CheckUptimeJob;
 use App\Jobs\CheckSslCertificateJob;
 use App\Jobs\CheckPhpVersionJob;
 use App\Jobs\CheckDomainExpiryJob;
+use App\Jobs\CheckSecurityHeadersJob;
 class MonitorController extends Controller
 {
 /**
@@ -103,6 +104,7 @@ class MonitorController extends Controller
         CheckSslCertificateJob::dispatchSync($monitor->id);
         CheckPhpVersionJob::dispatchSync($monitor->id);
         CheckDomainExpiryJob::dispatchSync($monitor->id);
+        CheckSecurityHeadersJob ::dispatchSync($monitor->id);
         /*
         * Redirect to index page with success message
         */
@@ -181,6 +183,7 @@ class MonitorController extends Controller
     CheckSslCertificateJob::dispatchSync($id);
     CheckPhpVersionJob::dispatchSync($id);
     CheckDomainExpiryJob::dispatchSync($id);
+     CheckSecurityHeadersJob ::dispatchSync($id);
     /*
     * Redirect to index page with success message
     */

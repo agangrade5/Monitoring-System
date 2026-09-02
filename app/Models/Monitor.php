@@ -43,6 +43,7 @@ class Monitor extends Model
     'domain_expires_at' => 'datetime',
 'domain_checked_at' => 'datetime',
 'php_checked_at' => 'datetime',
+'security_headers' => 'array',
 ];
 
     /**

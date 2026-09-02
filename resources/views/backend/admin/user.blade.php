@@ -115,7 +115,7 @@
 
                                                     {{-- Delete Form --}}
                                                     <form
-                                                        action="{{ route('admin.users.destroy', $user['id']) }}"
+                                                        action=""
                                                         method="POST"
                                                         class="d-inline"
                                                         onsubmit="return confirm('Are you sure you want to delete user {{ $user['name'] }}?')"
@@ -203,7 +203,7 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('admin.users.store') }}" method="POST" id="add-user-form">
+            <form action="" method="POST" id="add-user-form">
                 @csrf
                 <div class="modal-body p-4">
                     <div class="mb-3">

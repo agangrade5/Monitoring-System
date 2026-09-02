@@ -65,7 +65,6 @@
                                  <th style="min-width: 150px;">PHP Version</th>
                                 <th style="min-width: 150px;">Domain Expiry</th>
                                 <th style="min-width: 160px;">Security Grade</th>
-                                <th style="min-width: 140px;">Open Ports</th>
                                 <th class="text-end pe-3" style="min-width: 100px;">Actions</th>
                             </tr>
                         </thead>
@@ -188,7 +187,7 @@
                                             </div>
                                     </td>
 
-                                    {{-- 5. Security Grade --}}
+                                    {{-- 6. Security Grade --}}
                                     <td>
                                         <!-- @php
                                             $grade = strtoupper(trim($monitor->security_grade));
@@ -209,23 +208,7 @@
                                         </div> -->
                                     </td>
 
-                                    {{-- 6. Open Ports --}}
-                                    <td>
-                                        <!-- @php
-                                            $ports = $monitor->ports_list;
-                                        @endphp
-                                        @if(count($ports) > 0)
-                                            <div class="d-flex flex-wrap gap-1">
-                                                @foreach($ports as $port)
-                                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle font-monospace">
-                                                        {{ $port }}
-                                                    </span>
-                                                @endforeach
-                                            </div>
-                                        @else
-                                            <span class="text-muted small">Not Scanned</span>
-                                        @endif -->
-                                    </td>
+                                 
 
                                     {{-- 7. Actions --}}
                                     <td class="text-end pe-3">
