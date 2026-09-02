@@ -74,6 +74,7 @@
                             name="password"
                             required
                         >
+                        <x-toggle-password-btn target="password" />
                     </div>
                     @error('password')
                         <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
@@ -95,6 +96,7 @@
                             name="password_confirmation"
                             required
                         >
+                        <x-toggle-password-btn target="password_confirmation" />
                     </div>
                     @error('password_confirmation')
                         <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>

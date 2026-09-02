@@ -54,6 +54,11 @@ function showConfirmation(button, callback) {
         showCancelButton: true,
         confirmButtonText: button.dataset.confirmButton || 'Yes, Continue',
         cancelButtonText: button.dataset.cancelButton || 'Cancel',
+        customClass: {
+            confirmButton: button.dataset.confirmButtonClass || 'btn btn-danger',
+            cancelButton: button.dataset.confirmCancelButtonClass || 'btn btn-secondary'
+        },
+        //buttonsStyling: false,
         reverseButtons: true
     }).then((result) => {
 
@@ -182,4 +187,35 @@ $(document).on('submit', 'form', function (event) {
 
     // Disable button
     $button.prop('disabled', true);
+});
+
+// ========================================
+// Toggle Password
+// ========================================
+document.addEventListener('DOMContentLoaded', () => {
+
+    document.addEventListener('click', (event) => {
+
+        const btn = event.target.closest('.toggle-password');
+
+        if (!btn) {
+            return;
+        }
+
+        const targetId = btn.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const icon = btn.querySelector('i');
+
+        if (!input) {
+            return;
+        }
+
+        const isPassword = input.type === 'password';
+
+        input.type = isPassword ? 'text' : 'password';
+
+        icon.classList.toggle('bi-eye-slash', !isPassword);
+        icon.classList.toggle('bi-eye', isPassword);
+    });
+
 });

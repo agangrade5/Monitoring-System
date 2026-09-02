@@ -34,7 +34,7 @@
                                 <i class="bi bi-person me-2"></i>Account
                             </a>
                             <a href="#change-password" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-key me-2"></i>Change Password
+                                <i class="bi bi-shield-lock me-2"></i>Change Password
                             </a>
                         </div>
                     </div>

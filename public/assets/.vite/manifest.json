@@ -14,6 +14,12 @@
     "src": "resources/js/backend/admin.js",
     "isEntry": true
   },
+  "resources/js/backend/change-password.js": {
+    "file": "js/backend/change-password.js",
+    "name": "change-password",
+    "src": "resources/js/backend/change-password.js",
+    "isEntry": true
+  },
   "resources/js/backend/image-cropper.js": {
     "file": "js/backend/image-cropper.js",
     "name": "image-cropper",

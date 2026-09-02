@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\View\View;
 use App\Http\Requests\Backend\User\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\Backend\Auth\ChangePasswordRequest;
+use Illuminate\Http\{RedirectResponse, JsonResponse};
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -122,5 +123,26 @@ class UserController extends Controller
             'success',
             'Profile updated successfully.'
         );
+    }
+
+    /**
+     * Change authenticated user's password.
+     *
+     * @param ChangePasswordRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function changePassword(
+        ChangePasswordRequest $request
+    ): JsonResponse {
+        $this->userRepository->updatePassword(
+            $request->user(),
+            $request->validated('password')
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password updated successfully.',
+        ]);
     }
 }
