@@ -81,7 +81,7 @@
               </div>
         </div>
 
-       
+
         <!-- Recent Activities and Action Center Row -->
         <div class="row">
             <!-- Recent System logs -->
@@ -161,7 +161,7 @@
                             <a href="/admin/settings" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
                                 <div>
                                     <h6 class="mb-0 fw-bold"><i class="bi bi-gear-fill me-2 text-secondary"></i>System Settings</h6>
-                                    <small class="text-muted">Update configuration, notifications, and security</small>
+                                    <small class="text-muted">Update configuration and Change Password</small>
                                 </div>
                                 <i class="bi bi-chevron-right text-muted"></i>
                             </a>

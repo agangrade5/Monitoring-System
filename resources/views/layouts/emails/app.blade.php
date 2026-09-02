@@ -48,6 +48,11 @@
                                 "
                             >
                                 @yield('content')
+
+                                <p style="margin-top: 25px">
+                                    Regards,<br />
+                                    <strong>{{ config('app.name') }}</strong>
+                                </p>
                             </td>
                         </tr>
 
