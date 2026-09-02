@@ -63,9 +63,4 @@
     Your password will remain unchanged.
 </p>
 
-<p style="margin-top: 25px">
-    Regards,<br />
-    <strong>{{ config('app.name') }}</strong>
-</p>
-
 @endsection
