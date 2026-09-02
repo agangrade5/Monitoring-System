@@ -19,6 +19,7 @@ class MonitorRepository implements MonitorRepositoryInterface
      * Retrieves all monitors with pagination and optional search filtering.
      *
      * @param string|null $search
+     * 
      * @return LengthAwarePaginator
      */
     public function getAll(?string $search = null): LengthAwarePaginator

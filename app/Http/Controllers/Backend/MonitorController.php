@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\MonitorRepositoryInterface;
 use Illuminate\Http\Request;
-use App\Http\Requests\Backend\User\Monitor\MonitorUserRequest;
+use App\Http\Requests\Backend\Monitor\MonitorUserRequest;
 use App\Services\MonitorService;
 use App\Helpers\UtilityHelper;
 
@@ -21,37 +21,38 @@ class MonitorController extends Controller
         protected MonitorService $monitorService
     ) {}
 
-/**
- * Display a listing of the resource.
- *
- * @return View
- * 
- * This method fetches all monitors from the repository
- * and passes them to the view.
- */
+    /**
+     * Display a listing of the resource.
+     *
+     * @return View
+     * 
+     * This method fetches all monitors from the repository
+     * and passes them to the view.
+     */
     public function index(){
         $monitors = $this->monitorRepository->getAll(request('search'));
         $title = 'Monitor Websites & Domains';
         return view(
-            'backend.user.monitor.index',
+            'backend.monitor.index',
             compact('monitors', 'title')
         );
     }
 
-/**
- * This method renders the view to create a new monitor.
- *
- * @return View
- */
+    /**
+     * This method renders the view to create a new monitor.
+     *
+     * @return View
+     */
     public function create()
     {
-        return view('backend.user.monitor.create');
+        return view('backend.monitor.create');
     }
 
     /**
      * Display the specified monitor single detail overview.
      *
      * @param int $id
+     * 
      * @return \Illuminate\Contracts\View\View
      */
     public function show(int $id)
@@ -61,13 +62,14 @@ class MonitorController extends Controller
 
         $title = $monitor->name . ' - Health & Performance Overview';
 
-        return view('backend.user.monitor.show', compact('monitor', 'title'));
+        return view('backend.monitor.show', compact('monitor', 'title'));
     }
 
     /**
      * Store a newly created monitor in storage.
      *
      * @param  Request  $request
+     * 
      * @return RedirectResponse
      */
     public function store(MonitorUserRequest $request)
@@ -94,7 +96,6 @@ class MonitorController extends Controller
         * Run all background monitor health checks via Service layer
         */
         $this->monitorService->runAllChecks($monitor->id);
-
         /*
         * Redirect to index page with success message
         */
@@ -107,13 +108,14 @@ class MonitorController extends Controller
      * Edit the specified resource.
      *
      * @param int $id
+     * 
      * @return View
      */
     public function edit(int $id)
     {
         $monitor = $this->monitorRepository->findById($id);
         abort_if(!$monitor, 404);
-        return view('backend.user.monitor.edit', compact('monitor'));
+        return view('backend.monitor.edit', compact('monitor'));
     }
 
     /**
@@ -121,6 +123,7 @@ class MonitorController extends Controller
      *
      * @param  Request  $request
      * @param int $id
+     * 
      * @return RedirectResponse
      */
     public function update(MonitorUserRequest $request, int $id)
@@ -195,9 +198,10 @@ class MonitorController extends Controller
      * Toggle the active status of a monitor.
      *
      * @param int $id
+     * 
      * @return RedirectResponse
      */
-    public function toggleActive(int $id)
+    public function toggleActive(Request $request,int $id)
     {
         $monitor = $this->monitorRepository->findById($id);
         abort_if(!$monitor, 404);
@@ -206,11 +210,6 @@ class MonitorController extends Controller
             'is_active' => $newStatus
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
       /*
         |--------------------------------------------------------------------------
         | Activity Log
@@ -236,6 +235,7 @@ class MonitorController extends Controller
      * Trigger an immediate check for a specific monitor.
      *
      * @param int $id
+     * 
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function triggerCheck(Request $request,int $id)
@@ -257,13 +257,9 @@ class MonitorController extends Controller
                 'user_agent' => $request->userAgent(),
             ]
         );
-
-
         try {
             $this->monitorService->runAllChecks($id);
-
             $message = "Website checks triggered and updated successfully for {$monitor->name}.";
-
             if (request()->wantsJson() || request()->ajax()) {
                 return response()->json([
                     'success' => true,
@@ -295,6 +291,7 @@ class MonitorController extends Controller
      *
      * @param Request $request
      * @param int $id
+     * 
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function sendTestNotification(Request $request, int $id)

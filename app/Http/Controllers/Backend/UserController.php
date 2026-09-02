@@ -65,6 +65,7 @@ class UserController extends Controller
      *
      * @param Request $request
      * @param int $id
+     * 
      * @return \Illuminate\Http\RedirectResponse
      */
     public function updateUser(UserRequest $request, int $id)
@@ -81,12 +82,12 @@ class UserController extends Controller
      * Destroy an existing user.
      *
      * @param int $id
+     * 
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroyUser(int $id)
     {
         $this->userRepository->delete($id);
-
         return redirect()
             ->back()
             ->with('success', 'User deleted successfully.');

@@ -30,6 +30,7 @@ class MonitorService
      * Run all background health checks (Uptime, SSL, PHP Version, Domain Expiry, Security Headers).
      *
      * @param int $id
+     * 
      * @return Monitor|null
      */
     public function runAllChecks(int $id): ?Monitor
@@ -50,6 +51,7 @@ class MonitorService
      *
      * @param int $id
      * @param User|null $causer
+     * 
      * @return array
      */
     public function sendTestNotification(int $id, ?User $causer = null): array

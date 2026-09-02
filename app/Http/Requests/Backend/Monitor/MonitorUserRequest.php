@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Backend\User\Monitor;
+namespace App\Http\Requests\Backend\Monitor;
 use App\Rules\{NoScripts, ValidEmailDomain, ValidUrl, ValidMobile};
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -35,7 +35,7 @@ class MonitorUserRequest extends FormRequest
                 'string',
                 'email',
                 'max:50',
-                'required_without:mobile',
+                'required',
                 new NoScripts(),
                 new ValidEmailDomain(),
             ],

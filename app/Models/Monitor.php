@@ -28,10 +28,10 @@ class Monitor extends Model
     'php_status',
     'php_checked_at',
     'domain_expires_at',
-'domain_status',
-'domain_checked_at',
-'security_headers',
-'status'
+    'domain_status',
+    'domain_checked_at',
+    'security_headers',
+    'status'
 ];
 
  protected $casts = [
@@ -43,9 +43,9 @@ class Monitor extends Model
     'ssl_enabled' => 'boolean',
     'is_active' => 'boolean',
     'domain_expires_at' => 'datetime',
-'domain_checked_at' => 'datetime',
-'php_checked_at' => 'datetime',
-'security_headers' => 'array',
+    'domain_checked_at' => 'datetime',
+    'php_checked_at' => 'datetime',
+    'security_headers' => 'array',
 ];
 
     /**

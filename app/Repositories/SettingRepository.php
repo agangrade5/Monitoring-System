@@ -13,6 +13,7 @@ class SettingRepository implements SettingRepositoryInterface
      * 
      * @param string $setting
      * @param bool $value
+     * 
      * @return Setting
      *  
      */ 
