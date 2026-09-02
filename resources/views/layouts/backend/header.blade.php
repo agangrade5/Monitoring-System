@@ -91,6 +91,8 @@
                             data-confirm-title="Logout?"
                             data-confirm-text="Are you sure you want to logout?"
                             data-confirm-button="Yes, Logout"
+                            data-confirm-button-class="btn btn-primary"
+                            data-confirm-cancel-button-class="btn btn-secondary"
                         >
                             Logout
                         </button>

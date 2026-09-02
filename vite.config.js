@@ -14,7 +14,7 @@ function copyBackendImages() {
             if (fs.existsSync(srcDir)) {
                 fs.mkdirSync(destDir, { recursive: true });
                 fs.cpSync(srcDir, destDir, { recursive: true });
-                console.log('✔ Backend images copied to', destDir);
+                console.log('Backend images copied to', destDir);
             }
         },
     };
@@ -27,6 +27,7 @@ export default defineConfig({
                 'resources/css/backend/admin.css',
                 'resources/js/backend/admin.js',
                 'resources/js/backend/image-cropper.js',
+                'resources/js/backend/change-password.js',
             ],
             buildDirectory: 'assets',
             refresh: true,

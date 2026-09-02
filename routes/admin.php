@@ -181,4 +181,14 @@ Route::middleware('auth')->group(function () {
         UserController::class,
         'updateProfile',
     ])->name('profile.update');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Change Password
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/change-password', [
+        UserController::class,
+        'changePassword',
+    ])->name('change-password');
 });

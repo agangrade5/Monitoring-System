@@ -9,6 +9,21 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 class ValidEmailDomain implements ValidationRule
 {
     /**
+     * Valid email domains.
+     *
+     * @var array
+     */
+    protected array $validDomains = [
+        'gmail.com',
+        'yahoo.com',
+        'yahoo.co.in',
+        'outlook.com',
+        'hotmail.com',
+        'mailinator.com',
+        'yopmail.com',
+    ];
+
+    /**
      * Run the validation rule.
      *
      * @param  Closure(string, ?string=): PotentiallyTranslatedString  $fail
@@ -25,24 +40,14 @@ class ValidEmailDomain implements ValidationRule
             return;
         }
 
-        // Reject obvious/example/test/local domains.
-        $invalidDomains = [
-            'example.com',
-            'example.net',
-            'example.org',
-            'localhost',
-            'local',
-            'test',
-            'invalid',
-        ];
-
-        if (in_array($domain, $invalidDomains, true)) {
+        // Check whether the domain is valid.
+        if (!in_array($domain, $this->validDomains, true)) {
             $fail('validation.email_validation')->translate();
 
             return;
         }
 
-        // Check whether the domain has a mail server.
+        // Check whether the domain exists.
         if (
             !checkdnsrr($domain, 'MX') &&
             !checkdnsrr($domain, 'A')
