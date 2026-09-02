@@ -1,4 +1,5 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="icon" type="image/png" href="{{ asset('assets/images/backend/logo/monitoring-48.png') }}" />
 <title> @yield('title') | {{ config('app.name') }} </title>
 <!--begin::Theme Init (prevents flash of incorrect theme on load, #6043)-->
 <script nonce="{{ csp_nonce('script') }}">
