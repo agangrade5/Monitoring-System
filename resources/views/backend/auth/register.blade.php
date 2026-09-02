@@ -5,7 +5,10 @@
 <!--begin:: Main Content -->
 <main class="register-box">
     <div class="register-logo">
-        <a href="/"><b>{{ config('app.name') }}</b></a>
+        <a href="/">
+            <img src="{{ asset('assets/images/backend/logo/monitoring-48.png') }}" alt="{{ config('app.name') }}">
+            <b>{{ config('app.name') }}</b>
+        </a>
     </div>
     <!-- /.register-logo -->
     <div class="card">

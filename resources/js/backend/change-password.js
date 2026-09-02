@@ -169,13 +169,12 @@ document.addEventListener('DOMContentLoaded', () => {
         button.disabled = true;
 
         button.innerHTML = `
+            ${originalButtonHtml}
             <span
                 class="spinner-border spinner-border-sm me-1"
                 role="status"
                 aria-hidden="true"
-            ></span>
-            Updating...
-        `;
+            ></span>`;
 
         try {
 
