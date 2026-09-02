@@ -183,7 +183,7 @@
             {{-- Left Column (8 cols): Chart + Security Headers + Incidents --}}
             <div class="col-lg-8">
                 {{-- Response Time Chart Card --}}
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <!-- <div class="card border-0 shadow-sm rounded-4 mb-4">
                     <div class="card-header bg-transparent border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div>
                             <h5 class="fw-bold mb-0 text-body-emphasis">Response time for All regions</h5>
@@ -220,7 +220,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 {{-- Security Headers Card --}}
                 <div class="card border-0 shadow-sm rounded-4 mb-4">

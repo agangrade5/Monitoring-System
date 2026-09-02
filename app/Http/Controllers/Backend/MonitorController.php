@@ -10,12 +10,12 @@ use App\Helpers\UtilityHelper;
 
 class MonitorController extends Controller
 {
-/**
- * Constructor to inject the Monitor Repository and Monitor Service.
- *
- * @param MonitorRepositoryInterface $monitorRepository
- * @param MonitorService $monitorService
- */
+    /**
+     * Constructor to inject the Monitor Repository and Monitor Service.
+     *
+     * @param MonitorRepositoryInterface $monitorRepository
+     * @param MonitorService $monitorService
+     */
     public function __construct(
         protected MonitorRepositoryInterface $monitorRepository,
         protected MonitorService $monitorService
@@ -224,8 +224,6 @@ class MonitorController extends Controller
                 'user_agent' => $request->userAgent(),
             ]
         );
-
-
         return redirect()
             ->back()
             ->with('success', 'Monitor status updated successfully.');

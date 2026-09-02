@@ -41,6 +41,15 @@ class UserController extends Controller
             'users' => $users,
         ]);
     }
+
+    /**
+     * Show user profile
+     * 
+     * @return View
+     * 
+     * This method returns the view for the user profile page.
+     * 
+     */
     public function profile(): View
     {
         return view('backend.user.settings', [
@@ -50,6 +59,13 @@ class UserController extends Controller
         ]);
     }
 
+     /**
+      * Store a new user.
+      *
+      * @param UserRequest $request
+      *
+      * @return \Illuminate\Http\RedirectResponse
+      */
   public function storeUser(UserRequest $request)
     {
         $validated = $request->validated();
