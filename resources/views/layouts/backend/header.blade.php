@@ -68,6 +68,7 @@
                         />
                         <p>
                             {{ $user->name }}
+                            <small>Member since {{ $user->created_at->format('M. Y') }}</small>
                         </p>
                     </li>
                     <!--end::User Image-->

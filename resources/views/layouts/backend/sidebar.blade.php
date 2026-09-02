@@ -6,16 +6,16 @@
     <!--begin::Sidebar Brand-->
     <div class="sidebar-brand">
         <!--begin::Brand Link-->
-
-     <a href="@role('admin'){{ route('admin.dashboard') }}@elserole('user'){{ route('dashboard') }}@endrole" class="brand-link">
-
-    <!--begin::Brand Text-->
-    <span class="brand-text font-weight-bold ">
-        {{ config('app.name') }}
-    </span>
-    <!--end::Brand Text-->
-
-</a>
+        <a href="@role('admin'){{ route('admin.dashboard') }}@elserole('user'){{ route('dashboard') }}@endrole" class="brand-link">
+            <!--begin::Brand Image-->
+            <img src="{{ asset('assets/images/backend/logo/monitoring-48.png') }}" alt="{{ config('app.name') }}" class="brand-image opacity-75 shadow">
+            <!--end::Brand Image-->
+            <!--begin::Brand Text-->
+            <span class="brand-text fw-light">
+                {{ config('app.name') }}
+            </span>
+            <!--end::Brand Text-->
+        </a>
         <!--end::Brand Link-->
     </div>
     <!--end::Sidebar Brand-->

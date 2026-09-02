@@ -139,6 +139,10 @@
         <!-- Main Content Row: Recent System Logs & Quick Actions -->
         <div class="row g-4 mb-4">
             <!-- Left Column: Recent System Logs Table -->
+
+        <!-- Recent Activities and Action Center Row -->
+        <div class="row">
+            <!-- Recent System logs -->
             <div class="col-lg-8 col-12">
                 <div class="card border-0 shadow-sm rounded-4 h-100 mb-0">
                     <div class="card-header border-0 py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -403,7 +407,7 @@
                             <a href="{{ route('admin.settings') }}" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
                                 <div>
                                     <h6 class="mb-0 fw-bold"><i class="bi bi-gear-fill me-2 text-secondary"></i>System Settings</h6>
-                                    <small class="text-muted">Update configuration, notifications, and SMTP</small>
+                                    <small class="text-muted">Update configuration and Change Password</small>
                                 </div>
                                 <i class="bi bi-chevron-right text-muted"></i>
                             </a>

@@ -102,8 +102,10 @@ class UserController extends Controller
     public function updateProfile(
         ProfileUpdateRequest $request
     ): RedirectResponse {
+        $user = $request->user();
+
         $this->userRepository->updateProfile(
-            $request->user(),
+            $user,
             $request->validated()
         );
 
@@ -138,8 +140,10 @@ class UserController extends Controller
     public function changePassword(
         ChangePasswordRequest $request
     ): JsonResponse {
+        $user = $request->user();
+
         $this->userRepository->updatePassword(
-            $request->user(),
+            $user,
             $request->validated('password')
         );
 
