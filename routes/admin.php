@@ -124,6 +124,12 @@ Route::middleware('auth')->group(function () {
                 UserController::class,
                 'allUsers',
             ])->name('users');
+
+
+             Route::post('/users/update/{id}', [UserController::class, 'updateUser'])->name('update');
+                Route::get('/create', [ UserController::class,'createUser'])->name('create');
+                Route::post('/create', [ UserController::class, 'storeUser' ])->name('store') ;
+            Route::delete('/destroy/{id}', [UserController::class, 'destroyUser'])->name('destroy');
         });
 
     /*
@@ -161,10 +167,16 @@ Route::middleware('auth')->group(function () {
             Route::get('/users', function () {
                 return 'Users';
             })->name('users');
-Route::get('/profile', [
+        
+        
+        
+            Route::get('/profile', [
                 UserController::class,
                 'profile'
             ])->name('profile');
+            
+
+           
                /*
             |--------------------------------------------------------------------------
             | Monitors Routes

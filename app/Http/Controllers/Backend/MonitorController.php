@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\MonitorRepositoryInterface;
 use Illuminate\Http\Request;
-use App\Rules\{NoScripts, ValidEmailDomain, ValidUrl, ValidMobile};
+use App\Http\Requests\Backend\User\Monitor\MonitorUserRequest;
 use App\Services\MonitorService;
 
 class MonitorController extends Controller
@@ -69,50 +69,11 @@ class MonitorController extends Controller
  * @param  Request  $request
  * @return RedirectResponse
  */
-    public function store(Request $request)
+    public function store(MonitorUserRequest $request)
     {
-         $validated = $request->validate([
-        'name' => [
-            'required',
-            'string',
-            'max:255',
-            new NoScripts(),
-        ],
-
-        'email' => [
-            'nullable',
-            'string',
-            'email',
-            'max:50',
-            'required_without:mobile',
-            new NoScripts(),
-            new ValidEmailDomain(),
-        ],
-
-        'mobile' => [
-            'nullable',
-            'string',
-            'max:15',
-            'required_without:email',
-            new ValidMobile(),
-        ],
-
-        'url' => [
-            'nullable',
-            'string',
-            'max:255',
-            new ValidUrl(),
-        ],
-
-        'is_active' => [
-            'nullable',
-            'boolean',
-        ],
-    ]);
-
-        $validated['user_id'] = auth()->id() ?? 1;
+        $validated = $request->validated();
+        $validated['user_id'] = auth()->user()->id;
         $monitor = $this->monitorRepository->create($validated);
-
         if (function_exists('activity')) {
             activity('monitor')
                 ->causedBy(auth()->user())
@@ -153,47 +114,9 @@ class MonitorController extends Controller
  * @param int $id
  * @return RedirectResponse
  */
-    public function update(Request $request, int $id)
+    public function update(MonitorUserRequest $request, int $id)
     {
-        $validated = $request->validate([
-        'name' => [
-            'required',
-            'string',
-            'max:255',
-            new NoScripts(),
-        ],
-
-        'email' => [
-            'nullable',
-            'string',
-            'email',
-            'max:50',
-            'required_without:mobile',
-            new NoScripts(),
-            new ValidEmailDomain(),
-        ],
-
-        'mobile' => [
-            'nullable',
-            'string',
-            'max:15',
-            'required_without:email',
-            new ValidMobile(),
-        ],
-
-        'url' => [
-            'nullable',
-            'string',
-            'max:255',
-            new ValidUrl(),
-        ],
-
-        'is_active' => [
-            'nullable',
-            'boolean',
-        ],
-    ]);
-
+        $validated = $request->validated();
         $this->monitorRepository->update($id, $validated);
         $monitor = $this->monitorRepository->findById($id);
 

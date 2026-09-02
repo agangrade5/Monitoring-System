@@ -1,13 +1,12 @@
 <?php
-
 namespace App\Http\Controllers\Backend;
-
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\View\View;
 use App\Http\Requests\Backend\User\ProfileUpdateRequest;
 use App\Http\Requests\Backend\Auth\ChangePasswordRequest;
 use Illuminate\Http\{RedirectResponse, JsonResponse};
+use App\Http\Requests\Backend\User\UserRequest;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -50,20 +49,12 @@ class UserController extends Controller
     ]);
 }
 
-  public function storeUser(Request $request)
+  public function storeUser(UserRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'is_active' => 'required|boolean',
-        ]);
-
+        $validated = $request->validated();
         $user = $this->userRepository->create($validated);
-        
         // Assign default 'user' role
         $user->assignRole('user');
-
         return redirect()
             ->back()
             ->with('success', 'User created successfully.');
@@ -75,17 +66,11 @@ class UserController extends Controller
      * @param int $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateUser(Request $request, int $id)
+    public function updateUser(UserRequest $request, int $id)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'is_active' => 'required|boolean',
-        ]);
-
+    
+        $validated = $request->validated();
         $this->userRepository->update($id, $validated);
-
         return redirect()
             ->back()
             ->with('success', 'User updated successfully.');

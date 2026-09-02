@@ -113,9 +113,13 @@
                                                         <i class="bi bi-pencil-square"></i>
                                                     </button>
 
+
+
+
+
                                                     {{-- Delete Form --}}
                                                     <form
-                                                        action=""
+                                                        action="{{ route('admin.destroy', $user['id']) }}"
                                                         method="POST"
                                                         class="d-inline"
                                                         onsubmit="return confirm('Are you sure you want to delete user {{ $user['name'] }}?')"
@@ -125,7 +129,7 @@
 
                                                         <button
                                                             type="submit"
-                                                            class="btn btn-outline-danger btn-sm trigger-btn edit-user-btn text-white bg-danger"
+                                                            class="btn btn-outline-danger btn-sm trigger-btn text-white bg-danger"
                                                             title="Delete User"
                                                         >
                                                             <i class="bi bi-trash3"></i>
@@ -203,7 +207,7 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="" method="POST" id="add-user-form">
+            <form action="{{ route('admin.store') }}" method="POST" id="add-user-form">
                 @csrf
                 <div class="modal-body p-4">
                     <div class="mb-3">
@@ -275,8 +279,9 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="" method="POST" id="edit-user-form">
-                @csrf
+                 <form action="{{ route('admin.update', $user->id) }}" method="POST" id="edit-user-form">
+                    @csrf
+            
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="edit_user_name">Full Name</label>
