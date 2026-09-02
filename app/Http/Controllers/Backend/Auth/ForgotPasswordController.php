@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend\Auth;
 
+use App\Helpers\UtilityHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backend\Auth\{ForgotPasswordRequest, ResetPasswordRequest};
 use App\Repositories\Contracts\UserRepositoryInterface;
@@ -39,11 +40,43 @@ class ForgotPasswordController extends Controller
         );
 
         if ($status === Password::RESET_LINK_SENT) {
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - Reset Link Sent
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'Password reset link sent successfully.',
+                null,
+                [
+                    'email' => $request->email,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
             return back()->with(
                 'success',
                 'If an account exists for this email address, a password reset link has been sent.'
             );
         }
+
+        /* 
+        |-------------------------------------------------------------------------- 
+        | Activity Log - Reset Link Failed 
+        |-------------------------------------------------------------------------- 
+        */ 
+        UtilityHelper::customActivityLog( 
+            'auth', 
+            'Password reset link request failed.', 
+            null, 
+            [ 
+                'email' => $email, 
+                'reason' => __($status), 
+                'ip' => $request->ip(), 
+                'user_agent' => $request->userAgent(), 
+            ] 
+        );
 
         return back()
             ->withErrors([
@@ -87,7 +120,28 @@ class ForgotPasswordController extends Controller
             );
 
         if ($status === Password::PASSWORD_RESET) {
+            
+            $user = $this->userRepository->findByEmail(
+                $request->validated('email')
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - Password Reset Successful
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'Password reset successfully.',
+                $user,
+                [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+            
             Auth::logout();
+            
             return redirect()
                 ->route('login')
                 ->with(
@@ -95,6 +149,23 @@ class ForgotPasswordController extends Controller
                     'Your password has been reset successfully. You can now login.'
                 );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log - Password Reset Failed
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'auth',
+            'Password reset failed.',
+            null,
+            [
+                'email' => $request->validated('email'),
+                'reason' => __($status),
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
 
         return back()
             ->withErrors([

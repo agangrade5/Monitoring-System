@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\UtilityHelper;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\View\View;
@@ -56,6 +57,22 @@ class UserController extends Controller
             $request->user(),
             $request->validated()
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'user',
+            'Profile updated successfully.',
+            $user,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
+
         return back()->with(
             'success',
             'Profile updated successfully.'
@@ -75,6 +92,21 @@ class UserController extends Controller
         $this->userRepository->updatePassword(
             $request->user(),
             $request->validated('password')
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'auth',
+            'Password changed successfully.',
+            $user,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
         );
 
         return response()->json([
