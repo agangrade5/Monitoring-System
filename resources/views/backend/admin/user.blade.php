@@ -99,11 +99,11 @@
 
                                             <!-- Actions -->
                                             <td class="text-end pe-4">
-                                                <div class="d-flex justify-content-end gap-2">
-                                                    {{-- Edit Button --}}
+                                             <div class="d-inline-flex align-items-center gap-1">
+                                                        {{-- Edit Button --}}
                                                     <button 
                                                         type="button" 
-                                                        class="btn btn-light btn-sm text-primary p-2 rounded-circle edit-user-btn" 
+                                                        class="btn btn-outline-primary btn-sm trigger-btn edit-user-btn text-white bg-primary" 
                                                         data-id="{{ $user['id'] }}"
                                                         data-name="{{ $user['name'] }}"
                                                         data-email="{{ $user['email'] }}"
@@ -125,7 +125,7 @@
 
                                                         <button
                                                             type="submit"
-                                                            class="btn btn-light btn-sm text-danger p-2 rounded-circle"
+                                                            class="btn btn-outline-danger btn-sm trigger-btn edit-user-btn text-white bg-danger"
                                                             title="Delete User"
                                                         >
                                                             <i class="bi bi-trash3"></i>

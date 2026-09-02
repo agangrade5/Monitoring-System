@@ -5,20 +5,19 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\MonitorRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Rules\{NoScripts, ValidEmailDomain, ValidUrl, ValidMobile};
-use App\Jobs\CheckUptimeJob;
-use App\Jobs\CheckSslCertificateJob;
-use App\Jobs\CheckPhpVersionJob;
-use App\Jobs\CheckDomainExpiryJob;
-use App\Jobs\CheckSecurityHeadersJob;
+use App\Services\MonitorService;
+
 class MonitorController extends Controller
 {
 /**
- * Constructor to inject the Monitor Repository.
+ * Constructor to inject the Monitor Repository and Monitor Service.
  *
  * @param MonitorRepositoryInterface $monitorRepository
+ * @param MonitorService $monitorService
  */
     public function __construct(
-        protected MonitorRepositoryInterface $monitorRepository
+        protected MonitorRepositoryInterface $monitorRepository,
+        protected MonitorService $monitorService
     ) {}
 
 /**
@@ -122,13 +121,10 @@ class MonitorController extends Controller
         }
 
         /*
-        * Dispatch jobs to check uptime, ssl certificate, php version and domain expiry
+        * Run all background monitor health checks via Service layer
         */
-        CheckUptimeJob::dispatchSync($monitor->id);
-        CheckSslCertificateJob::dispatchSync($monitor->id);
-        CheckPhpVersionJob::dispatchSync($monitor->id);
-        CheckDomainExpiryJob::dispatchSync($monitor->id);
-        CheckSecurityHeadersJob ::dispatchSync($monitor->id);
+        $this->monitorService->runAllChecks($monitor->id);
+
         /*
         * Redirect to index page with success message
         */
@@ -210,13 +206,10 @@ class MonitorController extends Controller
 
         // Run checks after update
         /*
-        * Dispatch jobs to check uptime, ssl certificate, php version and domain expiry
+        * Run all background monitor health checks via Service layer
         */
-        CheckUptimeJob::dispatchSync($id);
-        CheckSslCertificateJob::dispatchSync($id);
-        CheckPhpVersionJob::dispatchSync($id);
-        CheckDomainExpiryJob::dispatchSync($id);
-        CheckSecurityHeadersJob ::dispatchSync($id);
+        $this->monitorService->runAllChecks($id);
+
         /*
         * Redirect to index page with success message
         */
@@ -294,11 +287,7 @@ class MonitorController extends Controller
         }
 
         try {
-            CheckUptimeJob::dispatchSync($id);
-            CheckSslCertificateJob::dispatchSync($id);
-            CheckPhpVersionJob::dispatchSync($id);
-            CheckDomainExpiryJob::dispatchSync($id);
-            CheckSecurityHeadersJob::dispatchSync($id);
+            $this->monitorService->runAllChecks($id);
 
             $message = "Website checks triggered and updated successfully for {$monitor->name}.";
 
@@ -326,5 +315,30 @@ class MonitorController extends Controller
                 ->back()
                 ->with('error', $errorMsg);
         }
+    }
+
+    /**
+     * Send a test notification email for a specific monitor.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function sendTestNotification(Request $request, int $id)
+    {
+        $result = $this->monitorService->sendTestNotification($id, auth()->user());
+
+        if (!$result['success']) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json($result, $result['code'] ?? 400);
+            }
+            return redirect()->back()->with('error', $result['message']);
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json($result);
+        }
+
+        return redirect()->back()->with('success', $result['message']);
     }
 }

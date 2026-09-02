@@ -29,12 +29,10 @@
                 <div class="small-box text-bg-primary">
                   <div class="inner">
                     <h3>12 / 12</h3>
-                    <p>Monitored Nodes</p>
+                    <p>Active Monitors</p>
                   </div>
                   <i class="bi bi-hdd-network small-box-icon"></i>
-                  <a href="#" class="small-box-footer link-light link-underline-opacity-0">
-                    View Network Map <i class="bi bi-arrow-right-short ms-1"></i>
-                  </a>
+                 
                 </div>
               </div>
 
@@ -42,13 +40,11 @@
               <div class="col-lg-3 col-sm-6">
                 <div class="small-box text-bg-success">
                   <div class="inner">
-                    <h3>24.5<sup class="fs-5">%</sup></h3>
-                    <p>Average CPU Load</p>
+                    <h3>24</h3>
+                    <p>All Users</p>
                   </div>
-                  <i class="bi bi-cpu small-box-icon"></i>
-                  <a href="#" class="small-box-footer link-light link-underline-opacity-0">
-                    View CPU Metrics <i class="bi bi-arrow-right-short ms-1"></i>
-                  </a>
+                  <i class="bi bi-users small-box-icon"></i>
+                  
                 </div>
               </div>
 
@@ -56,13 +52,11 @@
               <div class="col-lg-3 col-sm-6">
                 <div class="small-box text-bg-warning">
                   <div class="inner">
-                    <h3>142.8<sup class="fs-5">Mbps</sup></h3>
-                    <p>Network Throughput</p>
+                    <h3>142</h3>
+                    <p>Down Incidents</p>
                   </div>
                   <i class="bi bi-speedometer2 small-box-icon"></i>
-                  <a href="#" class="small-box-footer link-dark link-underline-opacity-0">
-                    Analyze Bandwidth <i class="bi bi-arrow-right-short ms-1"></i>
-                  </a>
+                 
                 </div>
               </div>
 
@@ -74,9 +68,7 @@
                     <p>Triggered Alerts</p>
                   </div>
                   <i class="bi bi-exclamation-triangle small-box-icon"></i>
-                  <a href="#" class="small-box-footer link-light link-underline-opacity-0">
-                    Incident Center <i class="bi bi-arrow-right-short ms-1"></i>
-                  </a>
+                 
                 </div>
               </div>
         </div>

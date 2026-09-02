@@ -124,7 +124,7 @@
                                             <i class="bi bi-check-circle-fill"></i> Valid 
                                         </span>
                                     @elseif($monitor->ssl_status === 'warning')
-                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle d-inline-flex align-items-center gap-1">
+                                        <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
                                             <i class="bi bi-exclamation-triangle-fill"></i> Warning
                                         </span>
                                     @elseif($monitor->ssl_status === 'expired')
@@ -176,7 +176,7 @@
                                             <i class="bi bi-check-circle-fill"></i> {{ $monitor->domain_status }} 
                                         </span>
                                     @elseif($monitor->domain_status === 'warning')
-                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle d-inline-flex align-items-center gap-1">
+                                        <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
                                             <i class="bi bi-exclamation-triangle-fill"></i> {{ $monitor->domain_status }}
                                         </span>
                                     @elseif($monitor->domain_status === 'expired')
@@ -224,7 +224,7 @@
                                             {{-- View Details --}}
                                             <a
                                                 href="{{ route('monitor.show', $monitor->id) }}"
-                                                class="btn btn-outline-primary btn-sm"
+                                                class="btn btn-outline-secondary btn-sm text-white bg-secondary"
                                                 title="View Health Overview"
                                             >
                                                 <i class="bi bi-eye"></i>
@@ -233,7 +233,7 @@
                                             {{-- Trigger check --}}
                                             <form action="{{ route('monitor.check', $monitor->id) }}" method="POST" class="d-inline trigger-check-form">
                                                 @csrf
-                                                <button type="submit" class="btn btn-outline-secondary btn-sm trigger-btn" title="Trigger Check">
+                                                <button type="submit" class="btn btn-outline-success  btn-sm trigger-btn text-white bg-success " title="Trigger Check">
                                                     <i class="bi bi-arrow-clockwise icon-idle"></i>
                                                     <span class="spinner-border spinner-border-sm icon-spin d-none" role="status" aria-hidden="true" style="width: 0.85rem; height: 0.85rem; border-width: 0.15em;"></span>
                                                 </button>
@@ -241,7 +241,7 @@
                                             {{-- Edit --}}
                                             <a
                                                 href="{{ route('monitor.edit', $monitor->id) }}"
-                                                class="btn btn-outline-secondary btn-sm"
+                                                class="btn btn-outline-primary btn-sm text-white bg-primary"
                                                 title="Edit"
                                             >
                                                 <i class="bi bi-pencil"></i>
@@ -258,7 +258,7 @@
                                                 @method('DELETE')
                                                 <button
                                                     type="submit"
-                                                    class="btn btn-outline-danger btn-sm"
+                                                    class="btn btn-outline-danger btn-sm text-white bg-danger"
                                                     title="Delete"
                                                 >
                                                     <i class="bi bi-trash"></i>

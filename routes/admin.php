@@ -206,6 +206,10 @@ Route::get('/profile', [
                 MonitorController::class,
                 'triggerCheck'
             ])->name('monitor.check');
+            Route::post('/monitor/{id}/test-notification', [
+                MonitorController::class,
+                'sendTestNotification'
+            ])->name('monitor.testNotification');
         });
 
     /*

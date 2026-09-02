@@ -38,15 +38,12 @@
 
             {{-- Action Buttons --}}
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                {{-- Trigger Check Button (AJAX) --}}
-                <form action="{{ route('monitor.check', $monitor->id) }}" method="POST" class="d-inline trigger-check-form">
-                    @csrf
-                    <button type="submit" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 trigger-btn" title="Trigger Instant Check">
-                        <i class="bi bi-arrow-clockwise icon-idle"></i>
-                        <span class="spinner-border spinner-border-sm icon-spin d-none" role="status" aria-hidden="true" style="width: 0.85rem; height: 0.85rem; border-width: 0.15em;"></span>
-                        <span>Test Check</span>
-                    </button>
-                </form>
+                {{-- Test Notification Modal Trigger --}}
+                <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#testNotificationModal" title="Send Test Notification">
+                    <i class="bi bi-bell"></i> <span>Test Notification</span>
+                </button>
+
+               
 
                 {{-- Pause/Resume Toggle --}}
                 <form action="{{ route('monitor.toggle', $monitor->id) }}" method="POST" class="d-inline">
@@ -67,13 +64,7 @@
                 </a>
 
                 {{-- Delete --}}
-                <form action="{{ route('monitor.destroy', $monitor->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this monitor?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete Monitor">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </form>
+                
             </div>
         </div>
     </div>
@@ -441,6 +432,78 @@
     </div>
 </div>
 
+{{-- Test Notification Modal --}}
+@php
+    $userName = auth()->user()->name ?? 'User';
+    $nameParts = preg_split('/\s+/', trim($userName));
+    $initials = '';
+    if (count($nameParts) >= 2) {
+        $initials = strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[1], 0, 1));
+    } else {
+        $initials = strtoupper(substr($userName, 0, 2));
+    }
+    $recipientEmail = $monitor->email ?: (auth()->user()->email ?? 'No email configured');
+@endphp
+
+<div class="modal fade" id="testNotificationModal" tabindex="-1" aria-labelledby="testNotificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content rounded-4 border shadow-lg">
+            <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="modal-title fw-bold text-body-emphasis mb-0 fs-5" id="testNotificationModalLabel">
+                    Send test notifications.
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body px-4 pt-3 pb-4">
+                <form id="formSendTestNotification" action="{{ route('monitor.testNotification', $monitor->id) }}" method="POST">
+                    @csrf
+
+                    {{-- Attached people and integrations section --}}
+                    <div class="text-secondary small fw-semibold mb-2" style="font-size: 0.85rem;">
+                        Attached people and integrations
+                    </div>
+
+                    {{-- User contact card --}}
+                    <div class="d-flex align-items-center justify-content-between p-2.5 rounded-3 bg-body-tertiary border mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-dark text-white fw-bold d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 0.875rem; letter-spacing: -0.5px;">
+                                {{ $initials }}.
+                            </div>
+                            <div>
+                                <div class="fw-bold text-body-emphasis small">{{ $userName }}</div>
+                                <small class="text-muted" style="font-size: 0.75rem;">{{ $recipientEmail }}</small>
+                            </div>
+                        </div>
+                        <div class="me-2 text-success" title="Email Alert Channel">
+                            <i class="bi bi-envelope-at fs-5"></i>
+                        </div>
+                    </div>
+
+                    {{-- Alert contact note --}}
+                    <div class="mb-4">
+                        <p class="small text-muted mb-1" style="font-size: 0.825rem;">
+                            Can't see your alert contact here? 
+                            <a href="{{ route('monitor.edit', $monitor->id) }}" class="text-success text-decoration-none fw-semibold">Attach it here</a>
+                        </p>
+                      
+                    </div>
+
+                   
+                   
+
+                    {{-- Submit button --}}
+                    <button type="submit" class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2 fw-semibold rounded-3" id="btnSubmitTestNotification">
+                        <i class="bi bi-bell icon-bell"></i>
+                        <span class="spinner-border spinner-border-sm icon-spin d-none" role="status" aria-hidden="true"></span>
+                        <span class="btn-text">Send test notifications</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 {{-- ApexCharts Script --}}
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce("https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js") !!}
@@ -604,6 +667,64 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
+
+    // 3. Test Notification Modal AJAX Submission
+    const testNotificationForm = document.getElementById('formSendTestNotification');
+    if (testNotificationForm) {
+        testNotificationForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btnSubmitTestNotification');
+            const iconBell = btn.querySelector('.icon-bell');
+            const iconSpin = btn.querySelector('.icon-spin');
+            const btnText = btn.querySelector('.btn-text');
+
+            if (iconBell) iconBell.classList.add('d-none');
+            if (iconSpin) iconSpin.classList.remove('d-none');
+            if (btnText) btnText.textContent = 'Sending notification...';
+            btn.disabled = true;
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(async response => {
+                const data = await response.json().catch(() => ({}));
+                return { ok: response.ok, data };
+            })
+            .then(({ ok, data }) => {
+                if (ok && data.success) {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success(data.message || 'Test notification sent successfully.');
+                    }
+                    const modalEl = document.getElementById('testNotificationModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                } else {
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(data.message || 'Failed to send test notification.');
+                    }
+                }
+            })
+            .catch(() => {
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('An unexpected error occurred while sending notification.');
+                }
+            })
+            .finally(() => {
+                if (iconBell) iconBell.classList.remove('d-none');
+                if (iconSpin) iconSpin.classList.add('d-none');
+                if (btnText) btnText.textContent = 'Send test notifications';
+                btn.disabled = false;
+            });
+        });
+    }
 });
 </script>
 @endpush
