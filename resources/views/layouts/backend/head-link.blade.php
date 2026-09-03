@@ -1,5 +1,4 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="icon" type="image/png" href="{{ asset('assets/images/backend/logo/monitoring-48.png') }}" />
 <title> @yield('title') | {{ config('app.name') }} </title>
 <!--begin::Theme Init (prevents flash of incorrect theme on load, #6043)-->
 <script nonce="{{ csp_nonce('script') }}">
@@ -67,11 +66,19 @@
 <meta name="title" content="@yield('title') | {{ config('app.name') }}" />
 <!--end::Primary Meta Tags-->
 
+<!--begin::Csrf Token-->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<!--end::Csrf Token-->
+
 <!--begin::Accessibility Features-->
 <!-- Skip links will be dynamically added by accessibility.js -->
 <meta name="supported-color-schemes" content="light dark" />
 <link rel="preload" href="{{ asset('assets/css/backend/admin.css') }}" as="style" />
 <!--end::Accessibility Features-->
+
+<!--begin::Favicon-->
+<link rel="icon" type="image/png" href="{{ asset('assets/images/backend/logo/monitoring-48.png') }}" />
+<!--end::Favicon-->
 
 <!--begin::Fonts-->
 <link

@@ -51,4 +51,6 @@
         </div>
     </div>
 </div>
+@push('scripts')
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/image-cropper.js')) !!}
+@endpush

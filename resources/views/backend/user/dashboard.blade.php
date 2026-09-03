@@ -71,20 +71,137 @@
            
         </div>
 
-        <!-- Row: Recent Outages & Activity Logs (2 Columns) -->
-        <div class="row g-4 mb-4">
-            <!-- Left Column: Recent Outages & Downtime Alerts -->
+        <!-- Monitors List Card -->
+        <div class="row">
+            <!-- Recent System logs -->
             <div class="col-lg-6 col-12">
-                <div class="card border-0 shadow-sm rounded-4 h-100 mb-0">
-                    <div class="card-header border-0 py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="btn btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(220, 53, 69, 0.12);">
-                                <i class="bi bi-exclamation-triangle-fill text-danger"></i>
-                            </span>
-                            <div>
-                                <h6 class="mb-0 fw-bold text-body-emphasis">Recent Outages & Incidents</h6>
-                                <small class="text-muted">Endpoints with recent downtime or critical status</small>
-                            </div>
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0 fw-bold">Recent System Logs</h5>
+                            <small class="text-muted">Latest server updates</small>
+                        </div>
+                        @php
+                            $activityLogsRoute = auth()->user()->hasRole('admin')
+                                ? route('admin.activity-logs.index')
+                                : route('activity-logs.index');
+                        @endphp
+                        <a href="{{ $activityLogsRoute }}" class="btn btn-outline-primary btn-sm px-3">View All Logs</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th width="60">#</th>
+                                        <th>User</th>
+                                        <th>Activity</th>
+                                        <th>Event</th>
+                                        <th>Date</th>
+                                        <th width="80">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($recentActivityLogs as $log)
+
+                                        @php
+                                            $eventClass = match($log->event) {
+                                                'created' => 'success',
+                                                'updated' => 'primary',
+                                                'deleted' => 'danger',
+                                                'login' => 'info',
+                                                'logout' => 'warning',
+                                                default => 'secondary',
+                                            };
+                                            $eventIcon = match($log->event) {
+                                                'created' => 'bi-plus-circle',
+                                                'updated' => 'bi-pencil-square',
+                                                'deleted' => 'bi-trash',
+                                                'login' => 'bi-box-arrow-in-right',
+                                                'logout' => 'bi-box-arrow-right',
+                                                default => 'bi-activity',
+                                            };
+                                        @endphp
+                                        <tr>
+                                            <td>
+                                                {{ $log->id }}
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0 me-2">
+                                                        <img
+                                                            src="{{ $log->causer?->image
+                                                                ? Storage::disk(config('filesystems.default'))->url($log->causer->image)
+                                                                : asset('assets/images/backend/user2-160x160.jpg') }}"
+                                                            alt="{{ $log->causer?->name ?? 'System' }}"
+                                                            class="img-size-32 rounded-circle"
+                                                        >
+                                                    </div>
+
+                                                    <div class="flex-grow-1">
+                                                        <div class="small fw-semibold">
+                                                            {{ $log->causer?->name ?? 'System' }}
+                                                        </div>
+
+                                                        @if($log->causer?->email)
+                                                            <div class="small text-muted">
+                                                                {{ $log->causer->email }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {{ $log->description }}
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ $eventClass }}-subtle text-{{ $eventClass }}"
+                                                >
+                                                    <i class="bi {{ $eventIcon }} me-1"></i>
+
+                                                    {{ ucfirst($log->event ?? 'activity') }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {{ \App\Helpers\UtilityHelper::formatDateTime($log->created_at) }}
+                                            </td>
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-primary view-activity-log"
+                                                    data-url="{{ auth()->user()->hasRole('admin')
+                                                        ? route('admin.activity-logs.show', $log->id)
+                                                        : route('activity-logs.show', $log->id) }}"
+                                                    title="View"
+                                                >
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td
+                                                colspan="6"
+                                                class="text-center py-4 text-muted"
+                                            >
+                                                No activity logs found.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-12">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0 fw-bold">My Active Endpoints</h5>
+                            <small class="text-muted">Currently active HTTP endpoints being monitored</small>
                         </div>
                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
                             {{ $downMonitors->count() }} Outages
@@ -231,4 +348,14 @@
        
     </div>
 </div>
+<<<<<<< HEAD
+=======
+
+{{-- Activity View Modal --}}
+@include('backend.activity-logs.view-modal')
+>>>>>>> 3776bb96d58a0da1399ce299f38c50432b8ccbc9
 @endsection
+
+@push('scripts')
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/activity-logs.js')) !!}
+@endpush

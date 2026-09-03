@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Repositories\Contracts\{
+    ActivityLogRepositoryInterface,
     UserRepositoryInterface,
     SettingRepositoryInterface,
     MonitorRepositoryInterface,
@@ -10,6 +11,7 @@ use App\Repositories\Contracts\{
 };
 
 use App\Repositories\{
+    ActivityLogRepository,
     UserRepository,
     SettingRepository,
     MonitorRepository,
@@ -50,6 +52,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             DashboardRepositoryInterface::class,
             DashboardRepository::class
+        );
+        // Activity Repository Binding
+        $this->app->bind(
+            ActivityLogRepositoryInterface::class,
+            ActivityLogRepository::class
         );
     }
 

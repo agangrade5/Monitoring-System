@@ -8,6 +8,12 @@
       "admin.css"
     ]
   },
+  "resources/js/backend/activity-logs.js": {
+    "file": "js/backend/activity-logs.js",
+    "name": "activity-logs",
+    "src": "resources/js/backend/activity-logs.js",
+    "isEntry": true
+  },
   "resources/js/backend/admin.js": {
     "file": "js/backend/admin.js",
     "name": "admin",

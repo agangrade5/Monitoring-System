@@ -18,6 +18,7 @@
             <form method="POST" action="{{ route('login.submit') }}" id="login-form" class="needs-validation" novalidate>
                 @csrf
 
+                <input type="hidden" name="timezone" id="timezone">
                 <!-- Email field -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold text-secondary-emphasis small" for="email">Email Address</label>

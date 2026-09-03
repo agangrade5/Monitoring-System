@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone_number')->nullable()->after('email');
             $table->string('image')->nullable()->after('phone_number');
             $table->boolean('is_active')->default(1)->after('image');
+            $table->string('timezone', 100)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

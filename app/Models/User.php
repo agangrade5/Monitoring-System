@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Notifications\CustomResetPasswordNotification;
 
-#[Fillable(['name', 'email', 'password', 'image', 'is_active'])]
+#[Fillable(['name', 'email', 'timezone', 'password', 'image', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {

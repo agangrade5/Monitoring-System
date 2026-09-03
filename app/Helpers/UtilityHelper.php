@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Activity;
 
@@ -46,5 +47,32 @@ class UtilityHelper
         }
 
         return $activity->log($description);
+    }
+
+    /**
+     * Format date time.
+     *
+     * @param mixed $dateTime
+     * @param ?string $format
+     *
+     * @return string
+     */
+    public static function formatDateTime(
+        mixed $dateTime,
+        ?string $format = null
+    ): string {
+        if (empty($dateTime)) {
+            return '';
+        }
+
+        $format ??= config('constants.date_format.admin_display');
+
+        $timezone = auth()->user()?->timezone
+            ?? session('user_timezone')
+            ?? config('app.timezone', 'UTC');
+
+        return Carbon::parse($dateTime)
+            ->timezone($timezone)
+            ->format($format);
     }
 }

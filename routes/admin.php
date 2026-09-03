@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\Auth\{
     ForgotPasswordController
 };
 use App\Http\Controllers\Backend\{
+    ActivityLogController,
     DashboardController,
     UserController,
     SettingController,
@@ -124,26 +125,30 @@ Route::middleware('auth')->group(function () {
                 UserController::class,
                 'allUsers',
             ])->name('users');
-            
-            Route::post('/users/update/{id}', [
-                UserController::class, 
-                'updateUser',
-            ])->name('update');
 
-            Route::get('/create', [ 
-                UserController::class,
-                'createUser',
-            ])->name('create');
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Logs
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/activity-logs', [
+                ActivityLogController::class,
+                'index',
+            ])->name('activity-logs.index');
 
-            Route::post('/create', [ 
-                UserController::class, 
-                'storeUser' ,
-            ])->name('store') ;
+            Route::get('/activity-logs/{id}', [
+                ActivityLogController::class,
+                'show',
+            ])->name('activity-logs.show');
 
-            Route::delete('/destroy/{id}', [
-                UserController::class, 
-               'destroyUser',
-            ])->name('destroy');
+            Route::delete('/activity-logs/{id}', [
+                ActivityLogController::class,
+                'destroy',
+            ])
+                ->middleware('role:admin')
+                ->name('activity-logs.destroy');
+
+
         });
 
     /*
@@ -244,6 +249,28 @@ Route::middleware('auth')->group(function () {
                 MonitorController::class,
                 'sendTestNotification'
             ])->name('monitor.testNotification');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Logs
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/activity-logs', [
+                ActivityLogController::class,
+                'index',
+            ])->name('activity-logs.index');
+
+            Route::get('/activity-logs/{id}', [
+                ActivityLogController::class,
+                'show',
+            ])->name('activity-logs.show');
+
+            Route::delete('/activity-logs/{id}', [
+                ActivityLogController::class,
+                'destroy',
+            ])
+                ->middleware('role:admin')
+                ->name('activity-logs.destroy');
         });
 
     /*
