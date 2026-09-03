@@ -68,7 +68,7 @@
                         />
                         <p>
                             {{ $user->name }}
-                            <small>Member since {{ $user->created_at->format('M. Y') }}</small>
+                            <small>Member since {{ \App\Helpers\UtilityHelper::formatDateTime($user->created_at, 'M. Y') }}</small>
                         </p>
                     </li>
                     <!--end::User Image-->

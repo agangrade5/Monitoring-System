@@ -84,8 +84,10 @@
 
                                             <!-- Created Date -->
                                             <td>
-                                                <span class="text-secondary small d-block"><i class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::parse($user['created_at'])->format('d M Y') }}</span>
-                                                <small class="text-muted">{{ \Carbon\Carbon::parse($user['created_at'])->format('h:i A') }}</small>
+                                                <span class="text-secondary small d-block"><i class="bi bi-clock me-1"></i>
+                                                    {{ \App\Helpers\UtilityHelper::formatDateTime($user['created_at'], 'd M Y') }}
+                                                </span>
+                                                <small class="text-muted">{{ \App\Helpers\UtilityHelper::formatDateTime($user['created_at'], 'h:i:s A') }}</small>
                                             </td>
 
                                             <!-- Status badge -->

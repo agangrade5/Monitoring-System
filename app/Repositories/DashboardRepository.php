@@ -25,8 +25,8 @@ class DashboardRepository implements DashboardRepositoryInterface
         $data['activeMonitorsCount'] = $monitors->where('is_active', true)->count();
         $data['totalMonitorsCount'] = $monitors->count();
 
-        $data['totalUsersCount'] = User::where('is_deleted', false)->count();
-        $data['activeUsersCount'] = User::where('is_deleted', false)->where('is_active', true)->count();
+        $data['totalUsersCount'] = User::count();
+        $data['activeUsersCount'] = User::where('is_active', true)->count();
 
         $validResponseTimes = $monitors->filter(fn($m) => !empty($m->response_time) && $m->response_time > 0);
         $data['avgResponseTime'] = $validResponseTimes->isNotEmpty()

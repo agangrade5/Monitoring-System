@@ -126,6 +126,32 @@ Route::middleware('auth')->group(function () {
                 'allUsers',
             ])->name('users');
 
+           
+
+            Route::post('/users', [
+                UserController::class,
+                'storeUser',
+            ])->name('store');
+
+            Route::get('/users/{id}/edit', [
+                UserController::class,
+                'editUser',
+            ])->name('edit');
+
+            Route::post('/users/update/{id}', [
+                UserController::class,
+                'updateUser',
+            ])->name('update');   
+           
+          
+
+            Route::delete('/users/{id}', [
+                UserController::class,
+                'destroyUser',  
+            ])->name('destroy');
+
+            
+
             /*
             |--------------------------------------------------------------------------
             | Activity Logs

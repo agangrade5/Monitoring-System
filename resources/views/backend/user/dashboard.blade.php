@@ -277,72 +277,8 @@
                 </div>
             </div>
 
-            <!-- Right Column: User Activity Logs -->
-            <div class="col-lg-6 col-12">
-                <div class="card border-0 shadow-sm rounded-4 h-100 mb-0">
-                    <div class="card-header border-0 py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="btn btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: rgba(13, 110, 253, 0.12);">
-                                <i class="bi bi-activity text-primary"></i>
-                            </span>
-                            <div>
-                                <h6 class="mb-0 fw-bold text-body-emphasis">Recent User Activity</h6>
-                                <small class="text-muted">Live audit trail of actions performed on your monitors</small>
-                            </div>
-                        </div>
-                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">
-                            Live Feed
-                        </span>
-                    </div>
-                    <div class="card-body p-3">
-                        @if($recentActivities->isNotEmpty())
-                            <div class="list-group list-group-flush">
-                                @foreach($recentActivities as $activity)
-                                    <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-bottom">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="rounded-circle bg-body-secondary d-flex align-items-center justify-content-center border" style="width: 32px; height: 32px;">
-                                                <i class="bi bi-clock-history text-primary" style="font-size: 0.85rem;"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-semibold text-body-emphasis small">{{ $activity->description }}</div>
-                                                <small class="text-muted">By {{ $activity->causer->name ?? auth()->user()->name }}</small>
-                                            </div>
-                                        </div>
-                                        <div class="text-muted small text-nowrap">
-                                            {{ $activity->created_at->diffForHumans() }}
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            {{-- Dynamic fallback feed based on recent monitor updates --}}
-                            <div class="list-group list-group-flush">
-                                @forelse($monitors->take(5) as $m)
-                                    <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-bottom">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="rounded-circle bg-body-secondary d-flex align-items-center justify-content-center border" style="width: 32px; height: 32px;">
-                                                <i class="bi bi-check2-circle text-success" style="font-size: 0.85rem;"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-semibold text-body-emphasis small">Monitoring check verified: {{ $m->name }}</div>
-                                                <small class="text-muted">Endpoint response: {{ $m->response_time ?? 245 }} ms</small>
-                                            </div>
-                                        </div>
-                                        <div class="text-muted small text-nowrap">
-                                            {{ $m->last_checked_at ? $m->last_checked_at->diffForHumans() : $m->updated_at->diffForHumans() }}
-                                        </div>
-                                    </div>
-                                @empty
-                                    <div class="text-center py-4 text-muted">
-                                        <i class="bi bi-clock-history fs-2 d-block mb-2 text-muted"></i>
-                                        <p class="small mb-0">No recent activities recorded yet.</p>
-                                    </div>
-                                @endforelse
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
+        
+           
         </div>
 
         <!-- Monitors List Card -->

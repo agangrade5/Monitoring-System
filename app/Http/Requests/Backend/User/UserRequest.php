@@ -33,12 +33,12 @@ class UserRequest extends FormRequest
                 new NoScripts(),
             ],
 
-            'email' => [
+           'email' => [
                 'required',
                 'string',
                 'email',
                 'max:50',
-                Rule::unique('users', 'email')->ignore($userId)->where(fn ($query) => $query->where('is_deleted', false)),
+                Rule::unique('users', 'email')->ignore($userId),
                 new NoScripts(),
                 new ValidEmailDomain(),
             ],
