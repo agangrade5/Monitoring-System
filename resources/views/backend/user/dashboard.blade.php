@@ -83,7 +83,130 @@
 
         <!-- Monitors List Card -->
         <div class="row">
-            <div class="col-12">
+            <!-- Recent System logs -->
+            <div class="col-lg-6 col-12">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0 fw-bold">Recent System Logs</h5>
+                            <small class="text-muted">Latest server updates</small>
+                        </div>
+                        @php
+                            $activityLogsRoute = auth()->user()->hasRole('admin')
+                                ? route('admin.activity-logs.index')
+                                : route('activity-logs.index');
+                        @endphp
+                        <a href="{{ $activityLogsRoute }}" class="btn btn-outline-primary btn-sm px-3">View All Logs</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th width="60">#</th>
+                                        <th>User</th>
+                                        <th>Activity</th>
+                                        <th>Event</th>
+                                        <th>Date</th>
+                                        <th width="80">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($recentActivityLogs as $log)
+
+                                        @php
+                                            $eventClass = match($log->event) {
+                                                'created' => 'success',
+                                                'updated' => 'primary',
+                                                'deleted' => 'danger',
+                                                'login' => 'info',
+                                                'logout' => 'warning',
+                                                default => 'secondary',
+                                            };
+                                            $eventIcon = match($log->event) {
+                                                'created' => 'bi-plus-circle',
+                                                'updated' => 'bi-pencil-square',
+                                                'deleted' => 'bi-trash',
+                                                'login' => 'bi-box-arrow-in-right',
+                                                'logout' => 'bi-box-arrow-right',
+                                                default => 'bi-activity',
+                                            };
+                                        @endphp
+                                        <tr>
+                                            <td>
+                                                {{ $log->id }}
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0 me-2">
+                                                        <img
+                                                            src="{{ $log->causer?->image
+                                                                ? Storage::disk(config('filesystems.default'))->url($log->causer->image)
+                                                                : asset('assets/images/backend/user2-160x160.jpg') }}"
+                                                            alt="{{ $log->causer?->name ?? 'System' }}"
+                                                            class="img-size-32 rounded-circle"
+                                                        >
+                                                    </div>
+
+                                                    <div class="flex-grow-1">
+                                                        <div class="small fw-semibold">
+                                                            {{ $log->causer?->name ?? 'System' }}
+                                                        </div>
+
+                                                        @if($log->causer?->email)
+                                                            <div class="small text-muted">
+                                                                {{ $log->causer->email }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {{ $log->description }}
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ $eventClass }}-subtle text-{{ $eventClass }}"
+                                                >
+                                                    <i class="bi {{ $eventIcon }} me-1"></i>
+
+                                                    {{ ucfirst($log->event ?? 'activity') }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {{ \App\Helpers\UtilityHelper::formatDateTime($log->created_at) }}
+                                            </td>
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-primary view-activity-log"
+                                                    data-url="{{ auth()->user()->hasRole('admin')
+                                                        ? route('admin.activity-logs.show', $log->id)
+                                                        : route('activity-logs.show', $log->id) }}"
+                                                    title="View"
+                                                >
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td
+                                                colspan="6"
+                                                class="text-center py-4 text-muted"
+                                            >
+                                                No activity logs found.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-12">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
@@ -178,4 +301,10 @@
     </div>
 </div>
 
+{{-- Activity View Modal --}}
+@include('backend.activity-logs.view-modal')
 @endsection
+
+@push('scripts')
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/activity-logs.js')) !!}
+@endpush
