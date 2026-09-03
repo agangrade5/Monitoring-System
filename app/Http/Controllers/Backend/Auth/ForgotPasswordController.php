@@ -39,6 +39,10 @@ class ForgotPasswordController extends Controller
             $request->only('email')
         );
 
+        $user = $this->userRepository->findByEmail(
+            $request->validated('email')
+        );
+
         if ($status === Password::RESET_LINK_SENT) {
             /*
             |--------------------------------------------------------------------------
@@ -48,7 +52,7 @@ class ForgotPasswordController extends Controller
             UtilityHelper::customActivityLog(
                 'auth',
                 'Password reset link sent successfully.',
-                null,
+                $user,
                 [
                     'email' => $request->email,
                     'ip' => $request->ip(),
@@ -61,21 +65,21 @@ class ForgotPasswordController extends Controller
             );
         }
 
-        /* 
-        |-------------------------------------------------------------------------- 
-        | Activity Log - Reset Link Failed 
-        |-------------------------------------------------------------------------- 
-        */ 
-        UtilityHelper::customActivityLog( 
-            'auth', 
-            'Password reset link request failed.', 
-            null, 
-            [ 
-                'email' => $email, 
-                'reason' => __($status), 
-                'ip' => $request->ip(), 
-                'user_agent' => $request->userAgent(), 
-            ] 
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log - Reset Link Failed
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'auth',
+            'Password reset link request failed.',
+            $user,
+            [
+                'email' => $request->email,
+                'reason' => __($status),
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
         );
 
         return back()
@@ -120,7 +124,7 @@ class ForgotPasswordController extends Controller
             );
 
         if ($status === Password::PASSWORD_RESET) {
-            
+
             $user = $this->userRepository->findByEmail(
                 $request->validated('email')
             );
@@ -139,9 +143,9 @@ class ForgotPasswordController extends Controller
                     'user_agent' => $request->userAgent(),
                 ]
             );
-            
+
             Auth::logout();
-            
+
             return redirect()
                 ->route('login')
                 ->with(
