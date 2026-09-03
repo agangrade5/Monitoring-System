@@ -181,7 +181,7 @@ class MonitorController extends Controller
      *
      * @return RedirectResponse Redirects to the index page with a success message.
      */
-    public function destroy(int $id)
+    public function destroy(int $id, Request $request)
     {
         $monitor = $this->monitorRepository->findById($id);
         abort_if(!$monitor, 404);

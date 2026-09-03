@@ -26,6 +26,7 @@ class MonitorRepository implements MonitorRepositoryInterface
     public function getAll(?string $search = null, ?int $userId = null): LengthAwarePaginator
     {
         return $this->model
+            ->with('user')
             ->when($userId, function ($query, $userId) {
                 $query->where('user_id', $userId);
             })
