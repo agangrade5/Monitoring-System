@@ -190,12 +190,12 @@ $(document).on('submit', 'form', function (event) {
 });
 
 // ========================================
-// Toggle Password
+// Multiple js codes
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Toggle Password
     document.addEventListener('click', (event) => {
-
         const btn = event.target.closest('.toggle-password');
 
         if (!btn) {
@@ -217,5 +217,12 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.classList.toggle('bi-eye-slash', !isPassword);
         icon.classList.toggle('bi-eye', isPassword);
     });
+
+    // Set timezone
+    const timezoneInput = document.getElementById('timezone');
+    if (timezoneInput) {
+        timezoneInput.value =
+            Intl.DateTimeFormat().resolvedOptions().timeZone;
+    }
 
 });

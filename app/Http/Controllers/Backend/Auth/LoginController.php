@@ -69,6 +69,31 @@ class LoginController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | Set timezone
+        |--------------------------------------------------------------------------
+        */
+        $timezone = $request->input('timezone');
+        $timezoneAliases = [
+            'Asia/Calcutta' => 'Asia/Kolkata',
+        ];
+        $timezone = $timezoneAliases[$timezone] ?? $timezone;
+        try {
+            new \DateTimeZone($timezone);
+
+            $user->timezone = $timezone;
+            $user->save();
+
+        } catch (\Exception $e) {
+            // Invalid timezone - keep existing timezone
+        }
+        $user->refresh();
+        session([
+            'user_timezone' => $user->timezone
+                ?? config('app.timezone', 'UTC'),
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
         | Activity Log - Loggin Success
         |--------------------------------------------------------------------------
         */

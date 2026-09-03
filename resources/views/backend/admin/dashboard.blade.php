@@ -81,7 +81,6 @@
               </div>
         </div>
 
-
         <!-- Recent Activities and Action Center Row -->
         <div class="row">
             <!-- Recent System logs -->
@@ -90,51 +89,117 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="mb-0 fw-bold">Recent System Logs</h5>
-                            <small class="text-muted">Latest server updates, user actions, and monitoring logs</small>
+                            <small class="text-muted">Latest server updates</small>
                         </div>
-                        <a href="#" class="btn btn-outline-primary btn-sm px-3">View All Logs</a>
+                        @php
+                            $activityLogsRoute = auth()->user()->hasRole('admin')
+                                ? route('admin.activity-logs.index')
+                                : route('activity-logs.index');
+                        @endphp
+                        <a href="{{ $activityLogsRoute }}" class="btn btn-outline-primary btn-sm px-3">View All Logs</a>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead>
                                     <tr>
-                                        <th class="ps-4">Timestamp</th>
-                                        <th>Log Category</th>
-                                        <th>Node Affected</th>
-                                        <th>Description</th>
-                                        <th class="text-end pe-4">Severity</th>
+                                        <th width="60">#</th>
+                                        <th>User</th>
+                                        <th>Activity</th>
+                                        <th>Event</th>
+                                        <th>Date</th>
+                                        <th width="80">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td class="ps-4 text-secondary small font-monospace">12:15:32 PM</td>
-                                        <td><span class="small fw-semibold text-primary"><i class="bi bi-person-fill-check me-1"></i>User Auth</span></td>
-                                        <td><span class="small text-muted">-</span></td>
-                                        <td class="small fw-medium">User <strong class="text-dark">admin@example.com</strong> logged in from IP 192.168.1.15</td>
-                                        <td class="text-end pe-4"><span class="badge bg-info-subtle text-info border border-info-subtle">Info</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="ps-4 text-secondary small font-monospace">12:08:14 PM</td>
-                                        <td><span class="small fw-semibold text-success"><i class="bi bi-shield-check me-1"></i>Health Check</span></td>
-                                        <td><span class="small fw-semibold">Web-Frontend-01</span></td>
-                                        <td class="small">Response latency returned to normal: <span class="text-success fw-semibold">8 ms</span></td>
-                                        <td class="text-end pe-4"><span class="badge bg-success-subtle text-success border border-success-subtle">Success</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="ps-4 text-secondary small font-monospace">11:54:20 AM</td>
-                                        <td><span class="small fw-semibold text-danger"><i class="bi bi-shield-slash me-1"></i>Incidents</span></td>
-                                        <td><span class="small fw-semibold">Primary-DB-Server</span></td>
-                                        <td class="small">High CPU consumption warning: <span class="text-danger fw-semibold">89% utilization</span></td>
-                                        <td class="text-end pe-4"><span class="badge bg-danger-subtle text-danger border border-danger-subtle">Warning</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="ps-4 text-secondary small font-monospace">11:32:05 AM</td>
-                                        <td><span class="small fw-semibold text-warning"><i class="bi bi-hdd-fill me-1"></i>Storage Capacity</span></td>
-                                        <td><span class="small fw-semibold">Auth-Service-Gateway</span></td>
-                                        <td class="small">Disk usage reached <span class="text-warning fw-semibold">78%</span> capacity limit on volume /dev/sda1</td>
-                                        <td class="text-end pe-4"><span class="badge bg-warning-subtle text-warning border border-warning-subtle">Warning</span></td>
-                                    </tr>
+                                    @forelse($recentActivityLogs as $log)
+
+                                        @php
+                                            $eventClass = match($log->event) {
+                                                'created' => 'success',
+                                                'updated' => 'primary',
+                                                'deleted' => 'danger',
+                                                'login' => 'info',
+                                                'logout' => 'warning',
+                                                default => 'secondary',
+                                            };
+                                            $eventIcon = match($log->event) {
+                                                'created' => 'bi-plus-circle',
+                                                'updated' => 'bi-pencil-square',
+                                                'deleted' => 'bi-trash',
+                                                'login' => 'bi-box-arrow-in-right',
+                                                'logout' => 'bi-box-arrow-right',
+                                                default => 'bi-activity',
+                                            };
+                                        @endphp
+                                        <tr>
+                                            <td>
+                                                {{ $log->id }}
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0 me-2">
+                                                        <img
+                                                            src="{{ $log->causer?->image
+                                                                ? Storage::disk(config('filesystems.default'))->url($log->causer->image)
+                                                                : asset('assets/images/backend/user2-160x160.jpg') }}"
+                                                            alt="{{ $log->causer?->name ?? 'System' }}"
+                                                            class="img-size-32 rounded-circle"
+                                                        >
+                                                    </div>
+
+                                                    <div class="flex-grow-1">
+                                                        <div class="small fw-semibold">
+                                                            {{ $log->causer?->name ?? 'System' }}
+                                                        </div>
+
+                                                        @if($log->causer?->email)
+                                                            <div class="small text-muted">
+                                                                {{ $log->causer->email }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {{ $log->description }}
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ $eventClass }}-subtle text-{{ $eventClass }}"
+                                                >
+                                                    <i class="bi {{ $eventIcon }} me-1"></i>
+
+                                                    {{ ucfirst($log->event ?? 'activity') }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {{ \App\Helpers\UtilityHelper::formatDateTime($log->created_at) }}
+                                            </td>
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-sm btn-outline-primary view-activity-log"
+                                                    data-url="{{ auth()->user()->hasRole('admin')
+                                                        ? route('admin.activity-logs.show', $log->id)
+                                                        : route('activity-logs.show', $log->id) }}"
+                                                    title="View"
+                                                >
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td
+                                                colspan="6"
+                                                class="text-center py-4 text-muted"
+                                            >
+                                                No activity logs found.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+
                                 </tbody>
                             </table>
                         </div>
@@ -151,14 +216,14 @@
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            <a href="/admin/users" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
+                            <a href="#" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
                                 <div>
                                     <h6 class="mb-0 fw-bold"><i class="bi bi-people-fill me-2 text-primary"></i>Manage User Accounts</h6>
                                     <small class="text-muted">Create, edit, or deactivate staff credentials</small>
                                 </div>
                                 <i class="bi bi-chevron-right text-muted"></i>
                             </a>
-                            <a href="/admin/settings" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
+                            <a href="#" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
                                 <div>
                                     <h6 class="mb-0 fw-bold"><i class="bi bi-gear-fill me-2 text-secondary"></i>System Settings</h6>
                                     <small class="text-muted">Update configuration and Change Password</small>
@@ -179,7 +244,10 @@
         </div>
     </div>
 </div>
-
+{{-- Activity View Modal --}}
+@include('backend.activity-logs.view-modal')
 @endsection
 
-
+@push('scripts')
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/activity-logs.js')) !!}
+@endpush
