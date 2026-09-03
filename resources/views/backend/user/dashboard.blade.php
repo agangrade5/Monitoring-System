@@ -102,6 +102,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    
                                     @forelse($recentActivityLogs as $log)
 
                                         @php
@@ -189,7 +190,7 @@
                                             </td>
                                         </tr>
                                     @endforelse
-
+                                   
                                 </tbody>
                             </table>
                         </div>
@@ -348,12 +349,9 @@
        
     </div>
 </div>
-<<<<<<< HEAD
-=======
 
 {{-- Activity View Modal --}}
 @include('backend.activity-logs.view-modal')
->>>>>>> 3776bb96d58a0da1399ce299f38c50432b8ccbc9
 @endsection
 
 @push('scripts')
