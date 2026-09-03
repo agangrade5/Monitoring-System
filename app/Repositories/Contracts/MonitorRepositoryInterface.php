@@ -11,9 +11,10 @@ interface MonitorRepositoryInterface
      * Retrieves all monitors from the database.
      * 
      * @param string|null $search
+     * @param int|null $userId
      * @return LengthAwarePaginator<Monitor> A paginator containing all monitors.
      */
-    public function getAll(?string $search = null): LengthAwarePaginator;
+    public function getAll(?string $search = null, ?int $userId = null): LengthAwarePaginator;
 
     /**
      * Retrieves a monitor by its ID.

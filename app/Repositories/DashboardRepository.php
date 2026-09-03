@@ -87,10 +87,7 @@ class DashboardRepository implements DashboardRepositoryInterface
     {
         $data = [];
         $userId = $user->id;
-        $query = Monitor::query();
-        if ($userId && Monitor::where('user_id', $userId)->exists()) {
-            $query->where('user_id', $userId);
-        }
+        $query = Monitor::query()->where('user_id', $userId);
 
         $data['monitors'] = $monitors = $query->latest()->get();
         $data['activeMonitorsCount'] = $monitors->where('is_active', true)->count();
@@ -103,7 +100,7 @@ class DashboardRepository implements DashboardRepositoryInterface
         $validResponseTimes = $monitors->filter(fn($m) => !empty($m->response_time) && $m->response_time > 0);
         $data['avgResponseTime'] = $validResponseTimes->isNotEmpty()
             ? (int) round($validResponseTimes->avg('response_time'))
-            : ($monitors->isNotEmpty() ? 0 : 0);
+            : 0;
 
         $data['totalAlertsCount'] = $monitors->filter(function ($m) {
             $status = strtolower($m->status ?? '');
@@ -119,9 +116,9 @@ class DashboardRepository implements DashboardRepositoryInterface
             ->filter(fn ($m) => strtolower(trim($m->status ?? '')) === 'down')
             ->sortByDesc(fn ($m) => $m->last_down_at ?? $m->updated_at);
 
-        // 2. Recent user activities
+        // 2. Recent user activities for this logged-in user
         $data['recentActivities'] = class_exists(Activity::class)
-            ? Activity::with('causer')->latest()->take(10)->get()
+            ? Activity::with('causer')->where('causer_id', $userId)->latest()->take(10)->get()
             : collect();
         $data['title'] = 'User Dashboard';
         return $data;

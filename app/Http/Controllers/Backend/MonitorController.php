@@ -26,11 +26,15 @@ class MonitorController extends Controller
      *
      * @return View
      * 
-     * This method fetches all monitors from the repository
+     * This method fetches monitors from the repository
+     * filtered for the current authenticated user (or all if admin)
      * and passes them to the view.
      */
-    public function index(){
-        $monitors = $this->monitorRepository->getAll(request('search'));
+    public function index()
+    {
+        $user = auth()->user();
+        $userId = ($user && !$user->hasRole('admin')) ? $user->id : null;
+        $monitors = $this->monitorRepository->getAll(request('search'), $userId);
         $title = 'Monitor Websites & Domains';
         return view(
             'backend.monitor.index',
@@ -59,6 +63,7 @@ class MonitorController extends Controller
     {
         $monitor = $this->monitorRepository->findById($id);
         abort_if(!$monitor, 404);
+        $this->checkMonitorOwnership($monitor);
 
         $title = $monitor->name . ' - Health & Performance Overview';
 
@@ -115,6 +120,8 @@ class MonitorController extends Controller
     {
         $monitor = $this->monitorRepository->findById($id);
         abort_if(!$monitor, 404);
+        $this->checkMonitorOwnership($monitor);
+
         return view('backend.monitor.edit', compact('monitor'));
     }
 
@@ -128,6 +135,10 @@ class MonitorController extends Controller
      */
     public function update(MonitorUserRequest $request, int $id)
     {
+        $monitor = $this->monitorRepository->findById($id);
+        abort_if(!$monitor, 404);
+        $this->checkMonitorOwnership($monitor);
+
         $validated = $request->validated();
         $this->monitorRepository->update($id, $validated);
         $monitor = $this->monitorRepository->findById($id);
@@ -173,6 +184,9 @@ class MonitorController extends Controller
     public function destroy(int $id)
     {
         $monitor = $this->monitorRepository->findById($id);
+        abort_if(!$monitor, 404);
+        $this->checkMonitorOwnership($monitor);
+
         /*
         |--------------------------------------------------------------------------
         | Activity Log
@@ -207,6 +221,8 @@ class MonitorController extends Controller
     {
         $monitor = $this->monitorRepository->findById($id);
         abort_if(!$monitor, 404);
+        $this->checkMonitorOwnership($monitor);
+
         $newStatus = !$monitor->is_active;
         $this->monitorRepository->update($id, [
             'is_active' => $newStatus
@@ -243,6 +259,7 @@ class MonitorController extends Controller
     {
         $monitor = $this->monitorRepository->findById($id);
         abort_if(!$monitor, 404);
+        $this->checkMonitorOwnership($monitor);
 
         /*
         |--------------------------------------------------------------------------
@@ -298,6 +315,10 @@ class MonitorController extends Controller
      */
     public function sendTestNotification(Request $request, int $id)
     {
+        $monitor = $this->monitorRepository->findById($id);
+        abort_if(!$monitor, 404);
+        $this->checkMonitorOwnership($monitor);
+
         $result = $this->monitorService->sendTestNotification($id, auth()->user());
 
         if (!$result['success']) {
@@ -312,5 +333,19 @@ class MonitorController extends Controller
         }
 
         return redirect()->back()->with('success', $result['message']);
+    }
+
+    /**
+     * Check if the authenticated user has ownership of the monitor or is an admin.
+     *
+     * @param mixed $monitor
+     * @return void
+     */
+    protected function checkMonitorOwnership($monitor): void
+    {
+        $user = auth()->user();
+        if ($user && !$user->hasRole('admin') && $monitor->user_id !== $user->id) {
+            abort(403, 'Unauthorized access to this monitor.');
+        }
     }
 }

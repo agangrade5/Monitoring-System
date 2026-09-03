@@ -19,12 +19,16 @@ class MonitorRepository implements MonitorRepositoryInterface
      * Retrieves all monitors with pagination and optional search filtering.
      *
      * @param string|null $search
+     * @param int|null $userId
      * 
      * @return LengthAwarePaginator
      */
-    public function getAll(?string $search = null): LengthAwarePaginator
+    public function getAll(?string $search = null, ?int $userId = null): LengthAwarePaginator
     {
         return $this->model
+            ->when($userId, function ($query, $userId) {
+                $query->where('user_id', $userId);
+            })
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
