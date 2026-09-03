@@ -19,11 +19,13 @@ class UserRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        return [
+        $userId = $this->route('id');
+
+        $rules = [
             'name' => [
                 'required',
                 'string',
@@ -32,20 +34,13 @@ class UserRequest extends FormRequest
             ],
 
             'email' => [
-                'nullable',
+                'required',
                 'string',
                 'email',
                 'max:50',
-                'required_without:mobile',
+                Rule::unique('users', 'email')->ignore($userId)->where(fn ($query) => $query->where('is_deleted', false)),
                 new NoScripts(),
                 new ValidEmailDomain(),
-            ],
-
-           'password' => [
-                'required',
-                'confirmed',
-                new WithoutSpacesRule(),
-                new StrictPasswordRule(),
             ],
 
             'is_active' => [
@@ -53,6 +48,27 @@ class UserRequest extends FormRequest
                 'boolean',
             ],
         ];
+
+        if ($userId) {
+            // Password is optional during user update
+            $rules['password'] = [
+                'nullable',
+                'string',
+                new WithoutSpacesRule(),
+                new StrictPasswordRule(),
+            ];
+        } else {
+            // Password is required when adding a new user
+            $rules['password'] = [
+                'required',
+                'string',
+                new WithoutSpacesRule(),
+                new StrictPasswordRule(),
+            ];
+        }
+
+        return $rules;
     }
+    
     
 }

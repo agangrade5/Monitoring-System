@@ -93,7 +93,7 @@
                                                 @if($user['is_active'])
                                                     <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2 py-1">Active</span>
                                                 @else
-                                                    <span class="badge rounded-pill bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">Inactive</span>
+                                                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">Inactive</span>
                                                 @endif
                                             </td>
 
@@ -207,53 +207,54 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('admin.store') }}" method="POST" id="add-user-form">
+            <form action="{{ route('admin.store') }}" method="POST" id="add-user-form" enctype="multipart/form-data" class="needs-validation" novalidate>
                 @csrf
+                <input type="hidden" name="form_type" value="add">
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="user_name">Full Name</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" name="name" id="user_name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Enter full name" required>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="text" name="name" id="user_name" class="form-control @if(old('form_type') === 'add') @error('name') is-invalid @enderror @endif" value="{{ old('form_type') === 'add' ? old('name') : '' }}" placeholder="Enter full name" required>
+                            @if(old('form_type') === 'add')
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @endif
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="user_email">Email Address</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" name="email" id="user_email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="name@example.com" required>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="email" name="email" id="user_email" class="form-control @if(old('form_type') === 'add') @error('email') is-invalid @enderror @endif" value="{{ old('form_type') === 'add' ? old('email') : '' }}" placeholder="name@example.com" required>
+                            @if(old('form_type') === 'add')
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @endif
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="user_password">Password</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" name="password" id="user_password" class="form-control @error('password') is-invalid @enderror" placeholder="••••••••" required>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="password" name="password" id="user_password" class="form-control @if(old('form_type') === 'add') @error('password') is-invalid @enderror @endif" placeholder="••••••••" required>
+                            @if(old('form_type') === 'add')
+                                @error('password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @endif
                         </div>
                     </div>
-                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary small" for="user_confirm_password">Confirm Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" name="password_confirmation" id="user_confirm_password" class="form-control" placeholder="••••••••" required>
-                        </div>
-                    </div>
+                     
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="user_status">Status</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-toggle-on"></i></span>
                             <select name="is_active" id="user_status" class="form-select" required>
-                                <option value="1" {{ old('is_active') === '1' || old('is_active') === null ? 'selected' : '' }}>Active</option>
-                                <option value="0" {{ old('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
+                                <option value="1" {{ old('form_type') === 'add' ? (old('is_active') === '1' || old('is_active') === null ? 'selected' : '') : 'selected' }}>Active</option>
+                                <option value="0" {{ old('form_type') === 'add' && old('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
                             </select>
                         </div>
                     </div>
@@ -279,22 +280,34 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-                 <form action="{{ route('admin.update', $user->id) }}" method="POST" id="edit-user-form">
-                    @csrf
+            <form action="{{ route('admin.update', old('edit_user_id', 0)) }}" method="POST" id="edit-user-form" enctype="multipart/form-data" class="row g-4 needs-validation" novalidate>
+                @csrf
+                <input type="hidden" name="form_type" value="edit">
+                <input type="hidden" name="edit_user_id" id="edit_user_id" value="{{ old('edit_user_id') }}">
             
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="edit_user_name">Full Name</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" name="name" id="edit_user_name" class="form-control" placeholder="Enter full name" required>
+                            <input type="text" name="name" id="edit_user_name" class="form-control @if(old('form_type') === 'edit') @error('name') is-invalid @enderror @endif" value="{{ old('form_type') === 'edit' ? old('name') : '' }}" placeholder="Enter full name" required>
+                            @if(old('form_type') === 'edit')
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @endif
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="edit_user_email">Email Address</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" name="email" id="edit_user_email" class="form-control" placeholder="name@example.com" required>
+                            <input type="email" name="email" id="edit_user_email" class="form-control @if(old('form_type') === 'edit') @error('email') is-invalid @enderror @endif" value="{{ old('form_type') === 'edit' ? old('email') : '' }}" placeholder="name@example.com" required>
+                            @if(old('form_type') === 'edit')
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @endif
                         </div>
                     </div>
                     <div class="mb-3">
@@ -302,8 +315,8 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-toggle-on"></i></span>
                             <select name="is_active" id="edit_user_status" class="form-select" required>
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
+                                <option value="1" {{ old('form_type') === 'edit' && old('is_active') === '1' ? 'selected' : '' }}>Active</option>
+                                <option value="0" {{ old('form_type') === 'edit' && old('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
                             </select>
                         </div>
                     </div>
@@ -311,16 +324,15 @@
                         <label class="form-label fw-semibold text-secondary small" for="edit_user_password">New Password (Optional)</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" name="password" id="edit_user_password" class="form-control" placeholder="Leave blank to keep current">
+                            <input type="password" name="password" id="edit_user_password" class="form-control @if(old('form_type') === 'edit') @error('password') is-invalid @enderror @endif" placeholder="Leave blank to keep current">
+                            @if(old('form_type') === 'edit')
+                                @error('password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @endif
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary small" for="edit_user_confirm_password">Confirm New Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" name="password_confirmation" id="edit_user_confirm_password" class="form-control" placeholder="Leave blank to keep current">
-                        </div>
-                    </div>
+                   
                 </div>
                 <div class="modal-footer border-top-0 p-3 bg-light-subtle">
                     <button type="button" class="btn btn-outline-secondary px-3" data-bs-dismiss="modal">Cancel</button>
@@ -332,63 +344,7 @@
 </div>
 
 @push('scripts')
-<script nonce="{{ csp_nonce('script') }}">
-document.addEventListener('DOMContentLoaded', () => {
-    // Interactive client-side user search helper
-    const userSearchInput = document.getElementById('user-search');
-    if (userSearchInput) {
-        userSearchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const rows = document.querySelectorAll('tbody tr');
-            
-            rows.forEach(row => {
-                const nameNode = row.querySelector('.fw-bold');
-                const emailNode = row.querySelector('.text-secondary');
-                
-                if (nameNode && emailNode) {
-                    const name = nameNode.textContent.toLowerCase();
-                    const email = emailNode.textContent.toLowerCase();
-                    
-                    if (name.includes(query) || email.includes(query)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                }
-            });
-        });
-    }
-
-    // Auto-open modal if validation errors exist
-    @if($errors->hasAny(['name', 'email', 'password']))
-        const modalEl = document.getElementById('addUserModal');
-        if (modalEl) {
-            const addUserModal = new bootstrap.Modal(modalEl);
-            addUserModal.show();
-        }
-    @endif
-
-    // Edit user button modal handler
-    document.querySelectorAll('.edit-user-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const id = this.dataset.id;
-            const name = this.dataset.name;
-            const email = this.dataset.email;
-            const active = this.dataset.active;
-
-            const form = document.getElementById('edit-user-form');
-            form.action = `/admin/users/update/${id}`;
-
-            document.getElementById('edit_user_name').value = name;
-            document.getElementById('edit_user_email').value = email;
-            document.getElementById('edit_user_status').value = active;
-
-            const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
-            editModal.show();
-        });
-    });
-});
-</script>
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/user.js')) !!}
 @endpush
 
 @endsection

@@ -19,23 +19,25 @@ class DashboardRepository implements DashboardRepositoryInterface
      */
     public function getAdminDashboardData(User $user): array
     {
-        $monitors = Monitor::with('user')->latest()->get();
-        $activeMonitorsCount = $monitors->where('is_active', true)->count();
-        $totalMonitorsCount = $monitors->count();
+        $data = [];
+        $data['users'] = $user;
+        $data['monitors'] = $monitors = Monitor::with('user')->latest()->get();
+        $data['activeMonitorsCount'] = $monitors->where('is_active', true)->count();
+        $data['totalMonitorsCount'] = $monitors->count();
 
-        $totalUsersCount = User::where('is_deleted', false)->count();
-        $activeUsersCount = User::where('is_deleted', false)->where('is_active', true)->count();
+        $data['totalUsersCount'] = User::where('is_deleted', false)->count();
+        $data['activeUsersCount'] = User::where('is_deleted', false)->where('is_active', true)->count();
 
         $validResponseTimes = $monitors->filter(fn($m) => !empty($m->response_time) && $m->response_time > 0);
-        $avgResponseTime = $validResponseTimes->isNotEmpty()
+        $data['avgResponseTime'] = $validResponseTimes->isNotEmpty()
             ? (int) round($validResponseTimes->avg('response_time'))
-            : ($monitors->isNotEmpty() ? 245 : 0);
+            : ($monitors->isNotEmpty() ? 0 : 0);
 
-        $upIncidentsCount = $monitors->filter(fn($m) => strtolower($m->status ?? '') === 'up')->count();
-        $downIncidentsCount = $monitors->filter(fn($m) => strtolower($m->status ?? '') === 'down')->count();
-        $activeOutagesCount = $downIncidentsCount;
+         $data['upIncidentsCount'] = $monitors->filter(fn($m) => strtolower($m->status ?? '') === 'up')->count();
+         $data['downIncidentsCount'] = $downIncidentsCount = $monitors->filter(fn($m) => strtolower($m->status ?? '') === 'down')->count();
+         $data['activeOutagesCount'] = $downIncidentsCount;
 
-        $totalAlertsCount = $monitors->filter(function ($m) {
+        $data['totalAlertsCount'] = $monitors->filter(function ($m) {
             $status = strtolower($m->status ?? '');
             $sslStatus = strtolower($m->ssl_status ?? '');
             $domainStatus = strtolower($m->domain_status ?? '');
@@ -45,24 +47,24 @@ class DashboardRepository implements DashboardRepositoryInterface
         })->count();
 
         // 1. Monitors that recently went down or have critical status
-        $downMonitors = $monitors
+         $data['downMonitors'] = $monitors
             ->filter(fn ($m) => strtolower(trim($m->status ?? '')) === 'down')
             ->sortByDesc(fn ($m) => $m->last_down_at ?? $m->updated_at);
 
         // 2. Recent Active Monitors
-        $recentActiveMonitors = $monitors
+         $data['recentActiveMonitors'] = $monitors
             ->where('is_active', true)
             ->sortByDesc(fn ($m) => $m->last_checked_at ?? $m->updated_at)
             ->take(8);
 
         // 3. Recent system and user activities with pagination
         if (class_exists(Activity::class)) {
-            $recentActivities = Activity::with('causer')
+            $data['recentActivities'] = Activity::with('causer')
                 ->latest()
                 ->paginate(10)
                 ->withQueryString();
         } else {
-            $recentActivities = new LengthAwarePaginator(
+            $data['recentActivities'] = new LengthAwarePaginator(
                 collect(),
                 0,
                 10,
@@ -70,24 +72,8 @@ class DashboardRepository implements DashboardRepositoryInterface
                 ['path' => request()->url(), 'query' => request()->query()]
             );
         }
-
-        return [
-            'title' => 'Admin Dashboard',
-            'user' => $user,
-            'monitors' => $monitors,
-            'recentActiveMonitors' => $recentActiveMonitors,
-            'downMonitors' => $downMonitors,
-            'recentActivities' => $recentActivities,
-            'activeMonitorsCount' => $activeMonitorsCount,
-            'totalMonitorsCount' => $totalMonitorsCount,
-            'totalUsersCount' => $totalUsersCount,
-            'activeUsersCount' => $activeUsersCount,
-            'upIncidentsCount' => $upIncidentsCount,
-            'downIncidentsCount' => $downIncidentsCount,
-            'avgResponseTime' => $avgResponseTime,
-            'activeOutagesCount' => $activeOutagesCount,
-            'totalAlertsCount' => $totalAlertsCount,
-        ];
+        $data['title'] = 'Admin Dashboard';
+        return $data;
     }
 
     /**
@@ -99,26 +85,27 @@ class DashboardRepository implements DashboardRepositoryInterface
      */
     public function getUserDashboardData(User $user): array
     {
+        $data = [];
         $userId = $user->id;
         $query = Monitor::query();
         if ($userId && Monitor::where('user_id', $userId)->exists()) {
             $query->where('user_id', $userId);
         }
 
-        $monitors = $query->latest()->get();
-        $activeMonitorsCount = $monitors->where('is_active', true)->count();
-        $totalMonitorsCount = $monitors->count();
+        $data['monitors'] = $monitors = $query->latest()->get();
+        $data['activeMonitorsCount'] = $monitors->where('is_active', true)->count();
+        $data['totalMonitorsCount'] = $monitors->count();
 
-        $upIncidentsCount = $monitors->filter(fn($m) => strtolower($m->status ?? '') === 'up')->count();
-        $downIncidentsCount = $monitors->filter(fn($m) => strtolower($m->status ?? '') === 'down')->count();
-        $activeOutagesCount = $downIncidentsCount;
+        $data['upIncidentsCount'] = $monitors->filter(fn($m) => strtolower($m->status ?? '') === 'up')->count();
+        $data['downIncidentsCount'] = $downIncidentsCount = $monitors->filter(fn($m) => strtolower($m->status ?? '') === 'down')->count();
+        $data['activeOutagesCount'] = $downIncidentsCount;
 
         $validResponseTimes = $monitors->filter(fn($m) => !empty($m->response_time) && $m->response_time > 0);
-        $avgResponseTime = $validResponseTimes->isNotEmpty()
+        $data['avgResponseTime'] = $validResponseTimes->isNotEmpty()
             ? (int) round($validResponseTimes->avg('response_time'))
-            : ($monitors->isNotEmpty() ? 245 : 0);
+            : ($monitors->isNotEmpty() ? 0 : 0);
 
-        $totalAlertsCount = $monitors->filter(function ($m) {
+        $data['totalAlertsCount'] = $monitors->filter(function ($m) {
             $status = strtolower($m->status ?? '');
             $sslStatus = strtolower($m->ssl_status ?? '');
             $domainStatus = strtolower($m->domain_status ?? '');
@@ -128,28 +115,15 @@ class DashboardRepository implements DashboardRepositoryInterface
         })->count();
 
         // 1. Monitors that recently went down or have critical status
-        $downMonitors = $monitors
+        $data['downMonitors'] = $monitors
             ->filter(fn ($m) => strtolower(trim($m->status ?? '')) === 'down')
             ->sortByDesc(fn ($m) => $m->last_down_at ?? $m->updated_at);
 
         // 2. Recent user activities
-        $recentActivities = class_exists(Activity::class)
+        $data['recentActivities'] = class_exists(Activity::class)
             ? Activity::with('causer')->latest()->take(10)->get()
             : collect();
-
-        return [
-            'title' => 'User Dashboard',
-            'user' => $user,
-            'monitors' => $monitors,
-            'downMonitors' => $downMonitors,
-            'recentActivities' => $recentActivities,
-            'activeMonitorsCount' => $activeMonitorsCount,
-            'totalMonitorsCount' => $totalMonitorsCount,
-            'upIncidentsCount' => $upIncidentsCount,
-            'downIncidentsCount' => $downIncidentsCount,
-            'avgResponseTime' => $avgResponseTime,
-            'activeOutagesCount' => $activeOutagesCount,
-            'totalAlertsCount' => $totalAlertsCount,
-        ];
+        $data['title'] = 'User Dashboard';
+        return $data;
     }
 }

@@ -9,15 +9,26 @@ use Illuminate\Foundation\Queue\Queueable;
 class CheckSslCertificateJob implements ShouldQueue
 {
     use Queueable;
-
+    /**
+     * Create a new job instance.
+     * 
+     * @return void
+     * @throws \Exception
+     * 
+     */
     public function __construct(
         protected int $monitorId
     ) {}
-
+     /**
+     * Execute the job.
+     * 
+     * @return void
+     * @throws \Exception
+     * 
+     */
     public function handle(): void
     {
         $monitor = Monitor::find($this->monitorId);
-
         if (!$monitor || !$monitor->is_active) {
             return;
         }

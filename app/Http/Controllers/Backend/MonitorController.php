@@ -142,6 +142,7 @@ class MonitorController extends Controller
             'Monitor updated successfully.',
             $monitor,
             [
+                'id' => $id,
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]
@@ -182,6 +183,7 @@ class MonitorController extends Controller
             'Monitor deleted successfully.',
             $monitor,
             [
+                'id' => $id,
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]
@@ -220,6 +222,7 @@ class MonitorController extends Controller
             'Monitor status updated successfully.',
             $monitor,
             [
+                'id' => $id,
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]
@@ -251,6 +254,7 @@ class MonitorController extends Controller
             'Monitor check triggered successfully.',
             $monitor,
             [
+                'id' => $id,
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]

@@ -37,5 +37,11 @@
     "name": "showmonitor",
     "src": "resources/js/backend/showmonitor.js",
     "isEntry": true
+  },
+  "resources/js/backend/user.js": {
+    "file": "js/backend/user.js",
+    "name": "user",
+    "src": "resources/js/backend/user.js",
+    "isEntry": true
   }
 }

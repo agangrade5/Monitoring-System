@@ -11,11 +11,21 @@ use Throwable;
 class CheckUptimeJob implements ShouldQueue
 {
     use Queueable;
-
+    /**
+     * Create a new job instance.
+     * 
+     * @return void
+     *  
+     */ 
     public function __construct(
         protected int $monitorId
     ) {}
-
+    /**
+     * Execute the job.
+     * 
+     * @return void
+     *  
+     */
     public function handle(): void
     {
         $monitor = Monitor::find($this->monitorId);

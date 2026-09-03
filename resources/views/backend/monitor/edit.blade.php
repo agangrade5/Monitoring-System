@@ -137,38 +137,5 @@
     </div>
 </div>
 
-@push('scripts')
-<script nonce="{{ csp_nonce('script') }}">
-document.addEventListener('DOMContentLoaded', () => {
-    const typeSelect = document.getElementById('type');
-    const urlGroup = document.getElementById('url-group');
-    const ipGroup = document.getElementById('ip-group');
-    const urlInput = document.getElementById('url');
-    const ipInput = document.getElementById('ip_address');
 
-    function toggleFields() {
-        const val = typeSelect.value;
-        if (val === 'server') {
-            urlGroup.style.display = 'none';
-            urlInput.removeAttribute('required');
-            ipGroup.style.display = 'block';
-            ipInput.setAttribute('required', 'required');
-        } else if (val === 'api') {
-            urlGroup.style.display = 'block';
-            urlInput.setAttribute('required', 'required');
-            ipGroup.style.display = 'block';
-            ipInput.removeAttribute('required');
-        } else {
-            urlGroup.style.display = 'block';
-            urlInput.setAttribute('required', 'required');
-            ipGroup.style.display = 'none';
-            ipInput.removeAttribute('required');
-        }
-    }
-
-    typeSelect.addEventListener('change', toggleFields);
-    toggleFields();
-});
-</script>
-@endpush
 @endsection

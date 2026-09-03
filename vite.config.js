@@ -30,6 +30,7 @@ export default defineConfig({
                 'resources/js/backend/change-password.js',
                 'resources/js/backend/monitor.js',
                 'resources/js/backend/showmonitor.js',
+                'resources/js/backend/user.js',
             ],
             buildDirectory: 'assets',
             refresh: true,

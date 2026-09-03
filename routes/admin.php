@@ -124,12 +124,26 @@ Route::middleware('auth')->group(function () {
                 UserController::class,
                 'allUsers',
             ])->name('users');
+            
+            Route::post('/users/update/{id}', [
+                UserController::class, 
+                'updateUser',
+            ])->name('update');
 
+            Route::get('/create', [ 
+                UserController::class,
+                'createUser',
+            ])->name('create');
 
-             Route::post('/users/update/{id}', [UserController::class, 'updateUser'])->name('update');
-                Route::get('/create', [ UserController::class,'createUser'])->name('create');
-                Route::post('/create', [ UserController::class, 'storeUser' ])->name('store') ;
-            Route::delete('/destroy/{id}', [UserController::class, 'destroyUser'])->name('destroy');
+            Route::post('/create', [ 
+                UserController::class, 
+                'storeUser' ,
+            ])->name('store') ;
+
+            Route::delete('/destroy/{id}', [
+                UserController::class, 
+               'destroyUser',
+            ])->name('destroy');
         });
 
     /*
@@ -186,26 +200,32 @@ Route::middleware('auth')->group(function () {
                 MonitorController::class,
                 'index'
             ])->name('monitor');
+
             Route::get('/monitor/create', [
                 MonitorController::class,
                 'create'
             ])->name('monitor.create');
+            
             Route::get('/monitor/{id}', [
                 MonitorController::class,
                 'show'
             ])->name('monitor.show');
+
             Route::post('/monitor/store', [
                 MonitorController::class,
                 'store'
             ])->name('monitor.store');
+
             Route::get('/monitor/{id}/edit', [
                 MonitorController::class,
                 'edit'
             ])->name('monitor.edit');
+
             Route::post('/monitor/{id}/update', [
                 MonitorController::class,
                 'update'
             ])->name('monitor.update');
+
             Route::delete('/monitor/{id}', [
                 MonitorController::class,
                 'destroy'
@@ -214,10 +234,12 @@ Route::middleware('auth')->group(function () {
                 MonitorController::class,
                 'toggleActive'
             ])->name('monitor.toggle');
+
             Route::post('/monitor/{id}/check', [
                 MonitorController::class,
                 'triggerCheck'
             ])->name('monitor.check');
+            
             Route::post('/monitor/{id}/test-notification', [
                 MonitorController::class,
                 'sendTestNotification'
