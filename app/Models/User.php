@@ -12,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Notifications\CustomResetPasswordNotification;
 
-#[Fillable(['name', 'email', 'timezone', 'password', 'image'])]
+#[Fillable(['name', 'email', 'timezone', 'password', 'image', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -29,6 +29,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -43,5 +44,13 @@ class User extends Authenticatable
         $this->notify(
             new CustomResetPasswordNotification($token)
         );
+    }
+
+    /**
+     * Get the monitors created by the user.
+     */
+    public function monitors()
+    {
+        return $this->hasMany(Monitor::class);
     }
 }

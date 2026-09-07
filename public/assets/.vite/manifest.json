@@ -31,5 +31,23 @@
     "name": "image-cropper",
     "src": "resources/js/backend/image-cropper.js",
     "isEntry": true
+  },
+  "resources/js/backend/monitor.js": {
+    "file": "js/backend/monitor.js",
+    "name": "monitor",
+    "src": "resources/js/backend/monitor.js",
+    "isEntry": true
+  },
+  "resources/js/backend/showmonitor.js": {
+    "file": "js/backend/showmonitor.js",
+    "name": "showmonitor",
+    "src": "resources/js/backend/showmonitor.js",
+    "isEntry": true
+  },
+  "resources/js/backend/user.js": {
+    "file": "js/backend/user.js",
+    "name": "user",
+    "src": "resources/js/backend/user.js",
+    "isEntry": true
   }
 }

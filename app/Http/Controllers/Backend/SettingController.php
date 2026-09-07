@@ -36,4 +36,6 @@ class SettingController extends Controller
             'user' => $user,
         ]);
     }
+
+    
 }

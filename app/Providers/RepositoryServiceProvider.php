@@ -5,19 +5,29 @@ namespace App\Providers;
 use App\Repositories\Contracts\{
     ActivityLogRepositoryInterface,
     UserRepositoryInterface,
-    SettingRepositoryInterface
+    SettingRepositoryInterface,
+    MonitorRepositoryInterface,
+    DashboardRepositoryInterface
 };
 
 use App\Repositories\{
     ActivityLogRepository,
     UserRepository,
-    SettingRepository
+    SettingRepository,
+    MonitorRepository,
+    DashboardRepository
 };
 
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
+    /**
+     * Register services.
+     * 
+     * @return void
+     * 
+     */
     public function register(): void
     {
         // User Repository Binding
@@ -26,12 +36,23 @@ class RepositoryServiceProvider extends ServiceProvider
             UserRepository::class
         );
 
-        // Setting Repository Binding
+        /* Setting Repository Binding */
         $this->app->bind(
             SettingRepositoryInterface::class,
             SettingRepository::class
         );
 
+        /* Monitor Repository Binding */
+        $this->app->bind(
+            MonitorRepositoryInterface::class,
+            MonitorRepository::class
+        );
+
+        /* Dashboard Repository Binding */
+        $this->app->bind(
+            DashboardRepositoryInterface::class,
+            DashboardRepository::class
+        );
         // Activity Repository Binding
         $this->app->bind(
             ActivityLogRepositoryInterface::class,

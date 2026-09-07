@@ -7,8 +7,8 @@
     <div class="container-fluid">
         <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
              <div>
-                <h4 class="page-title pt-2">Dashboard</h4>
-                <p class="page-subtitle text-muted mb-0">Welcome back, {{ auth()->user()->name }}! Here's the performance overview of your monitored nodes.</p>
+                <h4 class="page-title pt-2">Admin Dashboard</h4>
+                <p class="page-subtitle text-muted mb-0">Welcome back, {{ auth()->user()->name }}! Real-time performance overview of system users, monitored endpoints, and audit logs.</p>
              </div>
              <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
                 <i class="bi bi-calendar3 text-primary"></i>
@@ -24,59 +24,47 @@
     <div class="container-fluid">
         <!-- Metrics Boxes Row -->
         <div class="row g-4 mb-4">
-              <!-- Box 1: Monitored Nodes -->
+              <!-- Box 1: Active Monitors -->
               <div class="col-lg-3 col-sm-6">
                 <div class="small-box text-bg-primary">
                   <div class="inner">
-                    <h3>12 / 12</h3>
-                    <p>Monitored Nodes</p>
+                    <h3>{{ $activeMonitorsCount }}<sup class="fs-6 text-white-50">/{{ $totalMonitorsCount }}</sup></h3>
+                    <p>Active Monitors</p>
                   </div>
                   <i class="bi bi-hdd-network small-box-icon"></i>
-                  <a href="#" class="small-box-footer link-light link-underline-opacity-0">
-                    View Network Map <i class="bi bi-arrow-right-short ms-1"></i>
-                  </a>
                 </div>
               </div>
 
-              <!-- Box 2: Average CPU Load -->
+              <!-- Box 2: Total Users -->
               <div class="col-lg-3 col-sm-6">
                 <div class="small-box text-bg-success">
                   <div class="inner">
-                    <h3>24.5<sup class="fs-5">%</sup></h3>
-                    <p>Average CPU Load</p>
+                    <h3>{{ $totalUsersCount }}</h3>
+                    <p>All Registered Users</p>
                   </div>
-                  <i class="bi bi-cpu small-box-icon"></i>
-                  <a href="#" class="small-box-footer link-light link-underline-opacity-0">
-                    View CPU Metrics <i class="bi bi-arrow-right-short ms-1"></i>
-                  </a>
+                  <i class="bi bi-people-fill small-box-icon"></i>
                 </div>
               </div>
 
-              <!-- Box 3: Network Throughput -->
+              <!-- Box 3: Down Incidents -->
               <div class="col-lg-3 col-sm-6">
-                <div class="small-box text-bg-warning">
+                <div class="small-box text-bg-danger">
                   <div class="inner">
-                    <h3>142.8<sup class="fs-5">Mbps</sup></h3>
-                    <p>Network Throughput</p>
+                    <h3>{{ $downIncidentsCount }}</h3>
+                    <p>Down Incidents</p>
                   </div>
-                  <i class="bi bi-speedometer2 small-box-icon"></i>
-                  <a href="#" class="small-box-footer link-dark link-underline-opacity-0">
-                    Analyze Bandwidth <i class="bi bi-arrow-right-short ms-1"></i>
-                  </a>
+                  <i class="bi bi-exclamation-triangle-fill small-box-icon"></i>
                 </div>
               </div>
 
               <!-- Box 4: Active Alerts -->
               <div class="col-lg-3 col-sm-6">
-                <div class="small-box text-bg-danger">
+                <div class="small-box text-bg-warning">
                   <div class="inner">
-                    <h3>0</h3>
+                    <h3>{{ $totalAlertsCount }}</h3>
                     <p>Triggered Alerts</p>
                   </div>
-                  <i class="bi bi-exclamation-triangle small-box-icon"></i>
-                  <a href="#" class="small-box-footer link-light link-underline-opacity-0">
-                    Incident Center <i class="bi bi-arrow-right-short ms-1"></i>
-                  </a>
+                  <i class="bi bi-bell-fill small-box-icon"></i>
                 </div>
               </div>
         </div>
@@ -204,22 +192,103 @@
                             </table>
                         </div>
                     </div>
+
+                    <!-- Card Footer with Pagination -->
+                    @if($recentActivities instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $recentActivities->total() > 0)
+                        <div class="card-footer border-0 bg-transparent py-3">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div class="small text-muted fw-medium">
+                                    Showing {{ $recentActivities->firstItem() }} to {{ $recentActivities->lastItem() }} of {{ $recentActivities->total() }} system logs
+                                </div>
+                                @if($recentActivities->hasPages())
+                                    <div>
+                                        <ul class="pagination pagination-sm m-0">
+                                            <!-- Previous Page Link -->
+                                            <li class="page-item {{ $recentActivities->onFirstPage() ? 'disabled' : '' }}">
+                                                <a class="page-link" href="{{ $recentActivities->previousPageUrl() ?? '#' }}" aria-label="Previous">
+                                                    <i class="bi bi-chevron-left"></i>
+                                                </a>
+                                            </li>
+
+                                            <!-- Page Number Links -->
+                                            @for ($page = 1; $page <= $recentActivities->lastPage(); $page++)
+                                                <li class="page-item {{ $recentActivities->currentPage() == $page ? 'active' : '' }}">
+                                                    <a class="page-link" href="{{ $recentActivities->url($page) }}">{{ $page }}</a>
+                                                </li>
+                                            @endfor
+
+                                            <!-- Next Page Link -->
+                                            <li class="page-item {{ $recentActivities->hasMorePages() ? '' : 'disabled' }}">
+                                                <a class="page-link" href="{{ $recentActivities->nextPageUrl() ?? '#' }}" aria-label="Next">
+                                                    <i class="bi bi-chevron-right"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
-            <!-- Quick Action & Details -->
+            <!-- Right Column: Quick Actions & System Overview -->
             <div class="col-lg-4 col-12">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0 fw-bold">Quick Actions</h5>
-                        <small class="text-muted">Common admin tools and shortcuts</small>
+                <!-- System Performance & Health Status -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header border-0 py-3">
+                        <h6 class="mb-0 fw-bold text-body-emphasis">System Overview</h6>
+                        <small class="text-muted">High-level health & performance summary</small>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body pt-0">
+                        <div class="d-flex justify-content-between align-items-center p-3 mb-2 rounded-3 bg-body-secondary border">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-speedometer2 text-primary fs-5"></i>
+                                <span class="small fw-semibold">Average Response Time</span>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold">
+                                {{ $avgResponseTime }} ms
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center p-3 mb-2 rounded-3 bg-body-secondary border">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-hdd-network text-success fs-5"></i>
+                                <span class="small fw-semibold">Monitored Nodes Online</span>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
+                                {{ $upIncidentsCount }} / {{ $totalMonitorsCount }}
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 bg-body-secondary border">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-shield-check text-info fs-5"></i>
+                                <span class="small fw-semibold">System Health Status</span>
+                            </div>
+                            @if($downIncidentsCount === 0)
+                                <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Optimal
+                                </span>
+                            @else
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold">
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ $downIncidentsCount }} Degraded
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Action & Administration Tools -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header border-0 py-3">
+                        <h6 class="mb-0 fw-bold text-body-emphasis">Quick Actions</h6>
+                        <small class="text-muted">Common administrative shortcuts</small>
+                    </div>
+                    <div class="card-body pt-0">
                         <div class="d-grid gap-2">
                             <a href="#" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
                                 <div>
                                     <h6 class="mb-0 fw-bold"><i class="bi bi-people-fill me-2 text-primary"></i>Manage User Accounts</h6>
-                                    <small class="text-muted">Create, edit, or deactivate staff credentials</small>
+                                    <small class="text-muted">Create, edit, or deactivate user credentials</small>
                                 </div>
                                 <i class="bi bi-chevron-right text-muted"></i>
                             </a>
@@ -230,7 +299,7 @@
                                 </div>
                                 <i class="bi bi-chevron-right text-muted"></i>
                             </a>
-                            <button type="button" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3" onclick="if(window.toastr){toastr.success('Real-time audit scheduled for all nodes.')}">
+                            <button type="button" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3" onclick="if(window.toastr){toastr.success('Real-time audit scheduled for all nodes.')}else{alert('Real-time audit scheduled for all nodes.')}">
                                 <div>
                                     <h6 class="mb-0 fw-bold"><i class="bi bi-arrow-clockwise me-2 text-success"></i>Trigger Health Audit</h6>
                                     <small class="text-muted">Force real-time status check on all nodes</small>

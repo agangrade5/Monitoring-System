@@ -1,4 +1,7 @@
 <!--begin::Header-->
+@php
+    $user = auth()->user();
+@endphp
 <nav class="app-header navbar navbar-expand bg-body">
     <!--begin::Container-->
     <div class="container-fluid">
@@ -65,7 +68,7 @@
                         />
                         <p>
                             {{ $user->name }}
-                            <small>Member since {{ $user->created_at->format('M. Y') }}</small>
+                            <small>Member since {{ \App\Helpers\UtilityHelper::formatDateTime($user->created_at, 'M. Y') }}</small>
                         </p>
                     </li>
                     <!--end::User Image-->

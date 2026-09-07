@@ -46,6 +46,13 @@
                         <p>Users</p>
                     </a>
                 </li>
+                  <li class="nav-item">
+                     <a href="{{ route('monitor') }}" class="nav-link {{ request()->routeIs('monitor') ? 'active' : '' }}">
+                   
+                        <i class="nav-icon bi bi-activity"></i>
+                        <p>Monitoring</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-gear"></i>
@@ -69,8 +76,10 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/" class="nav-link">
+
+                 <li class="nav-item">
+                     <a href="{{ route('monitor') }}" class="nav-link {{ request()->routeIs('monitor') ? 'active' : '' }}">
+                   
                         <i class="nav-icon bi bi-activity"></i>
                         <p>Monitoring</p>
                     </a>
@@ -80,8 +89,9 @@
                         <i class="nav-icon bi bi-gear"></i>
                         <p>Settings</p>
                     </a>
-                </li>
-            </ul>
+                </li> 
+                
+            </ul> 
             @endrole
 
             <!--end::Sidebar Menu-->

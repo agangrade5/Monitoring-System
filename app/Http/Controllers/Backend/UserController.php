@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Backend;
-
 use App\Helpers\UtilityHelper;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\UserRepositoryInterface;
@@ -9,6 +7,7 @@ use Illuminate\View\View;
 use App\Http\Requests\Backend\User\ProfileUpdateRequest;
 use App\Http\Requests\Backend\Auth\ChangePasswordRequest;
 use Illuminate\Http\{RedirectResponse, JsonResponse};
+use App\Http\Requests\Backend\User\UserRequest;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -43,6 +42,72 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Show user profile
+     * 
+     * @return View
+     * 
+     * This method returns the view for the user profile page.
+     * 
+     */
+    public function profile(): View
+    {
+        return view('backend.user.settings', [
+            'title' => 'Settings',
+            'bodyClassName' => 'Settings',
+            'Settings' => ''
+        ]);
+    }
+
+     /**
+      * Store a new user.
+      *
+      * @param UserRequest $request
+      *
+      * @return \Illuminate\Http\RedirectResponse
+      */
+  public function storeUser(UserRequest $request)
+    {
+        $validated = $request->validated();
+        $user = $this->userRepository->create($validated);
+        // Assign default 'user' role
+        $user->assignRole('user');
+        return redirect()
+            ->back()
+            ->with('success', 'User created successfully.');
+    }
+     /**
+     * Update an existing user.
+     *
+     * @param Request $request
+     * @param int $id
+     * 
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateUser(UserRequest $request, int $id)
+    {
+    
+        $validated = $request->validated();
+        $this->userRepository->update($id, $validated);
+        return redirect()
+            ->back()
+            ->with('success', 'User updated successfully.');
+    }
+
+     /**
+     * Destroy an existing user.
+     *
+     * @param int $id
+     * 
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroyUser(int $id)
+    {
+        $this->userRepository->delete($id);
+        return redirect()
+            ->back()
+            ->with('success', 'User deleted successfully.');
+    }
     /**
      * Update user profile
      *

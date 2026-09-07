@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\Contracts\DashboardRepositoryInterface;
 use App\Repositories\Contracts\ActivityLogRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -13,13 +14,20 @@ class DashboardController extends Controller
     /**
      * Create a new controller instance.
      *
+     * @param DashboardRepositoryInterface $dashboardRepository
+     * /**
+     * Admin Dashboard View
      * @param ActivityLogRepositoryInterface $activityRepository
      *
      * @return void
      */
+     
     public function __construct(
-        private ActivityLogRepositoryInterface $activityRepository
+        protected DashboardRepositoryInterface $dashboardRepository,
+        protected ActivityLogRepositoryInterface $activityRepository
     ) {}
+        
+        
 
     /**
      * method admin
@@ -28,6 +36,7 @@ class DashboardController extends Controller
      */
     public function admin(): View
     {
+        $data = $this->dashboardRepository->getAdminDashboardData(Auth::user());
         $user = Auth::user();
 
         /*
@@ -35,27 +44,26 @@ class DashboardController extends Controller
         | Get recent activity logs
         |--------------------------------------------------------------------------
         */
-        $recentActivityLogs =
+        $data['recentActivityLogs'] =
             $this->activityRepository->getRecentLogs(
                 $user->id,
                 true,
                 5
             );
+            $data['user'] = $user;
+            $data['title'] = 'Admin Dashboard';
 
-        return view('backend.admin.dashboard', [
-            'title' => 'Admin Dashboard',
-            'user' => $user,
-            'recentActivityLogs' => $recentActivityLogs,
-        ]);
+        return view('backend.admin.dashboard', $data);
     }
 
     /**
-     * method user
+     * User Dashboard View
      *
      * @return View
      */
     public function user(): View
     {
+        $data = $this->dashboardRepository->getUserDashboardData(Auth::user());
         $user = Auth::user();
 
         /*
@@ -63,17 +71,15 @@ class DashboardController extends Controller
         | Get recent activity logs
         |--------------------------------------------------------------------------
         */
-        $recentActivityLogs =
+         $data['recentActivityLogs'] =
             $this->activityRepository->getRecentLogs(
                 $user->id,
                 false,
                 5
             );
+            $data['user'] = $user;
+            $data['title'] = 'User Dashboard';
 
-        return view('backend.user.dashboard', [
-            'title' => 'User Dashboard',
-            'user' => $user,
-            'recentActivityLogs' => $recentActivityLogs
-        ]);
+        return view('backend.user.dashboard', $data);
     }
 }

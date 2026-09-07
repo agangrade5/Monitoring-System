@@ -9,7 +9,8 @@ use App\Http\Controllers\Backend\{
     ActivityLogController,
     DashboardController,
     UserController,
-    SettingController
+    SettingController,
+    MonitorController
 };
 use Illuminate\Support\Facades\Route;
 
@@ -125,6 +126,32 @@ Route::middleware('auth')->group(function () {
                 'allUsers',
             ])->name('users');
 
+           
+
+            Route::post('/users', [
+                UserController::class,
+                'storeUser',
+            ])->name('store');
+
+            Route::get('/users/{id}/edit', [
+                UserController::class,
+                'editUser',
+            ])->name('edit');
+
+            Route::post('/users/update/{id}', [
+                UserController::class,
+                'updateUser',
+            ])->name('update');   
+           
+          
+
+            Route::delete('/users/{id}', [
+                UserController::class,
+                'destroyUser',  
+            ])->name('destroy');
+
+            
+
             /*
             |--------------------------------------------------------------------------
             | Activity Logs
@@ -152,10 +179,10 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | User Routes
+    | User & Monitoring Routes
     |--------------------------------------------------------------------------
     */
-    Route::middleware('role:user')
+    Route::middleware('role:user|admin')
         ->group(function () {
             /*
             |--------------------------------------------------------------------------
@@ -185,6 +212,69 @@ Route::middleware('auth')->group(function () {
             Route::get('/users', function () {
                 return 'Users';
             })->name('users');
+        
+        
+        
+            Route::get('/profile', [
+                UserController::class,
+                'profile'
+            ])->name('profile');
+            
+
+           
+               /*
+            |--------------------------------------------------------------------------
+            | Monitors Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/monitor', [
+                MonitorController::class,
+                'index'
+            ])->name('monitor');
+
+            Route::get('/monitor/create', [
+                MonitorController::class,
+                'create'
+            ])->name('monitor.create');
+            
+            Route::get('/monitor/{id}', [
+                MonitorController::class,
+                'show'
+            ])->name('monitor.show');
+
+            Route::post('/monitor/store', [
+                MonitorController::class,
+                'store'
+            ])->name('monitor.store');
+
+            Route::get('/monitor/{id}/edit', [
+                MonitorController::class,
+                'edit'
+            ])->name('monitor.edit');
+
+            Route::post('/monitor/{id}/update', [
+                MonitorController::class,
+                'update'
+            ])->name('monitor.update');
+
+            Route::delete('/monitor/{id}', [
+                MonitorController::class,
+                'destroy'
+            ])->name('monitor.destroy');
+            Route::patch('/monitor/{id}/toggle', [
+                MonitorController::class,
+                'toggleActive'
+            ])->name('monitor.toggle');
+
+            Route::post('/monitor/{id}/check', [
+                MonitorController::class,
+                'triggerCheck'
+            ])->name('monitor.check');
+            
+            Route::post('/monitor/{id}/test-notification', [
+                MonitorController::class,
+                'sendTestNotification'
+            ])->name('monitor.testNotification');
 
             /*
             |--------------------------------------------------------------------------
