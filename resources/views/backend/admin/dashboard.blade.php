@@ -285,27 +285,27 @@
                     </div>
                     <div class="card-body pt-0">
                         <div class="d-grid gap-2">
-                            <a href="#" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
+                            <a href="{{ route('admin.users.index') }}" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
                                 <div>
                                     <h6 class="mb-0 fw-bold"><i class="bi bi-people-fill me-2 text-primary"></i>Manage User Accounts</h6>
                                     <small class="text-muted">Create, edit, or deactivate user credentials</small>
                                 </div>
                                 <i class="bi bi-chevron-right text-muted"></i>
                             </a>
-                            <a href="#" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
+                            <a href="{{ route('admin.settings') }}" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
                                 <div>
                                     <h6 class="mb-0 fw-bold"><i class="bi bi-gear-fill me-2 text-secondary"></i>System Settings</h6>
                                     <small class="text-muted">Update configuration and Change Password</small>
                                 </div>
                                 <i class="bi bi-chevron-right text-muted"></i>
                             </a>
-                            <button type="button" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3" onclick="if(window.toastr){toastr.success('Real-time audit scheduled for all nodes.')}else{alert('Real-time audit scheduled for all nodes.')}">
+                            {{-- <button type="button" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3" onclick="if(window.toastr){toastr.success('Real-time audit scheduled for all nodes.')}else{alert('Real-time audit scheduled for all nodes.')}">
                                 <div>
                                     <h6 class="mb-0 fw-bold"><i class="bi bi-arrow-clockwise me-2 text-success"></i>Trigger Health Audit</h6>
                                     <small class="text-muted">Force real-time status check on all nodes</small>
                                 </div>
                                 <i class="bi bi-chevron-right text-muted"></i>
-                            </button>
+                            </button> --}}
                         </div>
                     </div>
                 </div>

@@ -47,7 +47,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getAllUsers(): LengthAwarePaginator
     {
-        return User::latest()->paginate(10);
+        return User::withoutRole('Admin')->latest()->paginate(10);
     }
 
     /**

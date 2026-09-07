@@ -1,30 +1,24 @@
 @extends('layouts.backend.app')
 @section('title', $title)
 @section('content')
-
 <!--begin::App Content Header-->
 <div class="app-content-header">
-    <!--begin::Container-->
     <div class="container-fluid">
-        <!--begin::Row-->
-        <div class="row">
-            <div class="col-sm-6">
-                <h1 class="mb-0 fs-3">{{ $title }}</h1>
+        <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h4 class="page-title pt-2">{{ $title }}</h4>
+                <p class="page-subtitle text-muted mb-0">Track user activities and system actions.</p>
             </div>
-            <div class="col-sm-6">
+            <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="{{ auth()->user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            {{ $title }}
-                        </li>
-                    </ol>
+                    <ol class="breadcrumb float-sm-end mb-0">
+                        <li class="breadcrumb-item"><a href="{{ auth()->user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+                        </ol>
                 </nav>
             </div>
         </div>
-        <!--end::Row-->
     </div>
-    <!--end::Container-->
 </div>
 <!--end::App Content Header-->
 <!--begin::App Content-->
@@ -33,6 +27,7 @@
     <div class="container-fluid">
         <!--begin::Row-->
         <div class="row">
+            <!--begin::Col-->
             <div class="col-12">
                 <!--begin::Card-->
                 <div class="card mb-4">
@@ -42,20 +37,15 @@
                             <div class="col-12 col-md-4">
                                 <h3 class="card-title">{{ $title }} List</h3>
                             </div>
-                            <div class="col-12 col-md-8">
-                                <div
-                                    class="d-flex flex-wrap justify-content-md-end gap-2"
-                                >
-                                    <div class="input-group input-group-sm w-auto">
-                                        <span class="input-group-text">
-                                            <i class="bi bi-search" aria-hidden="true"></i>
-                                        </span>
-
+                            <div class="col-12 col-md-8 text-md-end">
+                                <div class="d-flex flex-wrap justify-content-md-end gap-2 align-items-center">
+                                    <div class="settings-search-wrapper w-auto">
+                                        <i class="bi bi-search"></i>
                                         <input
                                             type="search"
                                             id="activity-log-search"
                                             name="search"
-                                            class="form-control"
+                                            class="form-control settings-search-input"
                                             placeholder="Search activity logs"
                                             aria-label="Search activity logs"
                                             style="width: 220px"
@@ -73,19 +63,17 @@
                             <table class="table table-hover align-middle m-0">
                                 <thead>
                                     <tr>
-
-                                        <th>#</th>
-                                        <th>Date & Time</th>
+                                        <th class="ps-4">S.No</th>
                                         <th>User</th>
                                         <th>Log Name</th>
                                         <th>Event</th>
                                         <th>Description</th>
+                                        <th>Date & Time</th>
                                         <th class="text-end">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($logs as $log)
-
                                     @php
                                         $isAdmin = auth()->user()->hasRole('admin');
 
@@ -114,20 +102,9 @@
                                             default => 'bi-activity',
                                         };
                                     @endphp
-
                                     <tr id="activity-log-row-{{ $log->id }}">
-                                        <!-- ID -->
-                                        <td>
-                                            <span class="text-muted small"> #{{ $log->id }} </span>
-                                        </td>
-                                        <!-- Date -->
-                                        <td>
-                                            <div class="small fw-semibold">
-                                                {{ \App\Helpers\UtilityHelper::formatDateTime($log->created_at, 'd M Y') }}
-                                            </div>
-                                            <div class="small text-muted">
-                                                {{ \App\Helpers\UtilityHelper::formatDateTime($log->created_at, 'h:i:s A') }}
-                                            </div>
+                                        <td class="ps-4">
+                                            {{ $logs->firstItem() + $loop->index }}
                                         </td>
                                         <!-- User -->
                                         <td>
@@ -141,7 +118,6 @@
                                                         class="img-size-32 rounded-circle"
                                                     >
                                                 </div>
-
                                                 <div class="flex-grow-1">
                                                     <div class="small fw-semibold">
                                                         {{ $log->causer?->name ?? 'System' }}
@@ -167,7 +143,6 @@
                                                 class="badge bg-{{ $eventClass }}-subtle text-{{ $eventClass }}"
                                             >
                                                 <i class="bi {{ $eventIcon }} me-1"></i>
-
                                                 {{ ucfirst($log->event ?? 'activity') }}
                                             </span>
                                         </td>
@@ -180,6 +155,13 @@
                                             >
                                                 {{ $log->description }}
                                             </div>
+                                        </td>
+                                        <!-- Created Date -->
+                                        <td>
+                                            <span class="small fw-semibold text-secondary d-block"><i class="bi bi-clock me-1"></i>
+                                                {{ \App\Helpers\UtilityHelper::formatDateTime($log->created_at, 'd M Y') }}
+                                            </span>
+                                            <small class="small text-muted">{{ \App\Helpers\UtilityHelper::formatDateTime($log->created_at, 'h:i:s A') }}</small>
                                         </td>
                                         <!-- Actions -->
                                         <td class="text-end pe-4">
@@ -198,11 +180,14 @@
                                                 @if($isAdmin)
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-outline-danger delete-activity-log"
+                                                        class="btn btn-sm btn-outline-danger delete-record-btn"
                                                         data-url="{{ $deleteUrl }}"
-                                                        data-id="{{ $log->id }}"
-                                                        title="Delete Activity"
-
+                                                        data-row-id="activity-log-row-{{ $log->id }}"
+                                                        data-confirm-title="Delete Activity Log?"
+                                                        data-confirm-text="Are you sure you want to delete this activity log?"
+                                                        data-confirm-button="Yes, Delete"
+                                                        data-confirm-button-class="btn btn-danger"
+                                                        data-confirm-cancel-button-class="btn btn-secondary"
                                                     >
                                                         <i class="bi bi-trash"></i>
                                                     </button>
