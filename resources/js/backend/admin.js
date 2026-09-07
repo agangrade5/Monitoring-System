@@ -174,16 +174,18 @@ $(document).on('submit', 'form', function (event) {
     // Store original text so it can be restored if required
     $button.data('original-text', buttonText);
 
-    // Add loader
-    $button.html(
-        `${buttonText}
-        <span
-            class="spinner-border spinner-border-sm ms-2"
-            role="status"
-            aria-hidden="true">
-        </span>
-        <span class="visually-hidden">Loading...</span>`
-    );
+    // If icon-only button (no text), replace icon with spinner
+    if ($button.text().trim() === '') {
+        $button.html(
+            `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="width: 0.85rem; height: 0.85rem; border-width: 0.15em;"></span><span class="visually-hidden">Loading...</span>`
+        );
+    } else {
+        // Hide icons inside button and append spinner
+        $button.find('i, svg, .icon-idle').addClass('d-none');
+        $button.append(
+            `<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>`
+        );
+    }
 
     // Disable button
     $button.prop('disabled', true);

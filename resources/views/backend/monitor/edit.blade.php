@@ -39,7 +39,7 @@
                                 </span>
                                 <div>
                                     <h6 class="fw-bold mb-0">Website & Server Details</h6>
-                                    <small class="text-muted">Target endpoint, IP host, and monitoring type.</small>
+                                    <small class="text-muted">Target endpoint, IP host, and monitoring details.</small>
                                 </div>
                             </div>
                         </div>
@@ -50,36 +50,29 @@
                                     <label for="name" class="form-label small fw-semibold text-secondary">Website / Monitor Name <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $monitor->name) }}" placeholder="e.g. Herbo" required>
+                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $monitor->name) }}" placeholder="e.g. My Website" required>
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
 
-                                <!-- Monitor Type -->
-                                
-
                                 <!-- Target URL -->
                                 <div class="col-md-6" id="url-group">
-                                    <label for="url" class="form-label small fw-semibold text-secondary">Website URL</label>
+                                    <label for="url" class="form-label small fw-semibold text-secondary">Website URL / Domain <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
-                                        <input type="url" name="url" id="url" class="form-control @error('url') is-invalid @enderror" value="{{ old('url', $monitor->url) }}" placeholder="https://example.com">
+                                        <input type="text" name="url" id="url" class="form-control @error('url') is-invalid @enderror" value="{{ old('url', $monitor->url) }}" placeholder="https://example.com" required>
                                         @error('url')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-
-                                <!-- IP Address -->
-                                
                             </div>
                         </div>
                     </div>
 
-                  
-                    {{-- 5. Alert Contacts & Settings --}}
+                    {{-- 2. Alert Contacts & Settings --}}
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-header border-bottom py-3">
                             <div class="d-flex align-items-center">
@@ -87,7 +80,7 @@
                                     <i class="bi bi-bell text-body fs-5"></i>
                                 </span>
                                 <div>
-                                    <h6 class="fw-bold mb-0">Alert Notifications & Intervals</h6>
+                                    <h6 class="fw-bold mb-0">Alert Notifications</h6>
                                     <small class="text-muted">Recipient details for downtime notifications.</small>
                                 </div>
                             </div>
@@ -95,34 +88,16 @@
                         <div class="card-body p-4">
                             <div class="row g-3">
                                 <!-- Alert Email -->
-                                <div class="col-md-6">
-                                    <label for="email" class="form-label small fw-semibold text-secondary">Alert Email</label>
+                                <div class="col-md-12">
+                                    <label for="email" class="form-label small fw-semibold text-secondary">Alert Email <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $monitor->email) }}" placeholder="alerts@example.com">
+                                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $monitor->email) }}" placeholder="alerts@example.com" required>
                                         @error('email')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-
-                                <!-- Alert Mobile -->
-                                <div class="col-md-6">
-                                    <label for="mobile" class="form-label small fw-semibold text-secondary">Alert Mobile</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                        <input type="text" name="mobile" id="mobile" class="form-control @error('mobile') is-invalid @enderror" value="{{ old('mobile', $monitor->mobile) }}" placeholder="e.g. +1234567890">
-                                        @error('mobile')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <!-- Check Interval -->
-                               
-
-                                <!-- Active State -->
-                                
                             </div>
                         </div>
                     </div>
@@ -136,6 +111,5 @@
         </div>
     </div>
 </div>
-
 
 @endsection

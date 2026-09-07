@@ -8,13 +8,18 @@
 <div class="app-content-header">
     <div class="container-fluid">
         <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div>
+             <div>
                 <h4 class="page-title pt-2">{{ $title }}s</h4>
                 <p class="page-subtitle text-muted mb-0">Manage registered system accounts, roles, access controls, and view account activation states.</p>
-            </div>
-            <div class="text-muted d-none d-sm-block">
-                <i class="bi bi-people-fill me-1"></i>User Directory
-            </div>
+             </div>
+             <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end mb-0">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">User Directory</li>
+                  </ol>
+                </nav>
+             </div>
         </div>
     </div>
 </div>
@@ -25,26 +30,33 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card settings-card">
+                <div class="card shadow-sm border-0 mb-4 settings-card">
                     <!-- Card Header -->
-                    <div class="card-header border-0 bg-transparent py-3">
-                        <div class="row g-3 align-items-center">
-                            <div class="col-12 col-md-6">
-                                <h5 class="mb-0 fw-bold">Active User Directory</h5>
-                                <small class="text-muted">Total accounts registered in system: {{ count($users) }}</small>
-                            </div>
-                            <div class="col-12 col-md-6 text-md-end">
-                                <div class="d-flex flex-wrap justify-content-md-end gap-2 align-items-center">
-                                    <div class="settings-search-wrapper w-auto">
-                                        <i class="bi bi-search"></i>
-                                        <input type="text" class="form-control settings-search-input" id="user-search" placeholder="Search user directory...">
-                                    </div>
-                                    <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                                        <i class="bi bi-person-plus"></i>Add User
-                                    </button>
-                                </div>
-                            </div>
+                    <div class="card-header border-bottom py-3 d-flex flex-wrap gap-2 align-items-center">
+                        <div class="me-auto">
+                            <h5 class="card-title fw-bold mb-0">Active User Directory</h5>
+                           
                         </div>
+
+                        <form action="{{ route('admin.users') }}" method="GET" class="settings-search-wrapper w-auto me-1">
+                            <div class="settings-search-wrapper w-auto">
+                                <i class="bi bi-search"></i>
+                                <input
+                                    type="search"
+                                    name="search"
+                                    id="user-search"
+                                    value="{{ request('search') }}"
+                                    class="form-control settings-search-input"
+                                    placeholder="Search user directory..."
+                                    aria-label="Search user directory"
+                                    style="width: 14rem;"
+                                >
+                            </div>
+                        </form>
+
+                        <button class="btn btn-primary btn-sm d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                            <i class="bi bi-person-plus"></i> Add User
+                        </button>
                     </div>
 
                     <!-- Card Body -->
@@ -153,40 +165,83 @@
                         </div>
                     </div>
 
-                    <!-- Card Footer -->
-                    <div class="card-footer border-0 bg-transparent py-3">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <div class="small text-muted fw-medium">
-                                @if(count($users) > 0)
-                                    Showing 1 to {{ count($users) }} of {{ count($users) }} users
+                    <!-- Pagination -->
+                    @if($users->total() > 0)
+                        <div class="card-footer clearfix">
+                            {{-- Showing Records --}}
+                            <div class="float-start pt-1 fs-7 text-body-secondary">
+                                Showing
+                                {{ $users->firstItem() ?? 0 }}
+                                to
+                                {{ $users->lastItem() ?? 0 }}
+                                of
+                                {{ $users->total() }}
+                                users
+                            </div>
+
+                            {{-- Pagination --}}
+                            <ul class="pagination pagination-sm m-0 float-end">
+
+                                {{-- Previous --}}
+                                @if($users->onFirstPage())
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-label="Previous">
+                                            &laquo;
+                                        </span>
+                                    </li>
                                 @else
-                                    Showing 0 to 0 of 0 users
+                                    <li class="page-item">
+                                        <a
+                                            class="page-link"
+                                            href="{{ $users->appends(request()->query())->previousPageUrl() }}"
+                                            aria-label="Previous"
+                                        >
+                                            &laquo;
+                                        </a>
+                                    </li>
                                 @endif
-                            </div>
-                            <div>
-                                <ul class="pagination pagination-sm m-0">
-                                    <!-- Previous -->
-                                    <li class="page-item {{ $users->onFirstPage() ? 'disabled' : '' }}">
-                                        <a class="page-link" href="{{ $users->previousPageUrl() ?? '#' }}" aria-label="Previous">
-                                            <i class="bi bi-chevron-left"></i>
-                                        </a>
-                                    </li>
-                                    <!-- Page Numbers -->
-                                    @for ($page = 1; $page <= $users->lastPage(); $page++)
-                                        <li class="page-item {{ $users->currentPage() == $page ? 'active' : '' }}">
-                                            <a class="page-link" href="{{ $users->url($page) }}">{{ $page }}</a>
+
+                                {{-- Page Numbers --}}
+                                @foreach($users->getUrlRange(1, $users->lastPage()) as $page => $url)
+                                    @if($page == $users->currentPage())
+                                        <li class="page-item active">
+                                            <span class="page-link">
+                                                {{ $page }}
+                                            </span>
                                         </li>
-                                    @endfor
-                                    <!-- Next -->
-                                    <li class="page-item {{ $users->hasMorePages() ? '' : 'disabled' }}">
-                                        <a class="page-link" href="{{ $users->nextPageUrl() ?? '#' }}" aria-label="Next">
-                                            <i class="bi bi-chevron-right"></i>
+                                    @else
+                                        <li class="page-item">
+                                            <a
+                                                class="page-link"
+                                                href="{{ $users->appends(request()->query())->url($page) }}"
+                                            >
+                                                {{ $page }}
+                                            </a>
+                                        </li>
+                                    @endif
+                                @endforeach
+
+                                {{-- Next --}}
+                                @if($users->hasMorePages())
+                                    <li class="page-item">
+                                        <a
+                                            class="page-link"
+                                            href="{{ $users->appends(request()->query())->nextPageUrl() }}"
+                                            aria-label="Next"
+                                        >
+                                            &raquo;
                                         </a>
                                     </li>
-                                </ul>
-                            </div>
+                                @else
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-label="Next">
+                                            &raquo;
+                                        </span>
+                                    </li>
+                                @endif
+                            </ul>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>

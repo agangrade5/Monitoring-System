@@ -26,6 +26,12 @@
     "src": "resources/js/backend/change-password.js",
     "isEntry": true
   },
+  "resources/js/backend/create-monitor.js": {
+    "file": "js/backend/create-monitor.js",
+    "name": "create-monitor",
+    "src": "resources/js/backend/create-monitor.js",
+    "isEntry": true
+  },
   "resources/js/backend/image-cropper.js": {
     "file": "js/backend/image-cropper.js",
     "name": "image-cropper",

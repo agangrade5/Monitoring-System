@@ -1,12 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Interactive client-side user search helper
+    // 1. Interactive user search helper
     const userSearchInput = document.getElementById('user-search');
     if (userSearchInput) {
+        if (userSearchInput.value) {
+            userSearchInput.focus();
+            const val = userSearchInput.value;
+            userSearchInput.value = '';
+            userSearchInput.value = val;
+        }
+
         userSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
             const rows = document.querySelectorAll('tbody tr');
 
             rows.forEach((row) => {
+                if (row.querySelector('.py-5')) return;
                 const nameNode = row.querySelector('.fw-bold');
                 const emailNode = row.querySelector('.text-secondary');
 

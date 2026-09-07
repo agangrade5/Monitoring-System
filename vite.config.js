@@ -32,6 +32,7 @@ export default defineConfig({
                 'resources/js/backend/showmonitor.js',
                 'resources/js/backend/user.js',
                 'resources/js/backend/activity-logs.js',
+                'resources/js/backend/create-monitor.js',
             ],
             buildDirectory: 'assets',
             refresh: true,

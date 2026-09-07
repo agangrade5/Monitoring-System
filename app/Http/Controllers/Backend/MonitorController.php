@@ -80,33 +80,69 @@ class MonitorController extends Controller
     public function store(MonitorUserRequest $request)
     {
         $validated = $request->validated();
-        $validated['user_id'] = auth()->user()->id;
-        $monitor = $this->monitorRepository->create($validated);
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
-       UtilityHelper::customActivityLog(
-            'monitor',
-            'New monitor created successfully.',
-            $monitor,
-            [
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]
-        );
+        $userId = auth()->user()->id;
 
-        /*
-        * Run all background monitor health checks via Service layer
-        */
-        $this->monitorService->runAllChecks($monitor->id);
+        $urls = $validated['urls'] ?? (isset($validated['url']) ? [$validated['url']] : []);
+        $urls = array_values(array_unique(array_filter($urls)));
+
+        if (empty($urls)) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Please provide at least one valid website URL or domain.');
+        }
+
+        $baseName = $validated['name'];
+        $createdCount = 0;
+
+        foreach ($urls as $url) {
+            $host = parse_url($url, PHP_URL_HOST) ?: $url;
+            $monitorName = (count($urls) > 1)
+                ? "{$baseName} - {$host}"
+                : $baseName;
+
+            $monitorData = [
+                'user_id' => $userId,
+                'name' => $monitorName,
+                'email' => $validated['email'],
+                'url' => $url,
+                'is_active' => $validated['is_active'] ?? true,
+            ];
+
+            $monitor = $this->monitorRepository->create($monitorData);
+            $createdCount++;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'monitor',
+                'New monitor created successfully.',
+                $monitor,
+                [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
+            /*
+            * Run all background monitor health checks via Service layer
+            */
+            $this->monitorService->runAllChecks($monitor->id);
+        }
+
         /*
         * Redirect to index page with success message
         */
+        $message = ($createdCount > 1)
+            ? "{$createdCount} Websites / Monitors created successfully."
+            : 'Website / Monitor created successfully.';
+
         return redirect()
             ->route('monitor')
-            ->with('success', 'Website / Monitor created successfully.');
+            ->with('success', $message);
     }
 
     /**
@@ -140,7 +176,19 @@ class MonitorController extends Controller
         $this->checkMonitorOwnership($monitor);
 
         $validated = $request->validated();
-        $this->monitorRepository->update($id, $validated);
+        $url = $validated['url'] ?? ($validated['urls'][0] ?? $monitor->url);
+
+        $updateData = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'url' => $url,
+        ];
+
+        if (isset($validated['is_active'])) {
+            $updateData['is_active'] = $validated['is_active'];
+        }
+
+        $this->monitorRepository->update($id, $updateData);
         $monitor = $this->monitorRepository->findById($id);
 
         /*

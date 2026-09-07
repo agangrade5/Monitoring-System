@@ -49,29 +49,61 @@ class CheckSecurityHeadersJob implements ShouldQueue
                 ]);
 
             $securityHeaders = [
-                'strict-transport-security' => 'Strict-Transport-Security',
-                'content-security-policy' => 'Content-Security-Policy',
-                'x-content-type-options' => 'X-Content-Type-Options',
-                'x-frame-options' => 'X-Frame-Options',
-                'referrer-policy' => 'Referrer-Policy',
-                'permissions-policy' => 'Permissions-Policy',
+                'strict-transport-security' => [
+                    'name' => 'Strict-Transport-Security (HSTS)',
+                    'description' => 'Forces secure HTTPS connections and prevents SSL stripping attacks.',
+                ],
+                'content-security-policy' => [
+                    'name' => 'Content-Security-Policy (CSP)',
+                    'description' => 'Mitigates Cross-Site Scripting (XSS) and malicious data injection.',
+                ],
+                'x-frame-options' => [
+                    'name' => 'X-Frame-Options',
+                    'description' => 'Prevents Clickjacking by controlling iframe embedding.',
+                ],
+                'x-content-type-options' => [
+                    'name' => 'X-Content-Type-Options',
+                    'description' => 'Blocks MIME-type sniffing to prevent malicious script execution.',
+                ],
+                'referrer-policy' => [
+                    'name' => 'Referrer-Policy',
+                    'description' => 'Controls referrer information sent in HTTP requests.',
+                ],
+                'permissions-policy' => [
+                    'name' => 'Permissions-Policy',
+                    'description' => 'Restricts browser permissions (Camera, Geolocation, Microphone).',
+                ],
             ];
 
             $result = [];
 
-            foreach ($securityHeaders as $key => $name) {
+            foreach ($securityHeaders as $key => $meta) {
                 $result[$key] = [
-                    'name' => $name,
+                    'name' => $meta['name'],
+                    'description' => $meta['description'],
                     'present' => $headers->has($key),
                     'value' => $headers->get($key),
                 ];
             }
 
+            $presentCount = collect($result)->where('present', true)->count();
+
+            $grade = match(true) {
+                $presentCount === 6 => 'A+',
+                $presentCount >= 5 => 'A',
+                $presentCount >= 4 => 'B',
+                $presentCount >= 3 => 'C',
+                $presentCount >= 2 => 'D',
+                default => 'F',
+            };
+
             $monitor->security_headers = $result;
+            $monitor->security_grade = $grade;
             $monitor->save();
 
             \Log::info('Security Headers Saved', [
                 'monitor_id' => $monitor->id,
+                'grade' => $grade,
                 'security_headers' => $result,
             ]);
 

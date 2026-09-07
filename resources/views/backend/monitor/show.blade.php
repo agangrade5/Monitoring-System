@@ -46,7 +46,7 @@
                
 
                 {{-- Pause/Resume Toggle --}}
-                <form action="{{ route('monitor.toggle', $monitor->id) }}" method="POST" class="d-inline">
+                <!-- <form action="{{ route('monitor.toggle', $monitor->id) }}" method="POST" class="d-inline">
                     @csrf
                     @method('PATCH')
                     <button type="submit" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" title="{{ $monitor->is_active ? 'Pause Monitor' : 'Resume Monitor' }}">
@@ -56,7 +56,7 @@
                             <i class="bi bi-play-circle text-success"></i> <span>Resume</span>
                         @endif
                     </button>
-                </form>
+                </form> -->
 
                 {{-- Edit --}}
                 <a href="{{ route('monitor.edit', $monitor->id) }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" title="Edit Monitor">
@@ -229,29 +229,46 @@
                             <h5 class="fw-bold mb-0 text-body-emphasis">Security Headers & Posture</h5>
                             <small class="text-muted">OWASP recommended security headers inspection</small>
                         </div>
-                        <span class="badge rounded-pill bg-body-secondary text-secondary border px-3 py-2">
-                            Grade {{ $monitor->security_grade ?? 'B+' }}
+                        @php
+                            $enforcedCount = is_array($monitor->security_headers) ? collect($monitor->security_headers)->where('present', true)->count() : 0;
+                            $computedGrade = $monitor->security_grade ?: match(true) {
+                                $enforcedCount === 6 => 'A+',
+                                $enforcedCount >= 5 => 'A',
+                                $enforcedCount >= 4 => 'B',
+                                $enforcedCount >= 3 => 'C',
+                                $enforcedCount >= 2 => 'D',
+                                default => 'F',
+                            };
+                            $gradeBadgeClass = match($computedGrade) {
+                                'A+', 'A' => 'bg-success-subtle text-success border border-success-subtle',
+                                'B', 'C' => 'bg-info-subtle text-info border border-info-subtle',
+                                'D' => 'bg-warning-subtle text-warning border border-warning-subtle',
+                                default => 'bg-danger-subtle text-danger border border-danger-subtle',
+                            };
+                        @endphp
+                        <span class="badge rounded-pill {{ $gradeBadgeClass }} px-3 py-2 fw-semibold">
+                            Grade {{ $computedGrade }} ({{ $enforcedCount }}/6 Enforced)
                         </span>
                     </div>
                     <div class="card-body px-4 py-2">
                         @php
                             $headers = $monitor->security_headers ?? [
-                                'strict-transport-security' => ['name' => 'Strict-Transport-Security', 'present' => true],
-                                'content-security-policy' => ['name' => 'Content-Security-Policy', 'present' => true],
-                                'x-frame-options' => ['name' => 'X-Frame-Options', 'present' => true],
-                                'x-content-type-options' => ['name' => 'X-Content-Type-Options', 'present' => true],
-                                'referrer-policy' => ['name' => 'Referrer-Policy', 'present' => true],
-                                'permissions-policy' => ['name' => 'Permissions-Policy', 'present' => false],
+                                'strict-transport-security' => ['name' => 'Strict-Transport-Security (HSTS)',  'present' => false],
+                                'content-security-policy' => ['name' => 'Content-Security-Policy (CSP)',  'present' => false],
+                                'x-frame-options' => ['name' => 'X-Frame-Options',  'present' => false],
+                                'x-content-type-options' => ['name' => 'X-Content-Type-Options',  'present' => false],
+                                'referrer-policy' => ['name' => 'Referrer-Policy',  'present' => false],
+                                'permissions-policy' => ['name' => 'Permissions-Policy',  'present' => false],
                             ];
                         @endphp
                         <div class="list-group list-group-flush">
                             @foreach($headers as $key => $header)
                                 <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 border-bottom">
-                                    <div>
+                                    <div class="me-3">
                                         <div class="fw-semibold text-body-emphasis">{{ $header['name'] ?? $key }}</div>
-                                        <small class="text-muted" style="font-size: 0.75rem;">{{ $header['description'] ?? 'Security header' }}</small>
+                                        <small class="text-muted" style="font-size: 0.75rem;">{{ $header['description'] ?? 'Security Header' }}</small>
                                     </div>
-                                    <span class="badge rounded-pill {{ ($header['present'] ?? false) ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle' }}">
+                                    <span class="badge rounded-pill flex-shrink-0 {{ ($header['present'] ?? false) ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle' }}">
                                         {{ ($header['present'] ?? false) ? 'Enforced' : 'Missing' }}
                                     </span>
                                 </div>
@@ -286,8 +303,8 @@
                                             </div>
                                         </td>
                                         <td><span class="badge bg-body-secondary text-secondary border">200 OK</span></td>
-                                        <td class="text-success fw-semibold">{{ $monitor->response_time ?? 245 }} ms</td>
-                                        <td class="pe-4 text-end text-muted small">{{ $monitor->last_checked_at ? $monitor->last_checked_at->diffForHumans() : 'Recently' }}</td>
+                                        <td class="text-success fw-semibold">{{ $monitor->response_time }} ms</td>
+                                        <td class="pe-4 text-end text-muted small">{{ $monitor->last_checked_at}}</td>
                                     </tr>
                                     <tr>
                                         <td class="ps-4">
@@ -298,7 +315,7 @@
                                         </td>
                                         <td><span class="badge bg-body-secondary text-secondary border">TLS 1.3</span></td>
                                         <td class="text-success fw-semibold">0 ms</td>
-                                        <td class="pe-4 text-end text-muted small">{{ $monitor->ssl_checked_at ? $monitor->ssl_checked_at->diffForHumans() : 'Recently' }}</td>
+                                        <td class="pe-4 text-end text-muted small">{{ $monitor->ssl_checked_at }}</td>
                                     </tr>
                                     <tr>
                                         <td class="ps-4">
@@ -309,7 +326,7 @@
                                         </td>
                                         <td><span class="badge bg-body-secondary text-secondary border">RDAP OK</span></td>
                                         <td class="text-muted small">N/A</td>
-                                        <td class="pe-4 text-end text-muted small">{{ $monitor->domain_checked_at ? $monitor->domain_checked_at->diffForHumans() : 'Recently' }}</td>
+                                        <td class="pe-4 text-end text-muted small">{{ $monitor->domain_checked_at }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -341,11 +358,17 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="text-muted small">Expiry Date:</span>
-                            <span class="fw-semibold text-body-emphasis">{{ $monitor->domain_expires_at ? $monitor->domain_expires_at->format('M d, Y') : 'N/A' }}</span>
+                            <span class="fw-semibold text-body-emphasis">{{ \App\Helpers\UtilityHelper::formatDateTime($monitor->domain_expires_at, 'd M Y') }}</span>
                         </div>
+                          @php
+                                            $domainDaysRemaining = now()->startOfDay()->diffInDays(
+                                                $monitor->domain_expires_at->copy()->startOfDay(),
+                                                false
+                                            );
+                                        @endphp
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="text-muted small">Days Remaining:</span>
-                            <span class="fw-bold text-success">{{ $monitor->domain_days_remaining ?? 'N/A' }} days</span>
+                            <span class="fw-bold text-success">{{ $domainDaysRemaining ?? 'N/A' }} days</span>
                         </div>
                     </div>
                 </div>
@@ -389,10 +412,6 @@
                             <span class="text-muted small">Alert Email:</span>
                             <span class="fw-semibold text-body-emphasis">{{ $monitor->email ?? 'Not configured' }}</span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted small">Alert Mobile:</span>
-                            <span class="fw-semibold text-body-emphasis">{{ $monitor->mobile ?? 'Not configured' }}</span>
-                        </div>
                         <div class="mt-2">
                             <span class="badge bg-body-secondary text-secondary border w-100 py-2">
                                 <i class="bi bi-clock-history me-1"></i> Notifies on status change
@@ -405,23 +424,23 @@
                 <div class="card border-0 shadow-sm rounded-4 mb-0">
                     <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="fw-bold mb-0 text-body-emphasis">Server & Endpoints</h6>
-                            <i class="bi bi-hdd-network text-info fs-5"></i>
+                            <h6 class="fw-bold mb-0 text-body-emphasis">PHP Engine</h6>
+                            <i class="bi bi-filetype-php text-info fs-5"></i>
+                            
                         </div>
                     </div>
                     <div class="card-body px-4 py-3">
+                        
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted small">Server Host:</span>
-                            <span class="fw-semibold text-body-emphasis">{{ $monitor->server_info ?? 'Global Edge CDN' }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted small">Monitored Ports:</span>
-                            <span class="badge bg-body-secondary text-secondary border">80, 443</span>
+                           <span class="text-muted small">PHP Runtime:</span>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                PHP {{ $monitor->php_version  }}
+                            </span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted small">PHP Runtime:</span>
-                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                PHP {{ $monitor->php_version ?? '8.2' }}
+                            <span class="text-muted small">Status:</span>
+                            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
+                                 {{ ucfirst($monitor->php_status ?? 'Unknown') }}
                             </span>
                         </div>
                     </div>

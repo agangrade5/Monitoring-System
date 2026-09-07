@@ -114,7 +114,10 @@
                                             @endif
                                         </div>
                                         <div class="text-muted small">
-                                            Checked: {{ $monitor->last_checked_at }}
+                                          
+                                             {{ \App\Helpers\UtilityHelper::formatDateTime( $monitor->last_checked_at, 'd M Y') }}
+                                             <br>
+                                             {{ \App\Helpers\UtilityHelper::formatDateTime( $monitor->last_checked_at, 'h:i:s A') }}
                                         </div>
                                     </td>
 
@@ -141,14 +144,14 @@
 
                                     @if($monitor->ssl_expires_at)
                                         <div class="text-muted small mt-1">
-                                            Exp: {{ $monitor->ssl_expires_at->format('Y-m-d') }}
+                                            Exp: {{ \App\Helpers\UtilityHelper::formatDateTime( $monitor->ssl_expires_at, 'd M Y') }}
                                         </div>
 
                                         <div class="text-muted small font-mono">
                                             {{ Str::limit($monitor->ssl_issuer, 20) }}
                                         </div>
 
-                                        <div class="text-muted small font-mono">
+                                        <div class="text-muted small font-mono"  style="font-size: 12px;">
                                             {{ $monitor->ssl_days_remaining }} days remaining
                                         </div>
                                     @endif
@@ -157,7 +160,7 @@
                                 {{-- 4. PHP Version --}}
                                 <td>
                                     @if($monitor->php_version && strtolower($monitor->php_version) !== 'unknown')
-                                        <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle d-inline-flex align-items-center gap-1 fw-semibold">
+                                        <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 fw-semibold">
                                             <i class="bi bi-filetype-php"></i> PHP {{ $monitor->php_version }}
                                         </span>
                                     @elseif(strtolower($monitor->php_version ?? '') === 'unknown')
@@ -175,24 +178,42 @@
                                 <td>
                                     @if($monitor->domain_status === 'active')
                                         <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-check-circle-fill"></i> {{ $monitor->domain_status }} 
+                                            <i class="bi bi-check-circle-fill"></i> {{ ucfirst($monitor->domain_status) }} 
                                         </span>
                                     @elseif($monitor->domain_status === 'warning')
                                         <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-exclamation-triangle-fill"></i> {{ $monitor->domain_status }}
+                                            <i class="bi bi-exclamation-triangle-fill"></i> {{ ucfirst($monitor->domain_status) }} 
                                         </span>
                                     @elseif($monitor->domain_status === 'expired')
                                         <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-x-circle-fill"></i> {{ $monitor->domain_status }}
+                                            <i class="bi bi-x-circle-fill"></i> {{ ucfirst($monitor->domain_status) }} 
                                         </span>
                                     @else
                                         <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                             <i class="bi bi-dash"></i> No expiry
                                         </span>
                                     @endif
-                                    @if($monitor->domain_expires_at)
+                                @if($monitor->domain_expires_at)
+                                        @php
+                                            $domainDaysRemaining = now()->startOfDay()->diffInDays(
+                                                $monitor->domain_expires_at->copy()->startOfDay(),
+                                                false
+                                            );
+                                        @endphp
+
                                         <div class="text-muted small mt-1">
-                                            Exp: {{ $monitor->domain_expires_at?->format('Y-m-d') }}
+                                            Exp:
+                                            {{ \App\Helpers\UtilityHelper::formatDateTime($monitor->domain_expires_at, 'd M Y') }}
+                                        </div>
+
+                                        <div class="text-muted small font-mono" style="font-size: 12px;">
+                                            @if($domainDaysRemaining < 0)
+                                                Expired {{ abs($domainDaysRemaining) }} days ago
+                                            @elseif($domainDaysRemaining === 0)
+                                                Expires today
+                                            @else
+                                                {{ $domainDaysRemaining }} days remaining
+                                            @endif
                                         </div>
                                     @endif
                                 </td>
@@ -233,7 +254,7 @@
                                             </a>
 
                                             {{-- Trigger check --}}
-                                            <form action="{{ route('monitor.check', $monitor->id) }}" method="POST" class="d-inline trigger-check-form">
+                                            <form action="{{ route('monitor.check', $monitor->id) }}" method="POST" class="d-inline trigger-check-form" data-no-loader>
                                                 @csrf
                                                 <button type="submit" class="btn btn-outline-success  btn-sm trigger-btn text-white bg-success " title="Trigger Check">
                                                     <i class="bi bi-arrow-clockwise icon-idle"></i>
@@ -246,7 +267,7 @@
                                                 class="btn btn-outline-primary btn-sm text-white bg-primary"
                                                 title="Edit"
                                             >
-                                                <i class="bi bi-pencil"></i>
+                                               <i class="bi bi-pencil-square"></i>
                                             </a>
 
                                             {{-- Delete --}}
@@ -288,36 +309,81 @@
                 </div>
             </div>
 
-            {{-- Pagination --}}
-            @if($monitors->hasPages())
-                <div class="card-footer bg-transparent border-top py-3">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <div class="small text-muted fw-medium">
-                            Showing {{ $monitors->firstItem() ?? 0 }} to {{ $monitors->lastItem() ?? 0 }} of {{ $monitors->total() }} monitors
-                        </div>
-                        <div>
-                            <ul class="pagination pagination-sm m-0">
-                                <!-- Previous -->
-                                <li class="page-item {{ $monitors->onFirstPage() ? 'disabled' : '' }}">
-                                    <a class="page-link" href="{{ $monitors->previousPageUrl() ? $monitors->appends(request()->except('page'))->previousPageUrl() : '#' }}" aria-label="Previous">
-                                        <i class="bi bi-chevron-left"></i>
-                                    </a>
-                                </li>
-                                <!-- Page Numbers -->
-                                @for ($page = 1; $page <= $monitors->lastPage(); $page++)
-                                    <li class="page-item {{ $monitors->currentPage() == $page ? 'active' : '' }}">
-                                        <a class="page-link" href="{{ $monitors->appends(request()->except('page'))->url($page) }}">{{ $page }}</a>
-                                    </li>
-                                @endfor
-                                <!-- Next -->
-                                <li class="page-item {{ $monitors->hasMorePages() ? '' : 'disabled' }}">
-                                    <a class="page-link" href="{{ $monitors->nextPageUrl() ? $monitors->appends(request()->except('page'))->nextPageUrl() : '#' }}" aria-label="Next">
-                                        <i class="bi bi-chevron-right"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+            <!-- Pagination -->
+            @if($monitors->total() > 0)
+                <div class="card-footer clearfix">
+                    {{-- Showing Records --}}
+                    <div class="float-start pt-1 fs-7 text-body-secondary">
+                        Showing
+                        {{ $monitors->firstItem() ?? 0 }}
+                        to
+                        {{ $monitors->lastItem() ?? 0 }}
+                        of
+                        {{ $monitors->total() }}
+                        monitors
                     </div>
+
+                    {{-- Pagination --}}
+                    <ul class="pagination pagination-sm m-0 float-end">
+
+                        {{-- Previous --}}
+                        @if($monitors->onFirstPage())
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-label="Previous">
+                                    &laquo;
+                                </span>
+                            </li>
+                        @else
+                            <li class="page-item">
+                                <a
+                                    class="page-link"
+                                    href="{{ $monitors->appends(request()->query())->previousPageUrl() }}"
+                                    aria-label="Previous"
+                                >
+                                    &laquo;
+                                </a>
+                            </li>
+                        @endif
+
+                        {{-- Page Numbers --}}
+                        @foreach($monitors->getUrlRange(1, $monitors->lastPage()) as $page => $url)
+                            @if($page == $monitors->currentPage())
+                                <li class="page-item active">
+                                    <span class="page-link">
+                                        {{ $page }}
+                                    </span>
+                                </li>
+                            @else
+                                <li class="page-item">
+                                    <a
+                                        class="page-link"
+                                        href="{{ $monitors->appends(request()->query())->url($page) }}"
+                                    >
+                                        {{ $page }}
+                                    </a>
+                                </li>
+                            @endif
+                        @endforeach
+
+                        {{-- Next --}}
+                        @if($monitors->hasMorePages())
+                            <li class="page-item">
+                                <a
+                                    class="page-link"
+                                    href="{{ $monitors->appends(request()->query())->nextPageUrl() }}"
+                                    aria-label="Next"
+                                >
+                                    &raquo;
+                                </a>
+                            </li>
+                        @else
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-label="Next">
+                                    &raquo;
+                                </span>
+                            </li>
+                        @endif
+                    </ul>
                 </div>
             @endif
         </div>
