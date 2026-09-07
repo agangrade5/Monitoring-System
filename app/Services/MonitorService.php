@@ -14,7 +14,7 @@ use App\Jobs\{
 };
 use App\Notifications\TestMonitorAlertNotification;
 use Illuminate\Support\Facades\Notification;
-
+use App\Helpers\UtilityHelper;
 class MonitorService
 {
     /**
@@ -79,13 +79,20 @@ class MonitorService
         try {
             Notification::route('mail', $recipientEmail)
                 ->notify(new TestMonitorAlertNotification($monitor, $causer));
-
-            if (function_exists('activity') && $causer) {
-                activity('monitor')
-                    ->causedBy($causer)
-                    ->performedOn($monitor)
-                    ->log("Sent test notification for monitor: {$monitor->name} to {$recipientEmail}");
-            }
+             /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+       UtilityHelper::customActivityLog(
+            'monitor',
+            "Sent test notification for monitor: {$monitor->name} to {$recipientEmail}.",
+            $monitor,
+            [
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]
+        );
 
             return [
                 'success' => true,

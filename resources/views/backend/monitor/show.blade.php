@@ -464,7 +464,9 @@
     $recipientEmail = $monitor->email ?: (auth()->user()->email ?? 'No email configured');
 @endphp
 
-<div class="modal fade" id="testNotificationModal" tabindex="-1" aria-labelledby="testNotificationModalLabel" aria-hidden="true"  class="needs-validation" novalidate>
+<div  id="testNotificationModal" tabindex="-1" aria-labelledby="testNotificationModalLabel" aria-hidden="true"  class="modal fade" aria-hidden="true"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
         <div class="modal-content rounded-4 border shadow-lg">
             <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
@@ -475,7 +477,7 @@
             </div>
 
             <div class="modal-body px-4 pt-3 pb-4">
-                <form id="formSendTestNotification" action="{{ route('monitor.testNotification', $monitor->id) }}" method="POST">
+                <form id="formSendTestNotification" action="{{ route('monitor.testNotification', $monitor->id) }}" method="POST"  class="needs-validation" novalidate>
                     @csrf
 
                     {{-- Attached people and integrations section --}}
