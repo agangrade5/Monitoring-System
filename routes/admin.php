@@ -124,33 +124,27 @@ Route::middleware('auth')->group(function () {
             Route::get('/users', [
                 UserController::class,
                 'allUsers',
-            ])->name('users');
-
-           
+            ])->name('users.index');
 
             Route::post('/users', [
                 UserController::class,
                 'storeUser',
-            ])->name('store');
+            ])->name('users.store');
 
             Route::get('/users/{id}/edit', [
                 UserController::class,
                 'editUser',
-            ])->name('edit');
+            ])->name('users.edit');
 
             Route::post('/users/update/{id}', [
                 UserController::class,
                 'updateUser',
-            ])->name('update');   
-           
-          
+            ])->name('users.update');
 
             Route::delete('/users/{id}', [
                 UserController::class,
-                'destroyUser',  
-            ])->name('destroy');
-
-            
+                'destroyUser',
+            ])->name('users.destroy');
 
             /*
             |--------------------------------------------------------------------------
@@ -212,16 +206,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/users', function () {
                 return 'Users';
             })->name('users');
-        
-        
-        
-            Route::get('/profile', [
-                UserController::class,
-                'profile'
-            ])->name('profile');
-            
 
-           
                /*
             |--------------------------------------------------------------------------
             | Monitors Routes
@@ -236,7 +221,7 @@ Route::middleware('auth')->group(function () {
                 MonitorController::class,
                 'create'
             ])->name('monitor.create');
-            
+
             Route::get('/monitor/{id}', [
                 MonitorController::class,
                 'show'
@@ -270,7 +255,7 @@ Route::middleware('auth')->group(function () {
                 MonitorController::class,
                 'triggerCheck'
             ])->name('monitor.check');
-            
+
             Route::post('/monitor/{id}/test-notification', [
                 MonitorController::class,
                 'sendTestNotification'
