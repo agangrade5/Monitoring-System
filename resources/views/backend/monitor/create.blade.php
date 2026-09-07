@@ -81,7 +81,7 @@
                                                        name="urls[]" 
                                                        class="form-control url-input @error('urls.'.$index) is-invalid @enderror" 
                                                        value="{{ $oldUrl }}" 
-                                                       placeholder="e.g. example.com or https://example.com" 
+                                                       placeholder="e.g. https://example.com" 
                                                        required>
                                                 @if($index === 0)
                                                     <button type="button" class="btn btn-primary px-3 add-url-btn" title="Add Domain">
@@ -102,7 +102,7 @@
                                         <div class="text-danger small mt-2">{{ $message }}</div>
                                     @enderror
                                     <div class="form-text text-muted small mt-1">
-                                        Enter complete URLs (e.g. <code>https://example.com</code>) or domain names (e.g. <code>example.com</code>).
+                                        Enter complete URLs (e.g. <code>https://example.com</code>) .
                                     </div>
                                 </div>
                             </div>

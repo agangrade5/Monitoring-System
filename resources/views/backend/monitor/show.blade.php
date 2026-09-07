@@ -464,7 +464,7 @@
     $recipientEmail = $monitor->email ?: (auth()->user()->email ?? 'No email configured');
 @endphp
 
-<div class="modal fade" id="testNotificationModal" tabindex="-1" aria-labelledby="testNotificationModalLabel" aria-hidden="true">
+<div class="modal fade" id="testNotificationModal" tabindex="-1" aria-labelledby="testNotificationModalLabel" aria-hidden="true"  class="needs-validation" novalidate>
     <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
         <div class="modal-content rounded-4 border shadow-lg">
             <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">

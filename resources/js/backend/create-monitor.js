@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
         row.className = 'url-row input-group';
         row.innerHTML = `
             <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
-            <input type="text" name="urls[]" class="form-control url-input" placeholder="e.g. example.com or https://example.com" required>
+            <input type="text" name="urls[]" class="form-control url-input" placeholder="e.g.  https://example.com" required>
             <button type="button" class="btn btn-outline-danger px-3 remove-url-btn" title="Remove Domain">
                 <i class="bi bi-dash-lg"></i>
             </button>
