@@ -57,6 +57,7 @@ class UserRepository implements UserRepositoryInterface
             })
             ->latest()
             ->paginate(10);
+        return User::withoutRole('Admin')->latest()->paginate(10);
     }
 
     /**

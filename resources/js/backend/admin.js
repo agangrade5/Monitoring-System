@@ -226,5 +226,90 @@ document.addEventListener('DOMContentLoaded', () => {
         timezoneInput.value =
             Intl.DateTimeFormat().resolvedOptions().timeZone;
     }
-
 });
+
+// ========================================
+// Generic Delete Record (AJAX)
+// ========================================
+
+document.addEventListener('click', function (event) {
+    const button = event.target.closest('.delete-record-btn');
+
+    if (!button) {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    const url = button.dataset.url;
+    const rowId = button.dataset.rowId;
+
+    if (!url) {
+        toastr.error('Delete URL not found.');
+        return;
+    }
+    showConfirmation(button, () => {
+        // Disable button
+        button.disabled = true;
+        // Save original button HTML
+        const originalHtml = button.innerHTML;
+        // Show loader
+        button.innerHTML = `
+            <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true">
+            </span>
+        `;
+
+        $.ajax({
+            url: url,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'X-CSRF-TOKEN': document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute('content'),
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function (response) {
+
+                if (!response.status) {
+                    throw new Error(
+                        response.message ||
+                        'Unable to delete record.'
+                    );
+                }
+
+                // Remove row
+                if (rowId) {
+                    const $row = $(`#${rowId}`);
+                    if ($row.length) {
+                        $row.fadeOut(300, function () {
+                            $(this).remove();
+                        });
+                    }
+                }
+                toastr.success(
+                    response.message ||
+                    'Record deleted successfully.'
+                );
+            },
+            error: function (xhr) {
+                console.error(
+                    'Delete Error:',
+                    xhr
+                );
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+                toastr.error(
+                    xhr.responseJSON?.message ||
+                    'Unable to delete record. Please try again.'
+                );
+            }
+        });
+    });
+}, true);

@@ -41,14 +41,14 @@
 
 
                  <li class="nav-item">
-                    <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                    <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-people"></i>
                         <p>Users</p>
                     </a>
                 </li>
                   <li class="nav-item">
                      <a href="{{ route('monitor') }}" class="nav-link {{ request()->routeIs('monitor') ? 'active' : '' }}">
-                   
+
                         <i class="nav-icon bi bi-activity"></i>
                         <p>Monitoring</p>
                     </a>
@@ -79,7 +79,7 @@
 
                  <li class="nav-item">
                      <a href="{{ route('monitor') }}" class="nav-link {{ request()->routeIs('monitor') ? 'active' : '' }}">
-                   
+
                         <i class="nav-icon bi bi-activity"></i>
                         <p>Monitoring</p>
                     </a>
@@ -89,9 +89,9 @@
                         <i class="nav-icon bi bi-gear"></i>
                         <p>Settings</p>
                     </a>
-                </li> 
-                
-            </ul> 
+                </li>
+
+            </ul>
             @endrole
 
             <!--end::Sidebar Menu-->

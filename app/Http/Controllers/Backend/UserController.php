@@ -35,7 +35,7 @@ class UserController extends Controller
 
         $users = $this->userRepository->getAllUsers($search);
 
-        return view('backend.admin.user', [
+        return view('backend.admin.users.index', [
             'title' => 'User',
             'bodyClassName' => 'user-page',
             'users' => $users,
@@ -44,11 +44,11 @@ class UserController extends Controller
 
     /**
      * Show user profile
-     * 
+     *
      * @return View
-     * 
+     *
      * This method returns the view for the user profile page.
-     * 
+     *
      */
     public function profile(): View
     {
@@ -81,12 +81,12 @@ class UserController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function updateUser(UserRequest $request, int $id)
     {
-    
+
         $validated = $request->validated();
         $this->userRepository->update($id, $validated);
         return redirect()
@@ -98,15 +98,24 @@ class UserController extends Controller
      * Destroy an existing user.
      *
      * @param int $id
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroyUser(int $id)
     {
-        $this->userRepository->delete($id);
-        return redirect()
-            ->back()
-            ->with('success', 'User deleted successfully.');
+        $deleted = $this->userRepository->delete($id);
+
+        if (!$deleted) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to delete user.',
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User deleted successfully.',
+        ]);
     }
     /**
      * Update user profile
