@@ -151,23 +151,17 @@ Route::middleware('auth')->group(function () {
             | Activity Logs
             |--------------------------------------------------------------------------
             */
-            Route::get('/activity-logs', [
-                ActivityLogController::class,
-                'index',
-            ])->name('activity-logs.index');
+            Route::middleware('permission:activity-logs.view-all')
+                ->get('/activity-logs', [ActivityLogController::class, 'index'])
+                ->name('activity-logs.index');
 
-            Route::get('/activity-logs/{id}', [
-                ActivityLogController::class,
-                'show',
-            ])->name('activity-logs.show');
+            Route::middleware('permission:activity-logs.view')
+                ->get('/activity-logs/{id}', [ActivityLogController::class, 'show'])
+                ->name('activity-logs.show');
 
-            Route::delete('/activity-logs/{id}', [
-                ActivityLogController::class,
-                'destroy',
-            ])
-                ->middleware('role:admin')
+            Route::middleware(['permission:activity-logs.delete', 'role:admin'])
+                ->delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])
                 ->name('activity-logs.destroy');
-
 
         });
 
@@ -266,21 +260,16 @@ Route::middleware('auth')->group(function () {
             | Activity Logs
             |--------------------------------------------------------------------------
             */
-            Route::get('/activity-logs', [
-                ActivityLogController::class,
-                'index',
-            ])->name('activity-logs.index');
+            Route::middleware('permission:activity-logs.view-all')
+                ->get('/activity-logs', [ActivityLogController::class, 'index'])
+                ->name('activity-logs.index');
 
-            Route::get('/activity-logs/{id}', [
-                ActivityLogController::class,
-                'show',
-            ])->name('activity-logs.show');
+            Route::middleware('permission:activity-logs.view')
+                ->get('/activity-logs/{id}', [ActivityLogController::class, 'show'])
+                ->name('activity-logs.show');
 
-            Route::delete('/activity-logs/{id}', [
-                ActivityLogController::class,
-                'destroy',
-            ])
-                ->middleware('role:admin')
+            Route::middleware(['permission:activity-logs.delete', 'role:admin'])
+                ->delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])
                 ->name('activity-logs.destroy');
         });
 

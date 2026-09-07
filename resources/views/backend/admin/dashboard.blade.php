@@ -84,14 +84,16 @@
                                 ? route('admin.activity-logs.index')
                                 : route('activity-logs.index');
                         @endphp
-                        <a href="{{ $activityLogsRoute }}" class="btn btn-outline-primary btn-sm px-3">View All Logs</a>
+                        @can('activity-logs.view-all')
+                            <a href="{{ $activityLogsRoute }}" class="btn btn-outline-primary btn-sm px-3">View All Logs</a>
+                        @endcan
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
                                 <thead>
                                     <tr>
-                                        <th width="60">#</th>
+                                        <th width="60">S.No</th>
                                         <th>User</th>
                                         <th>Activity</th>
                                         <th>Event</th>
@@ -122,7 +124,7 @@
                                         @endphp
                                         <tr>
                                             <td>
-                                                {{ $log->id }}
+                                                {{ $loop->iteration }}
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
