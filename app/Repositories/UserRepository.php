@@ -41,6 +41,18 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
+     * Method findByPhone
+     *
+     * @param string $phone
+     *
+     * @return User
+     */
+    public function findByPhone(string $phone): ?User
+    {
+        return User::where('phone_number', $phone)->first();
+    }
+
+    /**
      * Method to retrieve all users
      *
      * @return array<User>

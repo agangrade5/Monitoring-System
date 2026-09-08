@@ -26,6 +26,15 @@ interface UserRepositoryInterface
     public function findByEmail(string $email): ?User;
 
     /**
+     * Method findByPhone
+     *
+     * @param string $phone
+     *
+     * @return User
+     */
+    public function findByPhone(string $phone): ?User;
+
+    /**
      * Method to retrieve all users
      *
      * @return array<User>

@@ -15,7 +15,7 @@
         <div class="card-body login-card-body">
             <h5 class="login-box-msg">{{ $title }}</h5>
 
-            <form method="POST" action="{{ route('login.submit') }}" id="login-form" class="needs-validation" novalidate>
+            <form method="POST" action="{{ route('admin.login.submit') }}" id="login-form" class="needs-validation" novalidate>
                 @csrf
 
                 <input type="hidden" name="timezone" id="timezone">
@@ -90,13 +90,13 @@
 
             <div class="text-center mt-3 pt-3 border-top border-white-50">
                 <p class="mb-1">
-                    <a href="{{ route('password.request') }}">I forgot my password</a>
+                    <a href="{{ route('admin.password.request') }}">I forgot my password</a>
                 </p>
-                <p class="mb-0">
+                {{-- <p class="mb-0">
                     <a href="{{ route('register') }}">
                         Create new account
                     </a>
-                </p>
+                </p> --}}
             </div>
         </div>
     </div>
