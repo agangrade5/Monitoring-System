@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-
+use App\Services\MailConfigService;
 class TestMonitorAlertNotification extends Notification
 {
     use Queueable;
@@ -36,7 +36,9 @@ class TestMonitorAlertNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $showUrl = route('monitor.show', $this->monitor->id);
+    // Load mail configuration from settings table
+        app(MailConfigService::class)->apply();    
+    $showUrl = route('monitor.show', $this->monitor->id);
 
         return (new MailMessage)
             ->subject('[Test Alert] Monitor Test Notification: ' . $this->monitor->name)

@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Services\MailConfigService;
 
 class CustomResetPasswordNotification extends Notification
 {
@@ -38,6 +39,7 @@ class CustomResetPasswordNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+          app(MailConfigService::class)->apply();   
         $url = url(
             route('password.reset', [
                 'token' => $this->token,

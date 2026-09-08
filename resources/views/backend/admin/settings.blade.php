@@ -33,10 +33,11 @@
                             <a href="#account" class="settings-nav-link active mb-1" data-bs-toggle="pill" role="tab" aria-selected="true">
                                 <i class="bi bi-person me-2"></i>Account Settings
                             </a>
+                             @role('admin')
                             <a href="#change-password" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                 <i class="bi bi-shield-lock me-2"></i>Change Password
                             </a>
-                             @role('admin')
+                             
                             <a href="#twilio-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                 <i class="bi bi-chat-text me-2"></i>Twilio Settings
                             </a>

@@ -344,7 +344,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-5">
+                                    <td colspan="8" class="text-center py-5">
                                         <div class="text-secondary">
                                             <i class="bi bi-display fs-1 d-block mb-2 text-muted"></i>
                                             <h5 class="text-body-emphasis">No websites or monitors found</h5>

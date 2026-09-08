@@ -66,6 +66,7 @@
                                     <tr>
                                         <th class="ps-4">S.No</th>
                                         <th>User</th>
+                                        <th>Mobile Number</th>
                                         <th>Role</th>
                                         <th>Registered Date</th>
                                         <th>Status</th>
@@ -74,6 +75,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse($users as $user)
+                                    
                                         <tr id="user-row-{{ $user['id'] }}">
                                             <!-- Serial Number -->
                                             <td class="ps-4">
@@ -103,6 +105,10 @@
                                                         @endif
                                                     </div>
                                                 </div>
+                                            </td>
+                                            <!-- Mobile Number -->
+                                            <td>
+                                                {{ $user['phone_number'] }}
                                             </td>
                                             <!-- Email -->
                                             <td>
@@ -157,7 +163,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center py-5">
+                                            <td colspan="7" class="text-center py-5">
                                                 <div class="text-muted">
                                                     <i class="bi bi-clipboard-x fs-1 d-block mb-3"></i>
                                                     <h6 class="fw-semibold">No Users Found</h6>

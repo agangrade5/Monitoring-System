@@ -42,7 +42,34 @@
                             @endif
                         </div>
                     </div>
+
                     <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small" for="user_phone">
+                                Mobile Number
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-phone"></i>
+                                </span>
+                                <input
+                                    type="tel"
+                                    name="phone_number"
+                                    id="user_phone"
+                                    class="form-control @if(old('form_type') === 'add') @error('phone_number') is-invalid @enderror @endif"
+                                    value="{{ old('form_type') === 'add' ? old('phone_number') : '' }}"
+                                    placeholder="Enter mobile number"
+                                    maxlength="10"
+                                    required
+                                >
+
+                                @if(old('form_type') === 'add')
+                                    @error('phone_number')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                @endif
+                            </div>
+                        </div>
+                    <!-- <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="user_password">Password</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
@@ -53,7 +80,7 @@
                                 @enderror
                             @endif
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="user_status">Status</label>

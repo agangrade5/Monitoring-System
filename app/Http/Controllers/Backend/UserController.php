@@ -34,6 +34,7 @@ class UserController extends Controller
         $search = request('search');
 
         $users = $this->userRepository->getAllUsers($search);
+        
 
         return view('backend.admin.users.index', [
             'title' => 'User',

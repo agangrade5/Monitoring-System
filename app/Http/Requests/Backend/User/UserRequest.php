@@ -43,29 +43,37 @@ class UserRequest extends FormRequest
                 new ValidEmailDomain(),
             ],
 
+            'phone_number' => [
+                'required',
+                'string',
+                'max:15',
+                Rule::unique('users', 'phone_number')->ignore($userId),
+                new ValidMobile(),
+            ],
+
             'is_active' => [
                 'nullable',
                 'boolean',
             ],
         ];
 
-        if ($userId) {
-            // Password is optional during user update
-            $rules['password'] = [
-                'nullable',
-                'string',
-                new WithoutSpacesRule(),
-                new StrictPasswordRule(),
-            ];
-        } else {
-            // Password is required when adding a new user
-            $rules['password'] = [
-                'required',
-                'string',
-                new WithoutSpacesRule(),
-                new StrictPasswordRule(),
-            ];
-        }
+        // if ($userId) {
+        //     // Password is optional during user update
+        //     $rules['password'] = [
+        //         'nullable',
+        //         'string',
+        //         new WithoutSpacesRule(),
+        //         new StrictPasswordRule(),
+        //     ];
+        // } else {
+        //     // Password is required when adding a new user
+        //     $rules['password'] = [
+        //         'required',
+        //         'string',
+        //         new WithoutSpacesRule(),
+        //         new StrictPasswordRule(),
+        //     ];
+        // }
 
         return $rules;
     }
