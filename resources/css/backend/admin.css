@@ -396,8 +396,8 @@ body {
 }
 
 .settings-nav-link.active {
-    background-color: rgba(13, 110, 253, 0.1);
-    color: #0d6efd;
+    background-color: #0d6efd;
+    color: #fff;
     border-color: rgba(13, 110, 253, 0.15);
     font-weight: 600;
 }

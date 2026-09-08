@@ -56,6 +56,7 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
+                                <th class="ps-3" style="min-width: 40px;">S.No</th>
                                 <th class="ps-3" style="min-width: 220px;">Website Details</th>
                                 <th style="min-width: 160px;">Uptime Status</th>
                                 <th style="min-width: 150px;">SSL Status</th>
@@ -69,6 +70,12 @@
                         <tbody>
                             @forelse($monitors as $monitor)
                                 <tr id="monitor-row-{{ $monitor->id }}">
+
+                                  
+                                            <!-- Serial Number -->
+                                            <td class="ps-4">
+                                                {{ $loop->iteration }}
+                                            </td>
                                     {{-- 1. Website Details --}}
                                     <td class="ps-3">
                                         <div class="fw-semibold text-body-emphasis fs-6">

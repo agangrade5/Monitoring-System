@@ -9,37 +9,8 @@
     <div class="card-body">
         <form method="POST" action="{{ route('admin.settings.otp') }}" id="otp-settings-form" class="row g-4">
             @csrf
-            {{-- 1. Max Time --}}
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-secondary small" for="otp_max_time">OTP Max Expiry Time (max_time in Seconds)</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-clock-history"></i></span>
-                    <select class="form-select" id="otp_max_time" name="otp_max_time">
-                        <option value="15" {{ ($otpData['max_time'] ?? 60) == 15 ? 'selected' : '' }}>15 Seconds</option>
-                        <option value="30" {{ ($otpData['max_time'] ?? 60) == 30 ? 'selected' : '' }}>30 Seconds</option>
-                        <option value="60" {{ ($otpData['max_time'] ?? 60) == 60 ? 'selected' : '' }}>60 Seconds</option>
-                        <option value="90" {{ ($otpData['max_time'] ?? 60) == 90 ? 'selected' : '' }}>90 Seconds</option>
-                    </select>
-                </div>
-                <small class="text-muted mt-1 d-block">Valid values: 15, 30, 60, 90 Seconds</small>
-            </div>
 
-            {{-- 2. OTP Length --}}
-            <div class="col-md-6">
-                <label class="form-label fw-semibold text-secondary small" for="otp_length">OTP Digits Length (otp_length)</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-123"></i></span>
-                    <select class="form-select" id="otp_length" name="otp_length">
-                        <option value="4" {{ ($otpData['otp_length'] ?? 6) == 4 ? 'selected' : '' }}>4 Digits</option>
-                        <option value="5" {{ ($otpData['otp_length'] ?? 6) == 5 ? 'selected' : '' }}>5 Digits</option>
-                        <option value="6" {{ ($otpData['otp_length'] ?? 6) == 6 ? 'selected' : '' }}>6 Digits</option>
-                    </select>
-                </div>
-                <small class="text-muted mt-1 d-block">Valid values: 4, 5, 6 digits</small>
-            </div>
-
-            {{-- 3. Is Default Radio Buttons --}}
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <label class="form-label fw-semibold text-secondary small">Default Static OTP (is_default)</label>
                 <div class="p-2 bg-light rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2" style="min-height: 38px;">
                     <span class="fw-semibold text-body-emphasis small ms-2">Use Default OTP:</span>
@@ -60,12 +31,50 @@
                 </div>
                 <small class="text-muted mt-1 d-block">Select True to enable static OTP or False to disable</small>
             </div>
+            {{-- 1. Max Time --}}
+            <div class="col-md-6">
+                <label class="form-label fw-semibold text-secondary small" for="otp_max_time">OTP Max Expiry Time (max_time in Seconds)</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-clock-history"></i></span>
+                    <select class="form-select" id="otp_max_time" name="otp_max_time">
+                        <option value="15" {{ ($otpData['max_time'] ?? 60) == 15 ? 'selected' : '' }}>15 Seconds</option>
+                        <option value="30" {{ ($otpData['max_time'] ?? 60) == 30 ? 'selected' : '' }}>30 Seconds</option>
+                        <option value="60" {{ ($otpData['max_time'] ?? 60) == 60 ? 'selected' : '' }}>60 Seconds</option>
+                        <option value="90" {{ ($otpData['max_time'] ?? 60) == 90 ? 'selected' : '' }}>90 Seconds</option>
+                    </select>
+                </div>
+                <small class="text-muted mt-1 d-block">Valid values: 15, 30, 60, 90 Seconds</small>
+            </div>
+
+            {{-- 2. OTP Length --}}
+
+
+            <input type="hidden" class="form-control font-mono fw-bold" id="otp_length" name="otp_length"  value="6">
+               
+            <!-- <div class="col-md-6">
+                <label class="form-label fw-semibold text-secondary small" for="otp_length">OTP Digits Length (otp_length)</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-123"></i></span>
+                    <select class="form-select" id="otp_length" name="otp_length">
+                        <option value="4" {{ ($otpData['otp_length'] ?? 6) == 4 ? 'selected' : '' }}>4 Digits</option>
+                        <option value="5" {{ ($otpData['otp_length'] ?? 6) == 5 ? 'selected' : '' }}>5 Digits</option>
+                        <option value="6" {{ ($otpData['otp_length'] ?? 6) == 6 ? 'selected' : '' }}>6 Digits</option>
+                    </select>
+                </div>
+                <small class="text-muted mt-1 d-block">Valid values: 4, 5, 6 digits</small>
+            </div> -->
+
+            {{-- 3. Is Default Radio Buttons --}}
+            
 
             {{-- 4. Default Static OTP Code --}}
             <div class="col-md-6">
                 <label class="form-label fw-semibold text-secondary small" for="otp_default">Default Static OTP Code (default)</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                
+                
+                
                     <input type="text" class="form-control font-mono fw-bold" id="otp_default" name="otp_default" placeholder="e.g. {{ str_repeat('9', $otpData['otp_length'] ?? 6) }}" value="{{ $otpData['default'] ?? '999999' }}" maxlength="{{ $otpData['otp_length'] ?? 6 }}">
                 </div>
                 <small class="text-muted mt-1 d-block" id="otp_default_help">Static OTP code used when is_default is set to true.</small>

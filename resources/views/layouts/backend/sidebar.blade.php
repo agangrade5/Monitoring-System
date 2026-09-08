@@ -47,7 +47,7 @@
                     </a>
                 </li>
                   <li class="nav-item">
-                     <a href="{{ route('monitor') }}" class="nav-link {{ request()->routeIs('monitor') ? 'active' : '' }}">
+                     <a href="{{ route('monitor') }}" class="nav-link {{ request()->routeIs('monitor', 'monitor.create', 'monitor.edit','monitor.show') ? 'active' : '' }}">
 
                         <i class="nav-icon bi bi-activity"></i>
                         <p>Monitoring</p>

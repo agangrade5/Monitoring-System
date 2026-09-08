@@ -38,7 +38,6 @@ class SettingController extends Controller
     {
         $user = Auth::user();
         $settings = $this->settingRepository->getAllSettingsFormatted();
-
         return view('backend.admin.settings', [
             'title' => 'Settings',
             'user' => $user,
