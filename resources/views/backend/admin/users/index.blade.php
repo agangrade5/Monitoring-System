@@ -139,6 +139,7 @@
                                                         data-id="{{ $user['id'] }}"
                                                         data-name="{{ $user['name'] }}"
                                                         data-email="{{ $user['email'] }}"
+                                                        data-phone="{{ $user['phone_number'] }}"
                                                         data-active="{{ $user['is_active'] ? 1 : 0 }}"
                                                         title="Edit User"
                                                     >

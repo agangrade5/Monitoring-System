@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = this.dataset.id;
             const name = this.dataset.name;
             const email = this.dataset.email;
+            const phone = this.dataset.phone;
             const active = this.dataset.active;
 
             const form = document.getElementById('edit-user-form');
@@ -71,12 +72,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const editIdInput = document.getElementById('edit_user_id');
             const editNameInput = document.getElementById('edit_user_name');
             const editEmailInput = document.getElementById('edit_user_email');
+            const editPhoneInput = document.getElementById('edit_user_phone');
             const editStatusInput = document.getElementById('edit_user_status');
             const editPassInput = document.getElementById('edit_user_password');
 
             if (editIdInput) editIdInput.value = id;
             if (editNameInput) editNameInput.value = name;
             if (editEmailInput) editEmailInput.value = email;
+            if (editPhoneInput) editPhoneInput.value = phone || '';
             if (editStatusInput) editStatusInput.value = active;
             if (editPassInput) editPassInput.value = '';
 
