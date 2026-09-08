@@ -167,17 +167,19 @@
                                         <td class="text-end pe-4">
                                             <div class="btn-group">
                                                 <!-- View -->
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm btn-outline-primary view-activity-log"
-                                                    data-url="{{ $showUrl }}"
-                                                    title="View Activity"
-                                                >
-                                                    <i class="bi bi-eye"></i>
-                                                </button>
+                                                @can('activity-logs.view')
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-outline-primary view-activity-log"
+                                                        data-url="{{ $showUrl }}"
+                                                        title="View Activity"
+                                                    >
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                @endcan
 
                                                 <!-- Delete - Admin Only -->
-                                                @if($isAdmin)
+                                                @can('activity-logs.delete')
                                                     <button
                                                         type="button"
                                                         class="btn btn-sm btn-outline-danger delete-record-btn"
@@ -191,7 +193,7 @@
                                                     >
                                                         <i class="bi bi-trash"></i>
                                                     </button>
-                                                @endif
+                                                @endcan
                                             </div>
                                         </td>
                                     </tr>

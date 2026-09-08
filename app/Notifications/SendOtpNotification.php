@@ -6,20 +6,23 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+//use App\Services\MailConfigService;
 
-class CustomResetPasswordNotification extends Notification
+class SendOtpNotification extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      *
-     * @param string $token
+     * @param string $otp
+     * @param string $otpExpireTime
      *
      * @return void
      */
     public function __construct(
-        protected string $token
+        protected string $otp,
+        protected string $otpExpireTime
     ) {
     }
 
@@ -38,18 +41,15 @@ class CustomResetPasswordNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $url = url(
-            route('password.reset', [
-                'token' => $this->token,
-                'email' => $notifiable->getEmailForPasswordReset(),
-            ], false)
-        );
+        // Load mail configuration from settings table
+        //app(MailConfigService::class)->apply();
 
         return (new MailMessage)
-            ->subject('Reset Your Password - ' . config('app.name'))
-            ->view('emails.auth.password-reset', [
+            ->subject('Your Login OTP - ' . config('app.name'))
+            ->view('emails.auth.login-otp', [
                 'user' => $notifiable,
-                'url' => $url,
+                'otp' => $this->otp,
+                'otpExpireTime' => $this->otpExpireTime,
             ]);
     }
 

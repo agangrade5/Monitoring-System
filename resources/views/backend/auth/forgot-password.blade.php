@@ -56,13 +56,13 @@
             </form>
             <div class="text-center mt-3 pt-3 border-top border-white-50">
                 <p class="mb-1">
-                    <a href="{{ route('login') }}">Back to Login</a>
+                    <a href="{{ route('admin.login') }}">Back to Login</a>
                 </p>
-                <p class="mb-0">
+                {{-- <p class="mb-0">
                     <a href="{{ route('register') }}">
                         Create new account
                     </a>
-                </p>
+                </p> --}}
             </div>
         </div>
         <!-- /.login-card-body -->

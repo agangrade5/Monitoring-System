@@ -951,6 +951,76 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
     color: var(--bs-primary) !important;
 }
 
+/* Login Box */
+.login-box {
+    width: 100%;
+    max-width: 420px;
+    margin: auto;
+}
+
+.login-logo {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.auth-card {
+    background: #182336 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+}
+
+.otp-container {
+    width: 100%;
+}
+
+.otp-input {
+    width: 48px;
+    height: 56px;
+
+    background: #ffffff !important;
+    color: #111827 !important;
+
+    border: 2px solid #64748b !important;
+    border-radius: 10px;
+
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+
+    outline: none;
+}
+
+.otp-input:focus {
+    border-color: #0d6efd !important;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(13, 110, 253, 0.2) !important;
+}
+
+.otp-input:disabled {
+    background: #d1d5db !important;
+    color: #6b7280 !important;
+    cursor: not-allowed;
+}
+
+#otp-countdown.expired {
+    color: #dc3545 !important;
+}
+
+@media (max-width: 480px) {
+
+    .otp-input {
+        width: 42px;
+        height: 50px;
+        font-size: 21px;
+    }
+
+}
+/* Quick action link */
 .quick-action-link {
     background-color: var(--bs-card-bg, #ffffff);
     border: 1px solid var(--bs-border-color, #dee2e6);

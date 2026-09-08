@@ -37,6 +37,8 @@ export default defineConfig({
                 'resources/js/backend/twilio-settings.js',
                 'resources/js/backend/email-settings.js',
                 'resources/js/backend/aws-settings.js',
+                'resources/js/backend/user-login.js',
+                'resources/js/backend/verify-otp.js',
             ],
             buildDirectory: 'assets',
             refresh: true,
