@@ -14,7 +14,7 @@ use App\Jobs\{
 };
 use App\Notifications\TestMonitorAlertNotification;
 use Illuminate\Support\Facades\Notification;
-
+use App\Helpers\UtilityHelper;
 class MonitorService
 {
     /**
@@ -37,11 +37,31 @@ class MonitorService
     {
         $monitor = $this->monitorRepository->findById($id);
 
-        CheckUptimeJob::dispatchSync($id);
-        CheckSslCertificateJob::dispatchSync($id);
-        CheckPhpVersionJob::dispatchSync($id);
-        CheckDomainExpiryJob::dispatchSync($id);
-        CheckSecurityHeadersJob::dispatchSync($id);
+        if (!$monitor) {
+            return null;
+        }
+
+        $settings = $monitor->settings;
+
+        if ($settings && $settings->check_uptime) {
+            CheckUptimeJob::dispatchSync($id);
+        }
+
+        if ($settings && $settings->check_ssl) {
+            CheckSslCertificateJob::dispatchSync($id);
+        }
+
+        if ($settings && $settings->check_php) {
+            CheckPhpVersionJob::dispatchSync($id);
+        }
+
+        if ($settings && $settings->check_domain) {
+            CheckDomainExpiryJob::dispatchSync($id);
+        }
+
+        if ($settings && $settings->check_security_headers) {
+            CheckSecurityHeadersJob::dispatchSync($id);
+        }
 
         return $monitor;
     }
@@ -79,13 +99,20 @@ class MonitorService
         try {
             Notification::route('mail', $recipientEmail)
                 ->notify(new TestMonitorAlertNotification($monitor, $causer));
-
-            if (function_exists('activity') && $causer) {
-                activity('monitor')
-                    ->causedBy($causer)
-                    ->performedOn($monitor)
-                    ->log("Sent test notification for monitor: {$monitor->name} to {$recipientEmail}");
-            }
+             /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+       UtilityHelper::customActivityLog(
+            'monitor',
+            "Sent test notification for monitor: {$monitor->name} to {$recipientEmail}.",
+            $monitor,
+            [
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]
+        );
 
             return [
                 'success' => true,
@@ -101,3 +128,4 @@ class MonitorService
         }
     }
 }
+ 

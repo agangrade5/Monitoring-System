@@ -7,46 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 class Monitor extends Model
 {
     
-   protected $fillable = [
-    'user_id',
-    'name',
-    'email',
-    'mobile',
-    'url',
-    'check_interval',
-    'last_checked_at',
-    'last_up_at',
-    'last_down_at',
-    'uptime_percentage',
-    'is_active',
-    'ssl_enabled',
-    'ssl_expires_at',
-    'ssl_days_remaining',
-    'ssl_status',
-    'ssl_issuer',
-     'php_version',
-    'php_status',
-    'php_checked_at',
-    'domain_expires_at',
-    'domain_status',
-    'domain_checked_at',
-    'security_headers',
-    'status'
-];
+    protected $fillable = [
+        'user_id',
+        'name',
+        'email',
+        'mobile',
+        'url',
+        'check_interval',
+        'last_checked_at',
+        'last_up_at',
+        'last_down_at',
+        'uptime_percentage',
+        'is_active',
+        'status',
+    ];
 
- protected $casts = [
-    'last_checked_at' => 'datetime',
-    'last_up_at' => 'datetime',
-    'last_down_at' => 'datetime',
-    'ssl_expires_at' => 'datetime',
-    'uptime_percentage' => 'decimal:2',
-    'ssl_enabled' => 'boolean',
-    'is_active' => 'boolean',
-    'domain_expires_at' => 'datetime',
-    'domain_checked_at' => 'datetime',
-    'php_checked_at' => 'datetime',
-    'security_headers' => 'array',
-];
+    protected $casts = [
+        'last_checked_at' => 'datetime',
+        'last_up_at' => 'datetime',
+        'last_down_at' => 'datetime',
+        'uptime_percentage' => 'decimal:2',
+        'is_active' => 'boolean',
+    ];
 
     /**
      * Get open ports as an array for UI badges.
@@ -78,5 +60,55 @@ class Monitor extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get monitor check settings options.
+     */
+    public function settings()
+    {
+        return $this->hasOne(MonitorSetting::class)->withDefault([
+            'check_uptime' => false,
+            'check_ssl' => false,
+            'check_php' => false,
+            'check_domain' => false,
+            'check_security_headers' => false,
+        ]);
+    }
+
+    /**
+     * Get monitor health check results.
+     */
+    public function checkResult()
+    {
+        return $this->hasOne(MonitorCheckResult::class)->withDefault();
+    }
+
+    /**
+     * Dynamic magic getter to support relation property fallbacks seamlessly.
+     */
+    public function __get($key)
+    {
+        $value = parent::__get($key);
+        if ($value !== null) {
+            return $value;
+        }
+
+        // Fallback to settings
+        if (in_array($key, ['check_uptime', 'check_ssl', 'check_php', 'check_domain', 'check_security_headers'])) {
+            return $this->settings->{$key} ?? true;
+        }
+
+        // Fallback to checkResult
+        if (in_array($key, [
+            'ssl_status', 'ssl_enabled', 'ssl_days_remaining', 'ssl_expires_at', 'ssl_issuer',
+            'php_version', 'php_status', 'php_checked_at',
+            'domain_status', 'domain_expires_at', 'domain_checked_at',
+            'security_grade', 'server_info', 'open_ports', 'security_headers'
+        ])) {
+            return $this->checkResult->{$key} ?? null;
+        }
+
+        return null;
     }
 }
