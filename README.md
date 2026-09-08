@@ -31,8 +31,9 @@ DB_PASSWORD=password
 ```
 
 #### application start process
-- Login page for admin http://{APP_URL}/
+- Login page for admin http://{APP_URL}/admin/login
 - Admin Details ( admin@mailinator.com / Admin@123 )
+- Login page for user http://{APP_URL}/login
 - after successfully login you will be redirected to a static dashboard page
 # Monitoring-System
 Monitoring System
@@ -44,11 +45,6 @@ Monitoring System
     "bepsvpt/secure-headers": "^9.1",
     "tightenco/ziggy": "^2.6",
 ```
-
-#### application start process
-- Login page for admin http://{APP_URL}/
-- after you have seeded once you can login with the default admin credits provided 
-- inside the admin button section we will be having log that you can view from the admin account.
 
 <code>
     - change

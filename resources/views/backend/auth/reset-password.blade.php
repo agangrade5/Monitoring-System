@@ -98,7 +98,7 @@
             </form>
             <div class="text-center mt-3 pt-3 border-top border-white-50">
                 <p class="mb-1">
-                    <a href="{{ route('login') }}">Back to Login</a>
+                    <a href="{{ route('admin.login') }}">Back to Login</a>
                 </p>
             </div>
         </div>

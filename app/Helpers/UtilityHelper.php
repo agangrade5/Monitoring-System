@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use mysqli;
 use Spatie\Activitylog\Models\Activity;
 
 class UtilityHelper
@@ -74,5 +75,31 @@ class UtilityHelper
         return Carbon::parse($dateTime)
             ->timezone($timezone)
             ->format($format);
+    }
+
+    /**
+     * Generate OTP
+     *
+     * @param array $otpDetails
+     *
+     * @return string
+     */
+    public static function generateOtp(array $otpDetails): string
+    {
+        $length = (int) ($otpDetails['otp_length'] ?? 6);
+
+        if (!empty($otpDetails['is_default'])) {
+            return str_pad(
+                (string) ($otpDetails['default'] ?? '999999'),
+                $length,
+                '0',
+                STR_PAD_LEFT
+            );
+        }
+
+        $min = 10 ** ($length - 1);
+        $max = (10 ** $length) - 1;
+
+        return (string) random_int($min, $max);
     }
 }

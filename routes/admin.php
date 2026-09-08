@@ -16,69 +16,105 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Guest Routes
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::middleware('guest')->group(function () {
+            /*
+            |--------------------------------------------------------------------------
+            | Login Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/login', [
+                LoginController::class,
+                'index',
+            ])->name('login');
+
+            Route::post('/login', [
+                LoginController::class,
+                'login',
+            ])->name('login.submit');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Register Routes
+            |--------------------------------------------------------------------------
+            */
+            /* Route::get('/register', [
+                RegisterController::class,
+                'index',
+            ])->name('register');
+
+            Route::post('/register', [
+                RegisterController::class,
+                'register',
+            ])->name('register.submit'); */
+            /*
+            |--------------------------------------------------------------------------
+            | Forgot Password Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/forgot-password', [
+                ForgotPasswordController::class,
+                'index',
+            ])->name('password.request');
+
+            Route::post('/forgot-password', [
+                ForgotPasswordController::class,
+                'sendResetLink',
+            ])->name('password.email');
+
+            Route::get('/reset-password/{token}', [
+                ForgotPasswordController::class,
+                'showResetForm',
+            ])->name('password.reset');
+
+            Route::post('/reset-password', [
+                ForgotPasswordController::class,
+                'resetPassword',
+            ])->name('password.update');
+        });
+    });
+
+/*
+|--------------------------------------------------------------------------
+| User Routes
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Routes
-    |--------------------------------------------------------------------------
-    */
     Route::get('/', function () {
         return redirect()->route('login');
     });
 
     Route::get('/login', [
         LoginController::class,
-        'index',
+        'userLogin',
     ])->name('login');
 
-    Route::post('/login', [
+    Route::post('/login/send-otp', [
         LoginController::class,
-        'login',
-    ])->name('login.submit');
+        'sendOtp',
+    ])->name('login.send-otp');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Register Routes
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/register', [
-        RegisterController::class,
-        'index',
-    ])->name('register');
+    Route::get('/login/verify-otp', [
+        LoginController::class,
+        'showVerifyOtp',
+    ])->name('login.verify');
 
-    Route::post('/register', [
-        RegisterController::class,
-        'register',
-    ])->name('register.submit');
-    /*
-    |--------------------------------------------------------------------------
-    | Forgot Password Routes
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/forgot-password', [
-        ForgotPasswordController::class,
-        'index',
-    ])->name('password.request');
+    Route::post('/login/verify-otp', [
+        LoginController::class,
+        'verifyOtp',
+    ])->name('login.verify.submit');
 
-    Route::post('/forgot-password', [
-        ForgotPasswordController::class,
-        'sendResetLink',
-    ])->name('password.email');
-
-    Route::get('/reset-password/{token}', [
-        ForgotPasswordController::class,
-        'showResetForm',
-    ])->name('password.reset');
-
-    Route::post('/reset-password', [
-        ForgotPasswordController::class,
-        'resetPassword',
-    ])->name('password.update');
+    Route::post('/login/resend-otp', [
+        LoginController::class,
+        'resendOtp',
+    ])->name('login.resend-otp');
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -171,23 +207,17 @@ Route::middleware('auth')->group(function () {
             | Activity Logs
             |--------------------------------------------------------------------------
             */
-            Route::get('/activity-logs', [
-                ActivityLogController::class,
-                'index',
-            ])->name('activity-logs.index');
+            Route::middleware('permission:activity-logs.view-all')
+                ->get('/activity-logs', [ActivityLogController::class, 'index'])
+                ->name('activity-logs.index');
 
-            Route::get('/activity-logs/{id}', [
-                ActivityLogController::class,
-                'show',
-            ])->name('activity-logs.show');
+            Route::middleware('permission:activity-logs.view')
+                ->get('/activity-logs/{id}', [ActivityLogController::class, 'show'])
+                ->name('activity-logs.show');
 
-            Route::delete('/activity-logs/{id}', [
-                ActivityLogController::class,
-                'destroy',
-            ])
-                ->middleware('role:admin')
+            Route::middleware(['permission:activity-logs.delete', 'role:admin'])
+                ->delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])
                 ->name('activity-logs.destroy');
-
 
         });
 
@@ -227,7 +257,7 @@ Route::middleware('auth')->group(function () {
                 return 'Users';
             })->name('users');
 
-               /*
+            /*
             |--------------------------------------------------------------------------
             | Monitors Routes
             |--------------------------------------------------------------------------
@@ -286,21 +316,16 @@ Route::middleware('auth')->group(function () {
             | Activity Logs
             |--------------------------------------------------------------------------
             */
-            Route::get('/activity-logs', [
-                ActivityLogController::class,
-                'index',
-            ])->name('activity-logs.index');
+            Route::middleware('permission:activity-logs.view-all')
+                ->get('/activity-logs', [ActivityLogController::class, 'index'])
+                ->name('activity-logs.index');
 
-            Route::get('/activity-logs/{id}', [
-                ActivityLogController::class,
-                'show',
-            ])->name('activity-logs.show');
+            Route::middleware('permission:activity-logs.view')
+                ->get('/activity-logs/{id}', [ActivityLogController::class, 'show'])
+                ->name('activity-logs.show');
 
-            Route::delete('/activity-logs/{id}', [
-                ActivityLogController::class,
-                'destroy',
-            ])
-                ->middleware('role:admin')
+            Route::middleware(['permission:activity-logs.delete', 'role:admin'])
+                ->delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])
                 ->name('activity-logs.destroy');
         });
 
