@@ -9,15 +9,7 @@
     <div class="card-body">
         <form method="POST" action="{{ route('admin.settings.twilio') }}" id="twilio-settings-form" class="row g-4">
             @csrf
-            <div class="col-12">
-                <div class="form-check form-switch p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between mb-0 ps-5">
-                    <div>
-                        <label class="form-check-label fw-bold cursor-pointer" for="enable_twilio">Enable Twilio SMS Integration</label>
-                        <small class="text-muted d-block">Turn on to allow sending SMS alerts via Twilio gateway</small>
-                    </div>
-                    <input class="form-check-input ms-0 fs-5 cursor-pointer" type="checkbox" id="enable_twilio" name="enable_twilio" value="1" {{ ($twilioData['enable_twilio'] ?? false) ? 'checked' : '' }}>
-                </div>
-            </div>
+           
 
             <div class="col-md-6">
                 <label class="form-label fw-semibold text-secondary small" for="twilio_account_sid">Twilio Account SID</label>

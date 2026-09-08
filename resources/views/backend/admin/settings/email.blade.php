@@ -64,6 +64,7 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-key"></i></span>
                     <input type="password" class="form-control" id="mail_password" name="mail_password" placeholder="Mail password" value="{{ $emailData['mail_password_decrypted'] ?? '' }}">
+                    <x-toggle-password-btn target="mail_password" />
                 </div>
             </div>
 

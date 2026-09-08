@@ -96,7 +96,6 @@ class SettingController extends Controller
         }
 
         $payload = [
-            'enable_twilio' => isset($validated['enable_twilio']) && $validated['enable_twilio'] == '1',
             'twilio_account_sid' => (string) ($validated['twilio_account_sid'] ?? ''),
             'twilio_auth_token' => $twilioAuthToken,
             'twilio_from_number' => (string) ($validated['twilio_from_number'] ?? ''),

@@ -32,7 +32,7 @@
                         <label class="form-label fw-semibold text-secondary small" for="edit_user_email">Email Address</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" name="email" id="edit_user_email" class="form-control @if(old('form_type') === 'edit') @error('email') is-invalid @enderror @endif" value="{{ old('form_type') === 'edit' ? old('email') : '' }}" placeholder="name@example.com" disabled>
+                            <input type="email" name="email" id="edit_user_email" class="form-control bg-body-secondary @if(old('form_type') === 'edit') @error('email') is-invalid @enderror @endif" value="{{ old('form_type') === 'edit' ? old('email') : '' }}" placeholder="name@example.com" readonly>
                             @if(old('form_type') === 'edit')
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -40,6 +40,35 @@
                             @endif
                         </div>
                     </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary small" for="edit_user_phone">
+                                Mobile Number
+                            </label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-phone"></i>
+                                </span>
+                                <input
+                                    type="tel"
+                                    name="phone_number"
+                                    id="edit_user_phone"
+                                    class="form-control @if(old('form_type') === 'edit') @error('phone_number') is-invalid @enderror @endif"
+                                    value="{{ old('form_type') === 'edit' ? old('phone_number') : '' }}"
+                                    placeholder="Enter mobile number"
+                                    maxlength="10"
+                                    required
+                                >
+
+                                @if(old('form_type') === 'edit')
+                                    @error('phone_number')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                @endif
+                            </div>
+                        </div>
+
+
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="edit_user_status">Status</label>
                         <div class="input-group">
@@ -50,7 +79,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="edit_user_password">New Password (Optional)</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
@@ -61,7 +90,7 @@
                                 @enderror
                             @endif
                         </div>
-                    </div>
+                    </div> -->
 
                 </div>
                 <div class="modal-footer border-top-0 p-3 bg-light-subtle">
