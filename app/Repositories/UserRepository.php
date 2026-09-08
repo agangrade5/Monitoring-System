@@ -23,7 +23,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function create(array $data): User
     {
-        $data['password'] = Hash::make($data['password']);
+        $data['password'] = Hash::make('password');
 
         return User::create($data);
     }
