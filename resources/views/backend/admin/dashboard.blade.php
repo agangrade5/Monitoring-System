@@ -285,7 +285,7 @@
                     </div>
                     <div class="card-body pt-0">
                         <div class="d-grid gap-2">
-                            <a href="{{ route('admin.users') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
+                            <a href="{{ route('admin.users.index') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="quick-action-icon bg-primary-subtle text-primary rounded-3 d-flex align-items-center justify-content-center">
                                         <i class="bi bi-people-fill fs-5"></i>
@@ -294,10 +294,6 @@
                                         <h6 class="mb-0 fw-bold text-body-emphasis">Manage User Accounts</h6>
                                         <small class="text-muted">Create, edit, or deactivate user credentials</small>
                                     </div>
-                            <a href="{{ route('admin.users.index') }}" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
-                                <div>
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-people-fill me-2 text-primary"></i>Manage User Accounts</h6>
-                                    <small class="text-muted">Create, edit, or deactivate user credentials</small>
                                 </div>
                                 <i class="bi bi-chevron-right text-muted quick-action-arrow"></i>
                             </a>
@@ -311,10 +307,6 @@
                                         <h6 class="mb-0 fw-bold text-body-emphasis">System Settings</h6>
                                         <small class="text-muted">Update configuration and Change Password</small>
                                     </div>
-                            <a href="{{ route('admin.settings') }}" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
-                                <div>
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-gear-fill me-2 text-secondary"></i>System Settings</h6>
-                                    <small class="text-muted">Update configuration and Change Password</small>
                                 </div>
                                 <i class="bi bi-chevron-right text-muted quick-action-arrow"></i>
                             </a>
@@ -344,13 +336,6 @@
                                 </div>
                                 <i class="bi bi-chevron-right text-muted quick-action-arrow"></i>
                             </a>
-                            {{-- <button type="button" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3" onclick="if(window.toastr){toastr.success('Real-time audit scheduled for all nodes.')}else{alert('Real-time audit scheduled for all nodes.')}">
-                                <div>
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-arrow-clockwise me-2 text-success"></i>Trigger Health Audit</h6>
-                                    <small class="text-muted">Force real-time status check on all nodes</small>
-                                </div>
-                                <i class="bi bi-chevron-right text-muted"></i>
-                            </button> --}}
                         </div>
                     </div>
                 </div>
@@ -362,44 +347,6 @@
 @include('backend.activity-logs.view-modal')
 @endsection
 
-@push('css')
-<style>
-.quick-action-link {
-    background-color: var(--bs-card-bg, #ffffff);
-    border: 1px solid var(--bs-border-color, #dee2e6);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-    text-decoration: none !important;
-}
-
-.quick-action-link:hover {
-    background-color: var(--bs-tertiary-bg, #f8f9fa);
-    border-color: var(--bs-primary, #0d6efd) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 14px rgba(13, 110, 253, 0.08);
-}
-
-.quick-action-link:hover .quick-action-arrow {
-    color: var(--bs-primary, #0d6efd) !important;
-    transform: translateX(4px);
-}
-
-.quick-action-link:hover .quick-action-icon {
-    transform: scale(1.05);
-}
-
-.quick-action-icon {
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    transition: transform 0.2s ease-in-out;
-}
-
-.quick-action-arrow {
-    transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
-}
-</style>
-@endpush
 
 @push('scripts')
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/activity-logs.js')) !!}

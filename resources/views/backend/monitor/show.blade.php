@@ -79,61 +79,101 @@
             {{-- Current Status --}}
             <div class="col-lg-4 col-md-6">
                 <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="text-muted small fw-semibold text-uppercase">Current status</span>
-                        <span class="status-pulse {{ $monitor->status === 'down' ? 'down' : 'up' }}"></span>
-                    </div>
-                    <h3 class="fw-bold mb-1 {{ $monitor->status === 'down' ? 'text-danger' : 'text-success' }}">
-                        {{ $monitor->status === 'down' ? 'Down' : 'Up' }}
-                    </h3>
-                    <p class="text-muted small mb-0">
-                        @if($monitor->status === 'down')
-                            Down since {{ $monitor->last_down_at ? $monitor->last_down_at->diffForHumans() : 'recent check' }}
-                        @else
-                            Currently up for {{ $monitor->last_up_at ? $monitor->last_up_at->diffForHumans(null, true) : '2mo 29d' }}
-                        @endif
-                    </p>
+                    @if(!($monitor->settings?->check_uptime))
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="text-muted small fw-semibold text-uppercase">Current status</span>
+                            <span class="badge rounded-pill bg-body-secondary text-secondary border">Disabled</span>
+                        </div>
+                        <h3 class="fw-bold mb-1 text-secondary">
+                            Disabled
+                        </h3>
+                        <p class="text-muted small mb-0">
+                            Uptime monitoring is disabled
+                        </p>
+                    @else
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="text-muted small fw-semibold text-uppercase">Current status</span>
+                            <span class="status-pulse {{ $monitor->status === 'down' ? 'down' : 'up' }}"></span>
+                        </div>
+                        <h3 class="fw-bold mb-1 {{ $monitor->status === 'down' ? 'text-danger' : 'text-success' }}">
+                            {{ $monitor->status === 'down' ? 'Down' : 'Up' }}
+                        </h3>
+                        <p class="text-muted small mb-0">
+                            @if($monitor->status === 'down')
+                                Down since {{ $monitor->last_down_at ? $monitor->last_down_at->diffForHumans() : 'recent check' }}
+                            @else
+                                Currently up for {{ $monitor->last_up_at ? $monitor->last_up_at->diffForHumans(null, true) : '2mo 29d' }}
+                            @endif
+                        </p>
+                    @endif
                 </div>
             </div>
 
             {{-- Last Check --}}
             <div class="col-lg-4 col-md-6">
                 <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="text-muted small fw-semibold text-uppercase">Last check</span>
-                        <span class="badge rounded-pill bg-body-secondary text-secondary border">
-                            <i class="bi bi-clock-history me-1"></i> {{ $monitor->check_interval ?? 60 }}s interval
-                        </span>
-                    </div>
-                    <h3 class="fw-bold mb-1 text-body-emphasis">
-                        {{ $monitor->last_checked_at ? $monitor->last_checked_at->diffForHumans() : 'Just now' }}
-                    </h3>
-                    <p class="text-muted small mb-0">
-                        Checked every {{ round(($monitor->check_interval ?? 60) / 60) ?: 1 }}m
-                    </p>
+                    @if(!($monitor->settings?->check_uptime))
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="text-muted small fw-semibold text-uppercase">Last check</span>
+                            <span class="badge rounded-pill bg-body-secondary text-secondary border">Disabled</span>
+                        </div>
+                        <h3 class="fw-bold mb-1 text-secondary">
+                            N/A
+                        </h3>
+                        <p class="text-muted small mb-0">
+                            Uptime check is disabled
+                        </p>
+                    @else
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="text-muted small fw-semibold text-uppercase">Last check</span>
+                            <span class="badge rounded-pill bg-body-secondary text-secondary border">
+                                <i class="bi bi-clock-history me-1"></i> {{ $monitor->check_interval ?? 60 }}s interval
+                            </span>
+                        </div>
+                        <h3 class="fw-bold mb-1 text-body-emphasis">
+                            {{ $monitor->last_checked_at ? $monitor->last_checked_at->diffForHumans() : 'Just now' }}
+                        </h3>
+                        <p class="text-muted small mb-0">
+                            Checked every {{ round(($monitor->check_interval ?? 60) / 60) ?: 1 }}m
+                        </p>
+                    @endif
                 </div>
             </div>
 
             {{-- Last 24 Hours Uptime Bar --}}
             <div class="col-lg-4 col-md-12">
                 <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted small fw-semibold text-uppercase">Last 24 hours</span>
-                        <span class="fw-bold fs-5 text-success">{{ $monitor->uptime_percentage ?? '100.00' }}%</span>
-                    </div>
-                    {{-- 30-Pill Activity Timeline Bar --}}
-                    <div class="uptime-bar-container my-1">
-                        @for($i = 0; $i < 30; $i++)
-                            <div
-                                class="uptime-bar-pill {{ ($monitor->status === 'down' && $i === 29) ? 'down' : '' }}"
-                                title="Slot {{ 30 - $i }} ({{ $monitor->status === 'down' && $i === 29 ? 'Outage' : '100% Up' }})"
-                            ></div>
-                        @endfor
-                    </div>
-                    <div class="d-flex justify-content-between text-muted small mt-2">
-                        <span>0 incidents, 0m down</span>
-                        <span>24h ago &rarr; Now</span>
-                    </div>
+                    @if(!($monitor->settings?->check_uptime))
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted small fw-semibold text-uppercase">Last 24 hours</span>
+                            <span class="fw-bold fs-5 text-secondary">Disabled</span>
+                        </div>
+                        <div class="text-muted small my-3">
+                            <i class="bi bi-slash-circle me-1"></i> Uptime tracking disabled for this monitor
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mt-2">
+                            <span>No active uptime checks</span>
+                            <span>24h ago &rarr; Now</span>
+                        </div>
+                    @else
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted small fw-semibold text-uppercase">Last 24 hours</span>
+                            <span class="fw-bold fs-5 text-success">{{ $monitor->uptime_percentage ?? '100.00' }}%</span>
+                        </div>
+                        {{-- 30-Pill Activity Timeline Bar --}}
+                        <div class="uptime-bar-container my-1">
+                            @for($i = 0; $i < 30; $i++)
+                                <div
+                                    class="uptime-bar-pill {{ ($monitor->status === 'down' && $i === 29) ? 'down' : '' }}"
+                                    title="Slot {{ 30 - $i }} ({{ $monitor->status === 'down' && $i === 29 ? 'Outage' : '100% Up' }})"
+                                ></div>
+                            @endfor
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mt-2">
+                            <span>0 incidents, 0m down</span>
+                            <span>24h ago &rarr; Now</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -164,15 +204,23 @@
                     </div>
                     <div class="col-6 col-md-2 border-end-md">
                         <div class="text-muted small mb-1">SSL Certificate</div>
-                        <div class="fw-bold fs-5 {{ $monitor->ssl_status === 'valid' ? 'text-success' : 'text-warning' }}">
-                            {{ $monitor->ssl_days_remaining ?? 0 }} days
-                        </div>
-                        <div class="text-muted" style="font-size: 0.75rem;">{{ ucfirst($monitor->ssl_status ?? 'Valid') }}</div>
+                        @if(!($monitor->settings?->check_ssl))
+                            <span class="badge bg-body-secondary text-secondary border mt-1"><i class="bi bi-slash-circle me-1"></i> Disabled</span>
+                        @else
+                            <div class="fw-bold fs-5 {{ ($monitor->checkResult?->ssl_status === 'valid') ? 'text-success' : 'text-warning' }}">
+                                {{ $monitor->checkResult?->ssl_days_remaining ?? 0 }} days
+                            </div>
+                            <div class="text-muted" style="font-size: 0.75rem;">{{ ucfirst($monitor->checkResult?->ssl_status ?? 'Valid') }}</div>
+                        @endif
                     </div>
                     <div class="col-6 col-md-2">
                         <div class="text-muted small mb-1">PHP Engine</div>
-                        <div class="fw-bold fs-5 text-primary">{{ $monitor->php_version ?? '8.2' }}</div>
-                        <div class="text-muted" style="font-size: 0.75rem;">Status: {{ ucfirst($monitor->php_status ?? 'up') }}</div>
+                        @if(!($monitor->settings?->check_php))
+                            <span class="badge bg-body-secondary text-secondary border mt-1"><i class="bi bi-slash-circle me-1"></i> Disabled</span>
+                        @else
+                            <div class="fw-bold fs-5 text-primary">{{ $monitor->checkResult?->php_version ?? 'N/A' }}</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">Status: {{ ucfirst($monitor->checkResult?->php_status ?? 'unknown') }}</div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -229,51 +277,65 @@
                             <h5 class="fw-bold mb-0 text-body-emphasis">Security Headers & Posture</h5>
                             <small class="text-muted">OWASP recommended security headers inspection</small>
                         </div>
-                        @php
-                            $enforcedCount = is_array($monitor->security_headers) ? collect($monitor->security_headers)->where('present', true)->count() : 0;
-                            $computedGrade = $monitor->security_grade ?: match(true) {
-                                $enforcedCount === 6 => 'A+',
-                                $enforcedCount >= 5 => 'A',
-                                $enforcedCount >= 4 => 'B',
-                                $enforcedCount >= 3 => 'C',
-                                $enforcedCount >= 2 => 'D',
-                                default => 'F',
-                            };
-                            $gradeBadgeClass = match($computedGrade) {
-                                'A+', 'A' => 'bg-success-subtle text-success border border-success-subtle',
-                                'B', 'C' => 'bg-info-subtle text-info border border-info-subtle',
-                                'D' => 'bg-warning-subtle text-warning border border-warning-subtle',
-                                default => 'bg-danger-subtle text-danger border border-danger-subtle',
-                            };
-                        @endphp
-                        <span class="badge rounded-pill {{ $gradeBadgeClass }} px-3 py-2 fw-semibold">
-                            Grade {{ $computedGrade }} ({{ $enforcedCount }}/6 Enforced)
-                        </span>
+                        @if(!($monitor->settings?->check_security_headers))
+                            <span class="badge rounded-pill bg-body-secondary text-secondary border px-3 py-2 fw-semibold">
+                                <i class="bi bi-slash-circle me-1"></i> Disabled
+                            </span>
+                        @else
+                            @php
+                                $secHeadersData = $monitor->checkResult?->security_headers;
+                                $enforcedCount = is_array($secHeadersData) ? collect($secHeadersData)->where('present', true)->count() : 0;
+                                $computedGrade = $monitor->checkResult?->security_grade ?: match(true) {
+                                    $enforcedCount === 6 => 'A+',
+                                    $enforcedCount >= 5 => 'A',
+                                    $enforcedCount >= 4 => 'B',
+                                    $enforcedCount >= 3 => 'C',
+                                    $enforcedCount >= 2 => 'D',
+                                    default => 'F',
+                                };
+                                $gradeBadgeClass = match($computedGrade) {
+                                    'A+', 'A' => 'bg-success-subtle text-success border border-success-subtle',
+                                    'B', 'C' => 'bg-info-subtle text-info border border-info-subtle',
+                                    'D' => 'bg-warning-subtle text-warning border border-warning-subtle',
+                                    default => 'bg-danger-subtle text-danger border border-danger-subtle',
+                                };
+                            @endphp
+                            <span class="badge rounded-pill {{ $gradeBadgeClass }} px-3 py-2 fw-semibold">
+                                Grade {{ $computedGrade }} ({{ $enforcedCount }}/6 Enforced)
+                            </span>
+                        @endif
                     </div>
                     <div class="card-body px-4 py-2">
-                        @php
-                            $headers = $monitor->security_headers ?? [
-                                'strict-transport-security' => ['name' => 'Strict-Transport-Security (HSTS)',  'present' => false],
-                                'content-security-policy' => ['name' => 'Content-Security-Policy (CSP)',  'present' => false],
-                                'x-frame-options' => ['name' => 'X-Frame-Options',  'present' => false],
-                                'x-content-type-options' => ['name' => 'X-Content-Type-Options',  'present' => false],
-                                'referrer-policy' => ['name' => 'Referrer-Policy',  'present' => false],
-                                'permissions-policy' => ['name' => 'Permissions-Policy',  'present' => false],
-                            ];
-                        @endphp
-                        <div class="list-group list-group-flush">
-                            @foreach($headers as $key => $header)
-                                <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 border-bottom">
-                                    <div class="me-3">
-                                        <div class="fw-semibold text-body-emphasis">{{ $header['name'] ?? $key }}</div>
-                                        <small class="text-muted" style="font-size: 0.75rem;">{{ $header['description'] ?? 'Security Header' }}</small>
+                        @if(!($monitor->settings?->check_security_headers))
+                            <div class="text-center py-4 text-muted">
+                                <i class="bi bi-slash-circle fs-3 d-block mb-2"></i>
+                                <p class="mb-0">Security Headers check is currently disabled for this monitor.</p>
+                            </div>
+                        @else
+                            @php
+                                $headers = $monitor->checkResult?->security_headers ?? [
+                                    'strict-transport-security' => ['name' => 'Strict-Transport-Security (HSTS)',  'present' => false],
+                                    'content-security-policy' => ['name' => 'Content-Security-Policy (CSP)',  'present' => false],
+                                    'x-frame-options' => ['name' => 'X-Frame-Options',  'present' => false],
+                                    'x-content-type-options' => ['name' => 'X-Content-Type-Options',  'present' => false],
+                                    'referrer-policy' => ['name' => 'Referrer-Policy',  'present' => false],
+                                    'permissions-policy' => ['name' => 'Permissions-Policy',  'present' => false],
+                                ];
+                            @endphp
+                            <div class="list-group list-group-flush">
+                                @foreach($headers as $key => $header)
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 border-bottom">
+                                        <div class="me-3">
+                                            <div class="fw-semibold text-body-emphasis">{{ $header['name'] ?? $key }}</div>
+                                            <small class="text-muted" style="font-size: 0.75rem;">{{ $header['description'] ?? 'Security Header' }}</small>
+                                        </div>
+                                        <span class="badge rounded-pill flex-shrink-0 {{ ($header['present'] ?? false) ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle' }}">
+                                            {{ ($header['present'] ?? false) ? 'Enforced' : 'Missing' }}
+                                        </span>
                                     </div>
-                                    <span class="badge rounded-pill flex-shrink-0 {{ ($header['present'] ?? false) ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle' }}">
-                                        {{ ($header['present'] ?? false) ? 'Enforced' : 'Missing' }}
-                                    </span>
-                                </div>
-                            @endforeach
-                        </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -346,30 +408,39 @@
                         </div>
                     </div>
                     <div class="card-body px-4 py-3">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted small">Domain Status:</span>
-                            @if($monitor->domain_status === 'active')
-                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Active</span>
-                            @elseif($monitor->domain_status === 'warning')
-                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">Warning</span>
-                            @else
-                                <span class="badge bg-secondary-subtle text-secondary border rounded-pill">{{ ucfirst($monitor->domain_status ?? 'Active') }}</span>
-                            @endif
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted small">Expiry Date:</span>
-                            <span class="fw-semibold text-body-emphasis">{{ \App\Helpers\UtilityHelper::formatDateTime($monitor->domain_expires_at, 'd M Y') }}</span>
-                        </div>
-                          @php
-                                            $domainDaysRemaining = now()->startOfDay()->diffInDays(
-                                                $monitor->domain_expires_at->copy()->startOfDay(),
-                                                false
-                                            );
-                                        @endphp
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted small">Days Remaining:</span>
-                            <span class="fw-bold text-success">{{ $domainDaysRemaining ?? 'N/A' }} days</span>
-                        </div>
+                        @if(!($monitor->settings?->check_domain))
+                            <div class="text-center py-2 text-muted">
+                                <span class="badge bg-body-secondary text-secondary border px-3 py-2">
+                                    <i class="bi bi-slash-circle me-1"></i> Domain Check Disabled
+                                </span>
+                            </div>
+                        @else
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Domain Status:</span>
+                                @if($monitor->checkResult?->domain_status === 'active')
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Active</span>
+                                @elseif($monitor->checkResult?->domain_status === 'warning')
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">Warning</span>
+                                @else
+                                    <span class="badge bg-secondary-subtle text-secondary border rounded-pill">{{ ucfirst($monitor->checkResult?->domain_status ?? 'N/A') }}</span>
+                                @endif
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Expiry Date:</span>
+                                <span class="fw-semibold text-body-emphasis">{{ $monitor->checkResult?->domain_expires_at ? \App\Helpers\UtilityHelper::formatDateTime($monitor->checkResult->domain_expires_at, 'd M Y') : 'N/A' }}</span>
+                            </div>
+                            @php
+                                $domainExpiresAt = $monitor->checkResult?->domain_expires_at;
+                                $domainDaysRemaining = $domainExpiresAt ? now()->startOfDay()->diffInDays(
+                                    $domainExpiresAt->copy()->startOfDay(),
+                                    false
+                                ) : null;
+                            @endphp
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">Days Remaining:</span>
+                                <span class="fw-bold text-success">{{ $domainDaysRemaining !== null ? $domainDaysRemaining . ' days' : 'N/A' }}</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -382,20 +453,28 @@
                         </div>
                     </div>
                     <div class="card-body px-4 py-3">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted small">Issuer:</span>
-                            <span class="fw-semibold text-body-emphasis">{{ $monitor->ssl_issuer ?? 'Let\'s Encrypt' }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-muted small">Expiry Date:</span>
-                            <span class="fw-semibold text-body-emphasis">{{ $monitor->ssl_expires_at ? $monitor->ssl_expires_at->format('M d, Y') : 'N/A' }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted small">Status:</span>
-                            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
-                                {{ ucfirst($monitor->ssl_status ?? 'Valid') }}
-                            </span>
-                        </div>
+                        @if(!($monitor->settings?->check_ssl))
+                            <div class="text-center py-2 text-muted">
+                                <span class="badge bg-body-secondary text-secondary border px-3 py-2">
+                                    <i class="bi bi-slash-circle me-1"></i> SSL Check Disabled
+                                </span>
+                            </div>
+                        @else
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Issuer:</span>
+                                <span class="fw-semibold text-body-emphasis">{{ $monitor->checkResult?->ssl_issuer ?? 'N/A' }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Expiry Date:</span>
+                                <span class="fw-semibold text-body-emphasis">{{ $monitor->checkResult?->ssl_expires_at ? $monitor->checkResult->ssl_expires_at->format('M d, Y') : 'N/A' }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">Status:</span>
+                                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
+                                    {{ ucfirst($monitor->checkResult?->ssl_status ?? 'N/A') }}
+                                </span>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -430,19 +509,26 @@
                         </div>
                     </div>
                     <div class="card-body px-4 py-3">
-                        
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                           <span class="text-muted small">PHP Runtime:</span>
-                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                PHP {{ $monitor->php_version  }}
-                            </span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted small">Status:</span>
-                            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
-                                 {{ ucfirst($monitor->php_status ?? 'Unknown') }}
-                            </span>
-                        </div>
+                        @if(!($monitor->settings?->check_php))
+                            <div class="text-center py-2 text-muted">
+                                <span class="badge bg-body-secondary text-secondary border px-3 py-2">
+                                    <i class="bi bi-slash-circle me-1"></i> PHP Check Disabled
+                                </span>
+                            </div>
+                        @else
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                               <span class="text-muted small">PHP Runtime:</span>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                    PHP {{ $monitor->checkResult?->php_version ?? 'N/A' }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">Status:</span>
+                                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
+                                     {{ ucfirst($monitor->checkResult?->php_status ?? 'Unknown') }}
+                                </span>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

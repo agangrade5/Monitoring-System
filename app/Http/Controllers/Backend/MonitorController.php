@@ -107,6 +107,11 @@ class MonitorController extends Controller
                 'email' => $validated['email'],
                 'url' => $url,
                 'is_active' => $validated['is_active'] ?? true,
+                'check_uptime' => $request->has('check_uptime'),
+                'check_ssl' => $request->has('check_ssl'),
+                'check_php' => $request->has('check_php'),
+                'check_domain' => $request->has('check_domain'),
+                'check_security_headers' => $request->has('check_security_headers'),
             ];
 
             $monitor = $this->monitorRepository->create($monitorData);
@@ -182,6 +187,11 @@ class MonitorController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'url' => $url,
+            'check_uptime' => $request->has('check_uptime'),
+            'check_ssl' => $request->has('check_ssl'),
+            'check_php' => $request->has('check_php'),
+            'check_domain' => $request->has('check_domain'),
+            'check_security_headers' => $request->has('check_security_headers'),
         ];
 
         if (isset($validated['is_active'])) {
@@ -252,6 +262,13 @@ class MonitorController extends Controller
         );
 
         $this->monitorRepository->delete($id);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Monitor deleted successfully.',
+            ]);
+        }
 
         return redirect()
             ->route('monitor')

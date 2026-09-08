@@ -72,6 +72,84 @@
                         </div>
                     </div>
 
+                    {{-- 2. Active Monitor Checks --}}
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-header border-bottom py-3">
+                            <div class="d-flex align-items-center">
+                                <span class="btn btn-light-info btn-sm rounded-3 me-3 p-2">
+                                    <i class="bi bi-sliders text-info fs-5"></i>
+                                </span>
+                                <div>
+                                    <h6 class="fw-bold mb-0">Active Monitor Checks</h6>
+                                    <small class="text-muted">Select which checks to run automatically for this monitor.</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="check_uptime" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" name="check_uptime" id="check_uptime" value="1" {{ old('check_uptime', $monitor->settings?->check_uptime) ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-bold ms-2">
+                                                <i class="bi bi-activity text-success me-1"></i> Uptime Status
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2 ps-4 ms-2">Monitors website availability and HTTP response status.</small>
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="check_ssl" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" name="check_ssl" id="check_ssl" value="1" {{ old('check_ssl', $monitor->settings?->check_ssl) ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-bold ms-2">
+                                                <i class="bi bi-shield-check text-primary me-1"></i> SSL Status
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2 ps-4 ms-2">Tracks SSL certificate validity and expiration remaining days.</small>
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="check_php" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" name="check_php" id="check_php" value="1" {{ old('check_php', $monitor->settings?->check_php) ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-bold ms-2">
+                                                <i class="bi bi-filetype-php text-info me-1"></i> PHP Version
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2 ps-4 ms-2">Detects remote server PHP version and environment details.</small>
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="check_domain" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" name="check_domain" id="check_domain" value="1" {{ old('check_domain', $monitor->settings?->check_domain) ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-bold ms-2">
+                                                <i class="bi bi-globe me-1 text-warning"></i> Domain Expiry
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2 ps-4 ms-2">Monitors domain expiration date and registration status.</small>
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="check_security_headers" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" name="check_security_headers" id="check_security_headers" value="1" {{ old('check_security_headers', $monitor->settings?->check_security_headers) ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-bold ms-2">
+                                                <i class="bi bi-shield-lock text-danger me-1"></i> Security Headers
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2 ps-4 ms-2">Validates HTTP security headers (HSTS, CSP, X-Frame-Options).</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- 2. Alert Contacts & Settings --}}
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-header border-bottom py-3">

@@ -33,24 +33,21 @@
                 </div>
 
                 <form action="{{ route('monitor') }}" method="GET" class="settings-search-wrapper w-auto me-1">
-                    <div class="settings-search-wrapper w-auto">
-                       <i class="bi bi-search"></i>
-                        <input
-                            type="search"
-                            name="search"
-                            id="monitor-search"
-                            value="{{ request('search') }}"
-                            class="form-control settings-search-input"
-                            placeholder="Search websites..."
-                            aria-label="Search Websites"
-                            style="width: 14rem;"
-                        >
-                    </div>
+                    <i class="bi bi-search"></i>
+                    <input
+                        type="search"
+                        name="search"
+                        id="monitor-search"
+                        value="{{ request('search') }}"
+                        class="form-control settings-search-input"
+                        placeholder="Search websites..."
+                        aria-label="Search Websites"
+                        style="width: 14rem;"
+                    >
                 </form>
 
-                <a href="{{ route('monitor.create') }}" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
-                    Add Website
+                <a href="{{ route('monitor.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                    <i class="bi bi-plus-lg"></i>Add Website
                 </a>
             </div>
 
@@ -65,13 +62,13 @@
                                  <th style="min-width: 150px;">PHP Version</th>
                                 <th style="min-width: 150px;">Domain Expiry</th>
                                 <th style="min-width: 160px;">Security Headers</th>
-                                <th class="text-end pe-3" style="min-width: 100px;">Actions</th>
+                                <th class="text-end pe-4" style="min-width: 120px;">Actions</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             @forelse($monitors as $monitor)
-                                <tr>
+                                <tr id="monitor-row-{{ $monitor->id }}">
                                     {{-- 1. Website Details --}}
                                     <td class="ps-3">
                                         <div class="fw-semibold text-body-emphasis fs-6">
@@ -100,193 +97,241 @@
                                         @endif
                                     </td>
 
-                                    {{-- 2. Uptime Status --}}
-                                    <td>
-                                        <div class="d-flex align-items-center gap-1 mb-1">
-                                            @if($monitor->status === 'down')
-                                                <span class="badge rounded-pill text-bg-danger d-inline-flex align-items-center gap-1">
-                                                    <i class="bi bi-x-circle-fill"></i> DOWN
-                                                </span>
-                                            @else
-                                                <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                                    <i class="bi bi-check-circle-fill"></i> UP  <!-- ({{ $monitor->response_time }})-->
-                                                </span>
-                                            @endif
-                                        </div>
-                                        <div class="text-muted small">
-                                          
-                                             {{ \App\Helpers\UtilityHelper::formatDateTime( $monitor->last_checked_at, 'd M Y') }}
-                                             <br>
-                                             {{ \App\Helpers\UtilityHelper::formatDateTime( $monitor->last_checked_at, 'h:i:s A') }}
-                                        </div>
-                                    </td>
+                                     {{-- 2. Uptime Status --}}
+                                     <td>
+                                         @if(!($monitor->settings?->check_uptime))
+                                             <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                 <i class="bi bi-slash-circle"></i> Disabled
+                                             </span>
+                                         @else
+                                             <div class="d-flex align-items-center gap-1 mb-1">
+                                                 @if($monitor->status === 'down')
+                                                     <span class="badge rounded-pill text-bg-danger d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-x-circle-fill"></i> DOWN
+                                                     </span>
+                                                 @else
+                                                     <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-check-circle-fill"></i> UP
+                                                     </span>
+                                                 @endif
+                                             </div>
+                                             @if($monitor->last_checked_at)
+                                                 <div class="text-muted small">
+                                                      {{ \App\Helpers\UtilityHelper::formatDateTime($monitor->last_checked_at, 'd M Y') }}
+                                                      <br>
+                                                      {{ \App\Helpers\UtilityHelper::formatDateTime($monitor->last_checked_at, 'h:i:s A') }}
+                                                 </div>
+                                             @endif
+                                         @endif
+                                     </td>
 
-                                    {{-- 3. SSL Status --}}
-                                {{-- 3. SSL Status --}}
-                                <td>
-                                    @if($monitor->ssl_status === 'valid')
-                                        <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-check-circle-fill"></i> Valid 
-                                        </span>
-                                    @elseif($monitor->ssl_status === 'warning')
-                                        <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-exclamation-triangle-fill"></i> Warning
-                                        </span>
-                                    @elseif($monitor->ssl_status === 'expired')
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-x-circle-fill"></i> Expired
-                                        </span>
-                                    @else
-                                        <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-shield-slash"></i> No SSL
-                                        </span>
-                                    @endif
+                                     {{-- 3. SSL Status --}}
+                                     <td>
+                                         @if(!($monitor->settings?->check_ssl))
+                                             <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                 <i class="bi bi-slash-circle"></i> Disabled
+                                             </span>
+                                         @else
+                                             @php
+                                                 $sslStatus = $monitor->checkResult?->ssl_status;
+                                                 $sslExpiresAt = $monitor->checkResult?->ssl_expires_at;
+                                                 $sslIssuer = $monitor->checkResult?->ssl_issuer;
+                                                 $sslDaysRemaining = $monitor->checkResult?->ssl_days_remaining;
+                                             @endphp
 
-                                    @if($monitor->ssl_expires_at)
-                                        <div class="text-muted small mt-1">
-                                            Exp: {{ \App\Helpers\UtilityHelper::formatDateTime( $monitor->ssl_expires_at, 'd M Y') }}
-                                        </div>
+                                             @if($sslStatus === 'valid')
+                                                 <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-check-circle-fill"></i> Valid 
+                                                 </span>
+                                             @elseif($sslStatus === 'warning')
+                                                 <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-exclamation-triangle-fill"></i> Warning
+                                                 </span>
+                                             @elseif($sslStatus === 'expired')
+                                                 <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-x-circle-fill"></i> Expired
+                                                 </span>
+                                             @else
+                                                 <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-shield-slash"></i> No SSL
+                                                 </span>
+                                             @endif
 
-                                        <div class="text-muted small font-mono">
-                                            {{ Str::limit($monitor->ssl_issuer, 20) }}
-                                        </div>
+                                             @if($sslExpiresAt)
+                                                 <div class="text-muted small mt-1">
+                                                     Exp: {{ \App\Helpers\UtilityHelper::formatDateTime($sslExpiresAt, 'd M Y') }}
+                                                 </div>
 
-                                        <div class="text-muted small font-mono"  style="font-size: 12px;">
-                                            {{ $monitor->ssl_days_remaining }} days remaining
-                                        </div>
-                                    @endif
-                                </td>
+                                                 @if($sslIssuer)
+                                                     <div class="text-muted small font-mono">
+                                                         {{ Str::limit($sslIssuer, 20) }}
+                                                     </div>
+                                                 @endif
 
-                                {{-- 4. PHP Version --}}
-                                <td>
-                                    @if($monitor->php_version && strtolower($monitor->php_version) !== 'unknown')
-                                        <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 fw-semibold">
-                                            <i class="bi bi-filetype-php"></i> PHP {{ $monitor->php_version }}
-                                        </span>
-                                    @elseif(strtolower($monitor->php_version ?? '') === 'unknown')
-                                        <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-question-circle"></i> Unknown
-                                        </span>
-                                    @else
-                                        <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-dash"></i> N/A
-                                        </span>
-                                    @endif
-                                </td>
+                                                 <div class="text-muted small font-mono" style="font-size: 12px;">
+                                                     {{ $sslDaysRemaining ?? 0 }} days remaining
+                                                 </div>
+                                             @endif
+                                         @endif
+                                     </td>
 
-                                {{-- 5. Domain Expiry --}}
-                                <td>
-                                    @if($monitor->domain_status === 'active')
-                                        <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-check-circle-fill"></i> {{ ucfirst($monitor->domain_status) }} 
-                                        </span>
-                                    @elseif($monitor->domain_status === 'warning')
-                                        <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-exclamation-triangle-fill"></i> {{ ucfirst($monitor->domain_status) }} 
-                                        </span>
-                                    @elseif($monitor->domain_status === 'expired')
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-x-circle-fill"></i> {{ ucfirst($monitor->domain_status) }} 
-                                        </span>
-                                    @else
-                                        <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
-                                            <i class="bi bi-dash"></i> No expiry
-                                        </span>
-                                    @endif
-                                @if($monitor->domain_expires_at)
-                                        @php
-                                            $domainDaysRemaining = now()->startOfDay()->diffInDays(
-                                                $monitor->domain_expires_at->copy()->startOfDay(),
-                                                false
-                                            );
-                                        @endphp
+                                     {{-- 4. PHP Version --}}
+                                     <td>
+                                         @if(!($monitor->settings?->check_php))
+                                             <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                 <i class="bi bi-slash-circle"></i> Disabled
+                                             </span>
+                                         @else
+                                             @php
+                                                 $phpVersion = $monitor->checkResult?->php_version;
+                                             @endphp
+                                             @if($phpVersion && strtolower($phpVersion) !== 'unknown')
+                                                 <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 fw-semibold">
+                                                     <i class="bi bi-filetype-php"></i> PHP {{ $phpVersion }}
+                                                 </span>
+                                             @elseif(strtolower($phpVersion ?? '') === 'unknown')
+                                                 <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-question-circle"></i> Unknown
+                                                 </span>
+                                             @else
+                                                 <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-dash"></i> N/A
+                                                 </span>
+                                             @endif
+                                         @endif
+                                     </td>
 
-                                        <div class="text-muted small mt-1">
-                                            Exp:
-                                            {{ \App\Helpers\UtilityHelper::formatDateTime($monitor->domain_expires_at, 'd M Y') }}
-                                        </div>
+                                     {{-- 5. Domain Expiry --}}
+                                     <td>
+                                         @if(!($monitor->settings?->check_domain))
+                                             <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                 <i class="bi bi-slash-circle"></i> Disabled
+                                             </span>
+                                         @else
+                                             @php
+                                                 $domainStatus = $monitor->checkResult?->domain_status;
+                                                 $domainExpiresAt = $monitor->checkResult?->domain_expires_at;
+                                             @endphp
 
-                                        <div class="text-muted small font-mono" style="font-size: 12px;">
-                                            @if($domainDaysRemaining < 0)
-                                                Expired {{ abs($domainDaysRemaining) }} days ago
-                                            @elseif($domainDaysRemaining === 0)
-                                                Expires today
-                                            @else
-                                                {{ $domainDaysRemaining }} days remaining
-                                            @endif
-                                        </div>
-                                    @endif
-                                </td>
+                                             @if($domainStatus === 'active')
+                                                 <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-check-circle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                 </span>
+                                             @elseif($domainStatus === 'warning')
+                                                 <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-exclamation-triangle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                 </span>
+                                             @elseif($domainStatus === 'expired')
+                                                 <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-x-circle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                 </span>
+                                             @else
+                                                 <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-dash"></i> No expiry
+                                                 </span>
+                                             @endif
+                                             @if($domainExpiresAt)
+                                                 @php
+                                                     $domainDaysRemaining = now()->startOfDay()->diffInDays(
+                                                         $domainExpiresAt->copy()->startOfDay(),
+                                                         false
+                                                     );
+                                                 @endphp
 
-                                    {{-- 6. Security Grade --}}
-                                    <td>
-                                        @php
-                                            $headers = $monitor->security_headers ?? [];
-                                        @endphp
+                                                 <div class="text-muted small mt-1">
+                                                     Exp:
+                                                     {{ \App\Helpers\UtilityHelper::formatDateTime($domainExpiresAt, 'd M Y') }}
+                                                 </div>
 
-                                        <div class="d-flex flex-wrap gap-1">
-                                            @foreach($headers as $header)
-                                                @if($header['present'] ?? false)
-                                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
-                                                        {{ $header['name'] }}
-                                                    </span>
-                                                @else
-                                                    <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle">
-                                                        {{ $header['name'] }}
-                                                    </span>
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    </td>
+                                                 <div class="text-muted small font-mono" style="font-size: 12px;">
+                                                     @if($domainDaysRemaining < 0)
+                                                         Expired {{ abs($domainDaysRemaining) }} days ago
+                                                     @elseif($domainDaysRemaining === 0)
+                                                         Expires today
+                                                     @else
+                                                         {{ $domainDaysRemaining }} days remaining
+                                                     @endif
+                                                 </div>
+                                             @endif
+                                         @endif
+                                     </td>
+
+                                     {{-- 6. Security Grade --}}
+                                     <td>
+                                         @if(!($monitor->settings?->check_security_headers))
+                                             <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                 <i class="bi bi-slash-circle"></i> Disabled
+                                             </span>
+                                         @else
+                                             @php
+                                                 $headers = $monitor->checkResult?->security_headers ?? [
+                                                     'strict-transport-security' => ['name' => 'HSTS', 'present' => false],
+                                                     'content-security-policy' => ['name' => 'CSP', 'present' => false],
+                                                     'x-frame-options' => ['name' => 'X-Frame', 'present' => false],
+                                                     'x-content-type-options' => ['name' => 'X-Content-Type', 'present' => false],
+                                                     'referrer-policy' => ['name' => 'Referrer', 'present' => false],
+                                                     'permissions-policy' => ['name' => 'Permissions', 'present' => false],
+                                                 ];
+                                             @endphp
+
+                                             <div class="d-flex flex-wrap gap-1">
+                                                 @foreach($headers as $header)
+                                                     @if($header['present'] ?? false)
+                                                         <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
+                                                             {{ $header['name'] }}
+                                                         </span>
+                                                     @else
+                                                         <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle">
+                                                             {{ $header['name'] }}
+                                                         </span>
+                                                     @endif
+                                                 @endforeach
+                                             </div>
+                                         @endif
+                                     </td>
 
                                  
 
                                     {{-- 7. Actions --}}
-                                    <td class="text-end pe-3">
-                                        <div class="d-inline-flex align-items-center gap-1">
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group" role="group" aria-label="Monitor Actions">
                                             {{-- View Details --}}
                                             <a
                                                 href="{{ route('monitor.show', $monitor->id) }}"
-                                                class="btn btn-outline-secondary btn-sm text-white bg-secondary"
+                                                class="btn btn-sm btn-outline-secondary rounded-end-0"
                                                 title="View Health Overview"
                                             >
                                                 <i class="bi bi-eye"></i>
                                             </a>
 
                                             {{-- Trigger check --}}
-                                            <form action="{{ route('monitor.check', $monitor->id) }}" method="POST" class="d-inline trigger-check-form" data-no-loader>
+                                            <form action="{{ route('monitor.check', $monitor->id) }}" method="POST" class="d-inline-flex trigger-check-form" style="margin-left: -1px;" data-no-loader>
                                                 @csrf
-                                                <button type="submit" class="btn btn-outline-success  btn-sm trigger-btn text-white bg-success " title="Trigger Check">
+                                                <button type="submit" class="btn btn-sm btn-outline-success rounded-0 trigger-btn" title="Trigger Check">
                                                     <i class="bi bi-arrow-clockwise icon-idle"></i>
                                                     <span class="spinner-border spinner-border-sm icon-spin d-none" role="status" aria-hidden="true" style="width: 0.85rem; height: 0.85rem; border-width: 0.15em;"></span>
                                                 </button>
                                             </form>
+
                                             {{-- Edit --}}
-                                            <a
-                                                href="{{ route('monitor.edit', $monitor->id) }}"
-                                                class="btn btn-outline-primary btn-sm text-white bg-primary"
-                                                title="Edit"
-                                            >
-                                               <i class="bi bi-pencil-square"></i>
-                                            </a>
+                                            <a href="{{ route('monitor.edit', $monitor->id) }}" class="btn btn-sm btn-outline-primary rounded-0" style="margin-left: -1px;" title="Edit Monitor"><i class="bi bi-pencil-square"></i> </a>
 
                                             {{-- Delete --}}
-                                            <form
-                                                action="{{ route('monitor.destroy', $monitor->id) }}"
-                                                method="POST"
-                                                class="d-inline"
-                                                onsubmit="return confirm('Are you sure you want to delete this website / monitor?')"
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-outline-danger delete-record-btn rounded-start-0"
+                                                style="margin-left: -1px;"
+                                                data-url="{{ route('monitor.destroy', $monitor->id) }}"
+                                                data-row-id="monitor-row-{{ $monitor->id }}"
+                                                data-confirm-title="Delete Website / Monitor?"
+                                                data-confirm-text="Are you sure you want to delete this website / monitor?"
+                                                data-confirm-button="Yes, Delete"
+                                                data-confirm-button-class="btn btn-danger"
+                                                data-confirm-cancel-button-class="btn btn-secondary"
+                                                title="Delete"
                                             >
-                                                @csrf
-                                                @method('DELETE')
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-outline-danger btn-sm text-white bg-danger"
-                                                    title="Delete"
-                                                >
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>

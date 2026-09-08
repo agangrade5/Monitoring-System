@@ -28,18 +28,27 @@ class CheckSecurityHeadersJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $monitor = Monitor::find($this->monitorId);
+        $monitor = Monitor::with('settings')->find($this->monitorId);
 
         if (!$monitor || !$monitor->is_active) {
             return;
         }
+
+        if ($monitor->settings && !$monitor->settings->check_security_headers) {
+            return;
+        }
         try {
+            $url = $monitor->url;
+            if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+                $url = "http://" . $url;
+            }
+
             $response = Http::timeout(15)
                 ->withOptions([
                     'allow_redirects' => true,
                     'verify' => false,
                 ])
-                ->get($monitor->url);
+                ->get($url);
 
             $headers = collect($response->headers())
                 ->mapWithKeys(fn ($value, $key) => [
@@ -97,9 +106,10 @@ class CheckSecurityHeadersJob implements ShouldQueue
                 default => 'F',
             };
 
-            $monitor->security_headers = $result;
-            $monitor->security_grade = $grade;
-            $monitor->save();
+            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
+                'security_headers' => $result,
+                'security_grade' => $grade,
+            ]);
 
             \Log::info('Security Headers Saved', [
                 'monitor_id' => $monitor->id,
@@ -114,7 +124,19 @@ class CheckSecurityHeadersJob implements ShouldQueue
                 'error' => $e->getMessage(),
             ]);
 
-            throw $e;
+            $defaultHeaders = [
+                'strict-transport-security' => ['name' => 'Strict-Transport-Security (HSTS)', 'description' => 'Forces secure HTTPS connections.', 'present' => false, 'value' => null],
+                'content-security-policy' => ['name' => 'Content-Security-Policy (CSP)', 'description' => 'Mitigates XSS.', 'present' => false, 'value' => null],
+                'x-frame-options' => ['name' => 'X-Frame-Options', 'description' => 'Prevents Clickjacking.', 'present' => false, 'value' => null],
+                'x-content-type-options' => ['name' => 'X-Content-Type-Options', 'description' => 'Blocks MIME sniffing.', 'present' => false, 'value' => null],
+                'referrer-policy' => ['name' => 'Referrer-Policy', 'description' => 'Controls referrer information.', 'present' => false, 'value' => null],
+                'permissions-policy' => ['name' => 'Permissions-Policy', 'description' => 'Restricts permissions.', 'present' => false, 'value' => null],
+            ];
+
+            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
+                'security_headers' => $defaultHeaders,
+                'security_grade' => 'F',
+            ]);
         }
     }
 }

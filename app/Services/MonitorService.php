@@ -37,11 +37,31 @@ class MonitorService
     {
         $monitor = $this->monitorRepository->findById($id);
 
-        CheckUptimeJob::dispatchSync($id);
-        CheckSslCertificateJob::dispatchSync($id);
-        CheckPhpVersionJob::dispatchSync($id);
-        CheckDomainExpiryJob::dispatchSync($id);
-        CheckSecurityHeadersJob::dispatchSync($id);
+        if (!$monitor) {
+            return null;
+        }
+
+        $settings = $monitor->settings;
+
+        if ($settings && $settings->check_uptime) {
+            CheckUptimeJob::dispatchSync($id);
+        }
+
+        if ($settings && $settings->check_ssl) {
+            CheckSslCertificateJob::dispatchSync($id);
+        }
+
+        if ($settings && $settings->check_php) {
+            CheckPhpVersionJob::dispatchSync($id);
+        }
+
+        if ($settings && $settings->check_domain) {
+            CheckDomainExpiryJob::dispatchSync($id);
+        }
+
+        if ($settings && $settings->check_security_headers) {
+            CheckSecurityHeadersJob::dispatchSync($id);
+        }
 
         return $monitor;
     }
@@ -108,3 +128,4 @@ class MonitorService
         }
     }
 }
+ 

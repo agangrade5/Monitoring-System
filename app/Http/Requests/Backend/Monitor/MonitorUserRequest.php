@@ -73,6 +73,26 @@ class MonitorUserRequest extends FormRequest
                 'nullable',
                 'boolean',
             ],
+            'check_uptime' => [
+                'nullable',
+                'boolean',
+            ],
+            'check_ssl' => [
+                'nullable',
+                'boolean',
+            ],
+            'check_php' => [
+                'nullable',
+                'boolean',
+            ],
+            'check_domain' => [
+                'nullable',
+                'boolean',
+            ],
+            'check_security_headers' => [
+                'nullable',
+                'boolean',
+            ],
         ];
 
         if ($this->has('urls')) {
