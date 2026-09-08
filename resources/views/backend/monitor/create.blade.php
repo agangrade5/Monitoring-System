@@ -27,7 +27,7 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <form action="{{ route('monitor.store') }}" method="POST">
+                <form action="{{ route('monitor.store') }}" method="POST" id="create-monitor-form">
                     @csrf
                     
                     {{-- 1. Website & Server Information --}}
@@ -44,41 +44,150 @@
                             </div>
                         </div>
                         <div class="card-body p-4">
-                            <div class="row g-3">
+                            <div class="row g-4">
                                 <!-- Monitor Name -->
-                                <div class="col-md-6">
-                                    <label for="name" class="form-label small fw-semibold text-secondary">Website / Monitor Name <span class="text-danger">*</span></label>
+                                <div class="col-md-12">
+                                    <label for="name" class="form-label small fw-semibold text-secondary">Website / Project Name <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="e.g. Test Website" required>
+                                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="e.g. My Website / Client Name" required>
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
+                                    <div class="form-text text-muted small">For multiple domains, this name acts as the group/prefix identifier.</div>
                                 </div>
 
-                               
-                                <!-- Target URL -->
-                                <div class="col-md-6" id="url-group">
-                                    <label for="url" class="form-label small fw-semibold text-secondary">Website URL</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
-                                        <input type="url" name="url" id="url" class="form-control @error('url') is-invalid @enderror" value="{{ old('url') }}" placeholder="https://example.com">
-                                        @error('url')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                <!-- Dynamic Website URLs / Domains -->
+                                <div class="col-md-12">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label small fw-semibold text-secondary mb-0">
+                                            Website URL(s) / Domain(s) <span class="text-danger">*</span>
+                                        </label>
+                                       
+                                    </div>
+
+                                    <div id="urls-container" class="d-flex flex-column gap-2">
+                                        @php
+                                            $oldUrls = old('urls', ['']);
+                                            if (!is_array($oldUrls) || empty($oldUrls)) {
+                                                $oldUrls = [''];
+                                            }
+                                        @endphp
+                                        @foreach($oldUrls as $index => $oldUrl)
+                                            <div class="url-row input-group">
+                                                <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                                                <input type="text" 
+                                                       name="urls[]" 
+                                                       class="form-control url-input @error('urls.'.$index) is-invalid @enderror" 
+                                                       value="{{ $oldUrl }}" 
+                                                       placeholder="e.g. https://example.com" 
+                                                       required>
+                                                @if($index === 0)
+                                                    <button type="button" class="btn btn-primary px-3 add-url-btn" title="Add Domain">
+                                                        <i class="bi bi-plus-lg"></i>
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-outline-danger px-3 remove-url-btn" title="Remove Domain">
+                                                        <i class="bi bi-dash-lg"></i>
+                                                    </button>
+                                                @endif
+                                                @error('urls.'.$index)
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    @error('urls')
+                                        <div class="text-danger small mt-2">{{ $message }}</div>
+                                    @enderror
+                                    <div class="form-text text-muted small mt-1">
+                                        Enter complete URLs (e.g. <code>https://example.com</code>) .
                                     </div>
                                 </div>
-
-                                <!-- IP Address -->
-                                
                             </div>
                         </div>
                    </div>
 
-                   
+                    {{-- 2. Active Monitor Checks --}}
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-header border-bottom py-3">
+                            <div class="d-flex align-items-center">
+                                <span class="btn btn-light-info btn-sm rounded-3 me-3 p-2">
+                                    <i class="bi bi-sliders text-info fs-5"></i>
+                                </span>
+                                <div>
+                                    <h6 class="fw-bold mb-0">Active Monitor Checks</h6>
+                                    <small class="text-muted">Select which checks to run automatically for this monitor.</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="check_uptime" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" name="check_uptime" id="check_uptime" value="1" {{ old('check_uptime') ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-bold ms-2">
+                                                <i class="bi bi-activity text-success me-1"></i> Uptime Status
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2 ps-4 ms-2">Monitors website availability and HTTP response status.</small>
+                                    </label>
+                                </div>
 
-                    {{-- 5. Alert Contacts & Settings --}}
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="check_ssl" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" name="check_ssl" id="check_ssl" value="1" {{ old('check_ssl') ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-bold ms-2">
+                                                <i class="bi bi-shield-check text-primary me-1"></i> SSL Status
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2 ps-4 ms-2">Tracks SSL certificate validity and expiration remaining days.</small>
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="check_php" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" name="check_php" id="check_php" value="1" {{ old('check_php') ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-bold ms-2">
+                                                <i class="bi bi-filetype-php text-info me-1"></i> PHP Version
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2 ps-4 ms-2">Detects remote server PHP version and environment details.</small>
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="check_domain" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" name="check_domain" id="check_domain" value="1" {{ old('check_domain') ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-bold ms-2">
+                                                <i class="bi bi-globe me-1 text-warning"></i> Domain Expiry
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2 ps-4 ms-2">Monitors domain expiration date and registration status.</small>
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6 col-lg-4">
+                                    <label for="check_security_headers" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" name="check_security_headers" id="check_security_headers" value="1" {{ old('check_security_headers') ? 'checked' : '' }}>
+                                            <span class="form-check-label fw-bold ms-2">
+                                                <i class="bi bi-shield-lock text-danger me-1"></i> Security Headers
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2 ps-4 ms-2">Validates HTTP security headers (HSTS, CSP, X-Frame-Options).</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 2. Alert Contacts & Settings --}}
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-header border-bottom py-3">
                             <div class="d-flex align-items-center">
@@ -94,34 +203,16 @@
                         <div class="card-body p-4">
                             <div class="row g-3">
                                 <!-- Alert Email -->
-                                <div class="col-md-6">
-                                    <label for="email" class="form-label small fw-semibold text-secondary">Alert Email</label>
+                                <div class="col-md-12">
+                                    <label for="email" class="form-label small fw-semibold text-secondary">Alert Email <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="alerts@example.com">
+                                        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', auth()->user()->email ?? '') }}" placeholder="alerts@example.com" required>
                                         @error('email')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-
-                                <!-- Alert Mobile -->
-                                <div class="col-md-6">
-                                    <label for="mobile" class="form-label small fw-semibold text-secondary">Alert Mobile</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                                        <input type="text" name="mobile" id="mobile" class="form-control @error('mobile') is-invalid @enderror" value="{{ old('mobile') }}" placeholder="e.g. +1234567890">
-                                        @error('mobile')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <!-- Check Interval -->
-                                
-
-                                <!-- Active State -->
-                                
                             </div>
                         </div>
                     </div>
@@ -130,11 +221,12 @@
                         <a href="{{ route('monitor') }}" class="btn btn-outline-secondary px-4">Cancel</a>
                         <button type="submit" class="btn btn-primary px-5 fw-semibold shadow-sm">Save & Start Monitoring</button>
                     </div>
-                </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/create-monitor.js')) !!}
 
 @endsection

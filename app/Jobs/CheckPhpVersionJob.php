@@ -32,8 +32,12 @@ class CheckPhpVersionJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $monitor = Monitor::find($this->monitorId);
-        if (!$monitor || !$monitor->url) {
+        $monitor = Monitor::with('settings')->find($this->monitorId);
+        if (!$monitor || !$monitor->is_active || !$monitor->url) {
+            return;
+        }
+
+        if ($monitor->settings && !$monitor->settings->check_php) {
             return;
         }
 
@@ -43,17 +47,16 @@ class CheckPhpVersionJob implements ShouldQueue
             $phpVersion = $this->extractPhpVersion($response);
             $wpVersion  = $this->extractWordPressVersion($response->body());
 
-            $monitor->update([
+            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'php_version'    => $phpVersion ?: 'Unknown',
                 'php_status'     => $phpVersion ? 'up' : 'unknown',
-                'wp_version'     => $wpVersion ?: null, // agar column ho to
                 'php_checked_at' => now(),
             ]);
 
         } catch (\Throwable $e) {
             report($e);
 
-            $monitor->update([
+            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'php_version'    => 'Unknown',
                 'php_status'     => 'unknown',
                 'php_checked_at' => now(),

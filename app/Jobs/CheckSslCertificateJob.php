@@ -28,8 +28,12 @@ class CheckSslCertificateJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $monitor = Monitor::find($this->monitorId);
+        $monitor = Monitor::with('settings')->find($this->monitorId);
         if (!$monitor || !$monitor->is_active) {
+            return;
+        }
+
+        if ($monitor->settings && !$monitor->settings->check_ssl) {
             return;
         }
 
@@ -61,7 +65,7 @@ class CheckSslCertificateJob implements ShouldQueue
         );
 
         if (!$socket) {
-            $monitor->update([
+            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'ssl_status' => 'invalid',
             ]);
 
@@ -75,7 +79,7 @@ class CheckSslCertificateJob implements ShouldQueue
         if (
             !isset($params['options']['ssl']['peer_certificate'])
         ) {
-            $monitor->update([
+            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'ssl_status' => 'invalid',
             ]);
 
@@ -87,7 +91,7 @@ class CheckSslCertificateJob implements ShouldQueue
         );
 
         if (!$certificate || !isset($certificate['validTo_time_t'])) {
-            $monitor->update([
+            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'ssl_status' => 'invalid',
             ]);
 
@@ -107,7 +111,7 @@ class CheckSslCertificateJob implements ShouldQueue
             default => 'valid',
         };
 
-        $monitor->update([
+        $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
             'ssl_enabled' => true,
             'ssl_expires_at' => $expiresAt,
             'ssl_days_remaining' => max(0, $daysRemaining),

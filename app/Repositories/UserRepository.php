@@ -53,12 +53,22 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * Method to retrieve all users
+     * Method to retrieve all users with pagination and optional search.
      *
-     * @return array<User>
+     * @param string|null $search
+     *
+     * @return LengthAwarePaginator
      */
-    public function getAllUsers(): LengthAwarePaginator
+    public function getAllUsers(?string $search = null): LengthAwarePaginator
     {
+        return User::when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(10);
         return User::withoutRole('Admin')->latest()->paginate(10);
     }
 

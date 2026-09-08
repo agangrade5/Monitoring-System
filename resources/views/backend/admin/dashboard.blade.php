@@ -237,7 +237,7 @@
             <!-- Right Column: Quick Actions & System Overview -->
             <div class="col-lg-4 col-12">
                 <!-- System Performance & Health Status -->
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <!-- <div class="card border-0 shadow-sm rounded-4 mb-4">
                     <div class="card-header border-0 py-3">
                         <h6 class="mb-0 fw-bold text-body-emphasis">System Overview</h6>
                         <small class="text-muted">High-level health & performance summary</small>
@@ -277,7 +277,7 @@
                             @endif
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Quick Action & Administration Tools -->
                 <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -287,27 +287,57 @@
                     </div>
                     <div class="card-body pt-0">
                         <div class="d-grid gap-2">
-                            <a href="{{ route('admin.users.index') }}" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
-                                <div>
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-people-fill me-2 text-primary"></i>Manage User Accounts</h6>
-                                    <small class="text-muted">Create, edit, or deactivate user credentials</small>
+                            <a href="{{ route('admin.users.index') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="quick-action-icon bg-primary-subtle text-primary rounded-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-people-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-body-emphasis">Manage User Accounts</h6>
+                                        <small class="text-muted">Create, edit, or deactivate user credentials</small>
+                                    </div>
                                 </div>
-                                <i class="bi bi-chevron-right text-muted"></i>
+                                <i class="bi bi-chevron-right text-muted quick-action-arrow"></i>
                             </a>
-                            <a href="{{ route('admin.settings') }}" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3">
-                                <div>
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-gear-fill me-2 text-secondary"></i>System Settings</h6>
-                                    <small class="text-muted">Update configuration and Change Password</small>
+
+                            <a href="{{ route('admin.settings') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="quick-action-icon bg-secondary-subtle text-secondary rounded-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-gear-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-body-emphasis">System Settings</h6>
+                                        <small class="text-muted">Update configuration and Change Password</small>
+                                    </div>
                                 </div>
-                                <i class="bi bi-chevron-right text-muted"></i>
+                                <i class="bi bi-chevron-right text-muted quick-action-arrow"></i>
                             </a>
-                            {{-- <button type="button" class="btn btn-outline-primary text-start d-flex align-items-center justify-content-between p-3 rounded-3" onclick="if(window.toastr){toastr.success('Real-time audit scheduled for all nodes.')}else{alert('Real-time audit scheduled for all nodes.')}">
-                                <div>
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-arrow-clockwise me-2 text-success"></i>Trigger Health Audit</h6>
-                                    <small class="text-muted">Force real-time status check on all nodes</small>
+
+                            <a href="{{ route('monitor') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="quick-action-icon bg-success-subtle text-success rounded-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-globe2 fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-body-emphasis">Monitored Websites & Domains</h6>
+                                        <small class="text-muted">View all endpoints, SSL, and uptime status</small>
+                                    </div>
                                 </div>
-                                <i class="bi bi-chevron-right text-muted"></i>
-                            </button> --}}
+                                <i class="bi bi-chevron-right text-muted quick-action-arrow"></i>
+                            </a>
+
+                            <a href="{{ route('monitor.create') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="quick-action-icon bg-info-subtle text-info rounded-3 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-plus-circle-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-body-emphasis">Add Website / Monitor</h6>
+                                        <small class="text-muted">Register and track new website endpoints</small>
+                                    </div>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted quick-action-arrow"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -318,6 +348,7 @@
 {{-- Activity View Modal --}}
 @include('backend.activity-logs.view-modal')
 @endsection
+
 
 @push('scripts')
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/activity-logs.js')) !!}

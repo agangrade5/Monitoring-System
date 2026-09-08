@@ -28,9 +28,13 @@ class CheckUptimeJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $monitor = Monitor::find($this->monitorId);
+        $monitor = Monitor::with('settings')->find($this->monitorId);
 
         if (!$monitor || !$monitor->is_active) {
+            return;
+        }
+
+        if ($monitor->settings && !$monitor->settings->check_uptime) {
             return;
         }
 

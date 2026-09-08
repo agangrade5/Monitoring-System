@@ -147,6 +147,26 @@ Route::middleware('auth')->group(function () {
                 'index'
             ])->name('settings');
 
+            Route::post('/settings/otp', [
+                SettingController::class,
+                'updateOtpSettings'
+            ])->name('settings.otp');
+
+            Route::post('/settings/twilio', [
+                SettingController::class,
+                'updateTwilioSettings'
+            ])->name('settings.twilio');
+
+            Route::post('/settings/email', [
+                SettingController::class,
+                'updateEmailSettings'
+            ])->name('settings.email');
+
+            Route::post('/settings/aws', [
+                SettingController::class,
+                'updateAwsSettings'
+            ])->name('settings.aws');
+
             /*
             |--------------------------------------------------------------------------
             | Users Routes

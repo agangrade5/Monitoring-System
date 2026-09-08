@@ -11,7 +11,7 @@
             <img src="{{ asset('assets/images/backend/logo/monitoring-48.png') }}" alt="{{ config('app.name') }}" class="brand-image opacity-75 shadow">
             <!--end::Brand Image-->
             <!--begin::Brand Text-->
-            <span class="brand-text fw-light">
+            <span class="brand-text fw-bold">
                 {{ config('app.name') }}
             </span>
             <!--end::Brand Text-->
@@ -47,7 +47,7 @@
                     </a>
                 </li>
                   <li class="nav-item">
-                     <a href="{{ route('monitor') }}" class="nav-link {{ request()->routeIs('monitor') ? 'active' : '' }}">
+                     <a href="{{ route('monitor') }}" class="nav-link {{ request()->routeIs('monitor', 'monitor.create', 'monitor.edit','monitor.show') ? 'active' : '' }}">
 
                         <i class="nav-icon bi bi-activity"></i>
                         <p>Monitoring</p>

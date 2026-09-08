@@ -396,8 +396,8 @@ body {
 }
 
 .settings-nav-link.active {
-    background-color: rgba(13, 110, 253, 0.1);
-    color: #0d6efd;
+    background-color: #0d6efd;
+    color: #fff;
     border-color: rgba(13, 110, 253, 0.15);
     font-weight: 600;
 }
@@ -1030,4 +1030,38 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
         font-size: 21px;
     }
 
+}
+.quick-action-link {
+    background-color: var(--bs-card-bg, #ffffff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.quick-action-link:hover {
+    background-color: var(--bs-tertiary-bg, #f8f9fa);
+    border-color: var(--bs-primary, #0d6efd) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(13, 110, 253, 0.08);
+}
+
+.quick-action-link:hover .quick-action-arrow {
+    color: var(--bs-primary, #0d6efd) !important;
+    transform: translateX(4px);
+}
+
+.quick-action-link:hover .quick-action-icon {
+    transform: scale(1.05);
+}
+
+.quick-action-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease-in-out;
+}
+
+.quick-action-arrow {
+    transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
 }

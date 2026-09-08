@@ -30,9 +30,13 @@ class CheckDomainExpiryJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $monitor = Monitor::find($this->monitorId);
+        $monitor = Monitor::with('settings')->find($this->monitorId);
 
-        if (!$monitor || !$monitor->url) {
+        if (!$monitor || !$monitor->is_active || !$monitor->url) {
+            return;
+        }
+
+        if ($monitor->settings && !$monitor->settings->check_domain) {
             return;
         }
 
@@ -71,7 +75,7 @@ class CheckDomainExpiryJob implements ShouldQueue
                 ->get("https://rdap.org/domain/{$domain}");
 
             if (!$response->successful()) {
-                $monitor->update([
+                $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                     'domain_status' => 'unknown',
                     'domain_checked_at' => now(),
                     'domain_expires_at' => null,
@@ -85,7 +89,7 @@ class CheckDomainExpiryJob implements ShouldQueue
             $expiryDate = $this->getExpiryDate($data);
 
             if (!$expiryDate) {
-                $monitor->update([
+                $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                     'domain_status' => 'unknown',
                     'domain_checked_at' => now(),
                     'domain_expires_at' => null,
@@ -96,7 +100,7 @@ class CheckDomainExpiryJob implements ShouldQueue
 
             $expiry = \Carbon\Carbon::parse($expiryDate);
 
-            $monitor->update([
+            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'domain_expires_at' => $expiry,
                 'domain_status' => $expiry->isPast()
                     ? 'expired'
@@ -108,7 +112,7 @@ class CheckDomainExpiryJob implements ShouldQueue
 
             report($e);
 
-            $monitor->update([
+            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'domain_status' => 'unknown',
                 'domain_checked_at' => now(),
             ]);
