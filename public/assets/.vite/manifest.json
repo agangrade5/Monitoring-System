@@ -20,10 +20,28 @@
     "src": "resources/js/backend/admin.js",
     "isEntry": true
   },
+  "resources/js/backend/aws-settings.js": {
+    "file": "js/backend/aws-settings.js",
+    "name": "aws-settings",
+    "src": "resources/js/backend/aws-settings.js",
+    "isEntry": true
+  },
   "resources/js/backend/change-password.js": {
     "file": "js/backend/change-password.js",
     "name": "change-password",
     "src": "resources/js/backend/change-password.js",
+    "isEntry": true
+  },
+  "resources/js/backend/create-monitor.js": {
+    "file": "js/backend/create-monitor.js",
+    "name": "create-monitor",
+    "src": "resources/js/backend/create-monitor.js",
+    "isEntry": true
+  },
+  "resources/js/backend/email-settings.js": {
+    "file": "js/backend/email-settings.js",
+    "name": "email-settings",
+    "src": "resources/js/backend/email-settings.js",
     "isEntry": true
   },
   "resources/js/backend/image-cropper.js": {
@@ -38,16 +56,40 @@
     "src": "resources/js/backend/monitor.js",
     "isEntry": true
   },
+  "resources/js/backend/otp-settings.js": {
+    "file": "js/backend/otp-settings.js",
+    "name": "otp-settings",
+    "src": "resources/js/backend/otp-settings.js",
+    "isEntry": true
+  },
   "resources/js/backend/showmonitor.js": {
     "file": "js/backend/showmonitor.js",
     "name": "showmonitor",
     "src": "resources/js/backend/showmonitor.js",
     "isEntry": true
   },
+  "resources/js/backend/twilio-settings.js": {
+    "file": "js/backend/twilio-settings.js",
+    "name": "twilio-settings",
+    "src": "resources/js/backend/twilio-settings.js",
+    "isEntry": true
+  },
+  "resources/js/backend/user-login.js": {
+    "file": "js/backend/user-login.js",
+    "name": "user-login",
+    "src": "resources/js/backend/user-login.js",
+    "isEntry": true
+  },
   "resources/js/backend/user.js": {
     "file": "js/backend/user.js",
     "name": "user",
     "src": "resources/js/backend/user.js",
+    "isEntry": true
+  },
+  "resources/js/backend/verify-otp.js": {
+    "file": "js/backend/verify-otp.js",
+    "name": "verify-otp",
+    "src": "resources/js/backend/verify-otp.js",
     "isEntry": true
   }
 }

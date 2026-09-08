@@ -2,33 +2,56 @@
 
 namespace App\Services;
 
+use App\Repositories\Contracts\SettingRepositoryInterface;
 use Twilio\Rest\Client;
 
 class TwilioService
 {
-    private Client $client;
-
-    public function __construct()
-    {
-        $this->client = new Client(
-            config('services.twilio.sid'),
-            config('services.twilio.auth_token')
-        );
+    /**
+     * Constructor
+     *
+     * @param SettingRepositoryInterface $settingRepository
+     *
+     * @return void
+     */
+    public function __construct(
+        private readonly SettingRepositoryInterface $settingRepository,
+    ) {
     }
 
+    /**
+     * Send OTP through Twilio.
+     */
     public function sendOtp(
         string $phone,
-        string $otp
+        string $otp,
+        int $expireTime
     ): void {
 
-        $this->client->messages->create(
+        $twilioDetails =
+            $this->settingRepository->getSettingArray('twilio');
+
+        $sid = $twilioDetails['twilio_account_sid'] ?? null;
+        $token = $twilioDetails['twilio_auth_token'] ?? null;
+        $from = $twilioDetails['twilio_from_number'] ?? null;
+
+        if (!$sid || !$token || !$from) {
+            throw new \RuntimeException(
+                'Twilio configuration is incomplete.'
+            );
+        }
+
+        $client = new Client(
+            $sid,
+            $token
+        );
+
+        $client->messages->create(
             $phone,
             [
-                'from' => config('services.twilio.from'),
-                'body' => "Your login OTP is {$otp}. "
-                    . "It is valid for "
-                    . config('otp.otp.max_time')
-                    . " minutes.",
+                'from' => $from,
+                'body' => "Your Monitoring System OTP is {$otp}. "
+                    . "It is valid for {$expireTime} seconds.",
             ]
         );
     }

@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Backend\Auth\{LoginRequest, UserLoginRequest, VerifyOtpRequest};
 use App\Notifications\SendOtpNotification;
 use App\Repositories\Contracts\UserRepositoryInterface;
-//use App\Repositories\Contracts\SettingRepositoryInterface;
+use App\Repositories\Contracts\SettingRepositoryInterface;
 use App\Services\TwilioService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\{Auth, RateLimiter, Session};
@@ -26,7 +26,7 @@ class LoginController extends Controller
      */
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
-        //private readonly SettingRepositoryInterface $settingRepository,
+        private readonly SettingRepositoryInterface $settingRepository,
         private readonly TwilioService $twilioService,
     ) {
     }
@@ -168,49 +168,45 @@ class LoginController extends Controller
      *
      * @return RedirectResponse
      */
-    public function sendOtp(UserLoginRequest $request): RedirectResponse
-    {
+    public function sendOtp(
+        UserLoginRequest $request
+    ): RedirectResponse {
+
         $type = $request->input('login_type');
 
-        $value = $type === 'email'
-            ? $request->input('email')
-            : $request->input('phone');
-
-
         /*
-         * Rate limiter key
-         */
-        $key = 'login-otp:' . $request->ip() . ':' . $value;
+        |--------------------------------------------------------------------------
+        | Get Login Value
+        |--------------------------------------------------------------------------
+        */
 
-        /*
-         * Maximum 3 OTP requests per 10 minutes
-         */
-        if (RateLimiter::tooManyAttempts($key, 3)) {
+        if ($type === 'email') {
 
-            $seconds = RateLimiter::availableIn($key);
+            $value = $request->input('email');
 
-            return back()
-                ->withErrors([
-                    $type => "Too many OTP requests. Please try again in "
-                        . ceil($seconds / 60)
-                        . " minute(s).",
-                ])
-                ->withInput();
+        } else {
+
+            $countryCode =
+                $request->input('country_code');
+
+            $phone =
+                $request->input('phone');
+
+            $value = $countryCode . $phone;
         }
 
-        RateLimiter::hit(
-            $key,
-            10 * 60 // 10 minutes
-        );
-
         /*
-         * Find user
-         */
+        |--------------------------------------------------------------------------
+        | Find User
+        |--------------------------------------------------------------------------
+        */
+
         $user = $type === 'email'
             ? $this->userRepository->findByEmail($value)
             : $this->userRepository->findByPhone($value);
 
         if (!$user) {
+
             return back()
                 ->withErrors([
                     $type => 'No account found with these details.',
@@ -219,52 +215,97 @@ class LoginController extends Controller
         }
 
         /*
-         * OTP settings
-         */
-        //$otpDetails = $this->settingRepository->getOtpDetails();
+        |--------------------------------------------------------------------------
+        | OTP Settings
+        |--------------------------------------------------------------------------
+        */
 
-        $otp = UtilityHelper::generateOtp();
+        $otpDetails =
+            $this->settingRepository
+                ->getSettingArray('otp');
+
+        $maxTime = (int) (
+            $otpDetails['max_time'] ?? 90
+        );
 
         /*
-         * Store OTP in session
-         */
+        |--------------------------------------------------------------------------
+        | Generate OTP
+        |--------------------------------------------------------------------------
+        */
+
+        $otp = UtilityHelper::generateOtp(
+            $otpDetails
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Store OTP Session
+        |--------------------------------------------------------------------------
+        */
+
         Session::put('login_otp', [
+
             'user_id' => $user->id,
+
             'type' => $type,
+
             'value' => $value,
+
             'otp' => $otp,
+
             'expires_at' => now()->addSeconds(
-                60 //$otpDetails['otp']['max_time']
+                $maxTime
             ),
+
+            /*
+            | Wrong OTP attempts
+            */
+            'attempts' => 0,
+
+            /*
+            | Maximum allowed wrong attempts
+            */
+            'max_attempts' => 3,
+
         ]);
 
         /*
-         * Send OTP
-         */
+        |--------------------------------------------------------------------------
+        | Send OTP
+        |--------------------------------------------------------------------------
+        */
+
         if ($type === 'phone') {
 
             $this->twilioService->sendOtp(
-                $value,
-                $otp
+                phone: $value,
+                otp: $otp,
+                expireTime: $maxTime
             );
+
         } else {
 
-            /*
-             * Email OTP service
-             *
-             * Twilio SendGrid / Laravel Mail can be used here.
-             */
             $user->notify(
                 new SendOtpNotification(
                     otp: $otp,
-                    otpExpireTime: 60 //$otpDetails['otp']['max_time']
+                    otpExpireTime: $maxTime
                 )
             );
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect Verify Page
+        |--------------------------------------------------------------------------
+        */
+
         return redirect()
             ->route('login.verify')
-            ->with('success', 'OTP sent successfully.');
+            ->with(
+                'success',
+                'OTP sent successfully.'
+            );
     }
 
     /**
@@ -275,10 +316,12 @@ class LoginController extends Controller
     public function showVerifyOtp(): View|RedirectResponse
     {
         if (!session()->has('login_otp')) {
+
             return redirect()
                 ->route('login')
                 ->withErrors([
-                    'login' => 'Please request a new OTP.',
+                    'login' =>
+                        'Please request a new OTP.',
                 ]);
         }
 
@@ -287,7 +330,18 @@ class LoginController extends Controller
         return view('backend.auth.verify-otp', [
             'title' => 'Verify OTP',
             'bodyClassName' => 'login-page',
-            'expiresAt' => $otpData['expires_at'],
+            'expiresAt' =>
+                $otpData['expires_at'],
+            'attempts' =>
+                $otpData['attempts'] ?? 0,
+            'maxAttempts' =>
+                $otpData['max_attempts'] ?? 3,
+            'remainingAttempts' =>
+                max(
+                    0,
+                    ($otpData['max_attempts'] ?? 3)
+                    - ($otpData['attempts'] ?? 0)
+                ),
         ]);
     }
 
@@ -304,86 +358,346 @@ class LoginController extends Controller
 
         $otpData = session('login_otp');
 
+        /*
+        |--------------------------------------------------------------------------
+        | OTP Session Check
+        |--------------------------------------------------------------------------
+        */
+
         if (!$otpData) {
+
             return redirect()
                 ->route('login')
                 ->withErrors([
-                    'otp' => 'OTP session expired. Please request a new OTP.',
+                    'otp' =>
+                        'OTP session expired. Please request a new OTP.',
                 ]);
         }
 
         /*
-        * Check expiry
+        |--------------------------------------------------------------------------
+        | Get Attempts
+        |--------------------------------------------------------------------------
         */
-        if (now()->greaterThan(
-            \Carbon\Carbon::parse($otpData['expires_at'])
-        )) {
 
-            session()->forget('login_otp');
+        $attempts =
+            (int) ($otpData['attempts'] ?? 0);
 
-            return back()
-                ->withErrors([
-                    'otp' => 'OTP has expired. Please request a new OTP.',
-                ]);
-        }
+        $maxAttempts =
+            (int) ($otpData['max_attempts'] ?? 3);
 
-        $otp = implode('', $request->input('otp'));
+        /*
+        |--------------------------------------------------------------------------
+        | Already blocked
+        |--------------------------------------------------------------------------
+        */
 
-        if (!hash_equals(
-            (string) $otpData['otp'],
-            (string) $otp
-        )) {
+        if ($attempts >= $maxAttempts) {
 
             return back()
                 ->withErrors([
-                    'otp' => 'Invalid OTP.',
+                    'otp' =>
+                        'Maximum OTP attempts exceeded. Please resend OTP.',
                 ]);
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Check Expiry
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            now()->greaterThan(
+                \Carbon\Carbon::parse(
+                    $otpData['expires_at']
+                )
+            )
+        ) {
+
+            return back()
+                ->withErrors([
+                    'otp' =>
+                        'OTP has expired. Please resend OTP.',
+                ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Submitted OTP
+        |--------------------------------------------------------------------------
+        */
+
+        $otp =
+            implode(
+                '',
+                $request->input('otp')
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Invalid OTP
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !hash_equals(
+                (string) $otpData['otp'],
+                (string) $otp
+            )
+        ) {
+
+            $attempts++;
+
+            /*
+            | Update session
+            */
+            session()->put(
+                'login_otp.attempts',
+                $attempts
+            );
+
+            $remaining =
+                max(
+                    0,
+                    $maxAttempts - $attempts
+                );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Maximum Attempts Reached
+            |--------------------------------------------------------------------------
+            */
+
+            if ($attempts >= $maxAttempts) {
+
+                return back()
+                    ->withErrors([
+                        'otp' =>
+                            'Invalid OTP. Maximum attempts reached. Please resend OTP.',
+                    ]);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Attempts Remaining
+            |--------------------------------------------------------------------------
+            */
+
+            return back()
+                ->withErrors([
+                    'otp' =>
+                        "Invalid OTP. {$remaining} attempt"
+                        . ($remaining === 1 ? '' : 's')
+                        . " remaining.",
+                ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Find User
+        |--------------------------------------------------------------------------
+        */
 
         $user = $this->userRepository->findById(
             $otpData['user_id']
         );
 
         if (!$user) {
+
             session()->forget('login_otp');
 
             return redirect()
                 ->route('login')
                 ->withErrors([
-                    'login' => 'User account not found.',
+                    'login' =>
+                        'User account not found.',
                 ]);
         }
 
         /*
-        * Login
+        |--------------------------------------------------------------------------
+        | Login
+        |--------------------------------------------------------------------------
         */
-        auth()->login($user);
 
-        request()->session()->regenerate();
+        Auth::login($user);
+
+        request()
+            ->session()
+            ->regenerate();
 
         /*
-        * Remove OTP
+        |--------------------------------------------------------------------------
+        | Remove OTP Session
+        |--------------------------------------------------------------------------
         */
+
         session()->forget('login_otp');
 
         /*
-        * Activity Log
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
         */
+
         UtilityHelper::customActivityLog(
             'auth',
             'User logged in successfully using OTP.',
             $user,
             [
-                'user_id' => $user->id,
-                'login_type' => $otpData['type'],
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
+                'user_id' =>
+                    $user->id,
+
+                'login_type' =>
+                    $otpData['type'],
+
+                'ip' =>
+                    $request->ip(),
+
+                'user_agent' =>
+                    $request->userAgent(),
             ]
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect
+        |--------------------------------------------------------------------------
+        */
+
         return redirect()
             ->route('dashboard')
-            ->with('success', 'Login successful!');
+            ->with(
+                'success',
+                'Login successful!'
+            );
+    }
+
+    /**
+     * Method resendOtp
+     *
+     * @return RedirectResponse
+     */
+    public function resendOtp(): RedirectResponse
+    {
+        $otpData = session('login_otp');
+
+        /*
+        |--------------------------------------------------------------------------
+        | OTP Session Check
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$otpData) {
+
+            return redirect()
+                ->route('login')
+                ->withErrors([
+                    'login' =>
+                        'OTP session expired. Please login again.',
+                ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get OTP Settings
+        |--------------------------------------------------------------------------
+        */
+
+        $otpDetails =
+            $this->settingRepository
+                ->getSettingArray('otp');
+
+        $maxTime = (int) (
+            $otpDetails['max_time'] ?? 90
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Generate New OTP
+        |--------------------------------------------------------------------------
+        */
+
+        $otp = UtilityHelper::generateOtp(
+            $otpDetails
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Reset OTP Session
+        |--------------------------------------------------------------------------
+        */
+
+        session()->put(
+            'login_otp',
+            [
+                'user_id' =>
+                    $otpData['user_id'],
+                'type' =>
+                    $otpData['type'],
+                'value' =>
+                    $otpData['value'],
+                'otp' =>
+                    $otp,
+                'expires_at' =>
+                    now()->addSeconds($maxTime),
+                /*
+                | Reset wrong attempts
+                */
+                'attempts' =>
+                    0,
+                'max_attempts' =>
+                    3,
+            ]
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Send New OTP
+        |--------------------------------------------------------------------------
+        */
+
+        $user = $this->userRepository->findById(
+            $otpData['user_id']
+        );
+
+        if (!$user) {
+
+            session()->forget('login_otp');
+
+            return redirect()
+                ->route('login')
+                ->withErrors([
+                    'login' =>
+                        'User account not found.',
+                ]);
+        }
+
+        if ($otpData['type'] === 'phone') {
+
+            $this->twilioService->sendOtp(
+                phone: $otpData['value'],
+                otp: $otp,
+                expireTime: $maxTime
+            );
+
+        } else {
+
+            $user->notify(
+                new SendOtpNotification(
+                    otp: $otp,
+                    otpExpireTime: $maxTime
+                )
+            );
+        }
+
+        return redirect()
+            ->route('login.verify')
+            ->with(
+                'success',
+                'A new OTP has been sent successfully.'
+            );
     }
 
     /**

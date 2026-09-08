@@ -109,6 +109,11 @@ Route::middleware('guest')->group(function () {
         LoginController::class,
         'verifyOtp',
     ])->name('login.verify.submit');
+
+    Route::post('/login/resend-otp', [
+        LoginController::class,
+        'resendOtp',
+    ])->name('login.resend-otp');
 });
 
 /*

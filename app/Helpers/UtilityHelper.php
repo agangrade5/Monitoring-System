@@ -80,31 +80,26 @@ class UtilityHelper
     /**
      * Generate OTP
      *
-     * @param ?array $otpDetails
+     * @param array $otpDetails
      *
      * @return string
      */
-    public static function generateOtp(
-        ?array $otpDetails = null
-    ): string {
-        $otpDetails ??= config('constants.otp');
+    public static function generateOtp(array $otpDetails): string
+    {
+        $length = (int) ($otpDetails['otp_length'] ?? 6);
 
-        $otp = $otpDetails;
-
-        $digits = (int) ($otp['otp_length'] ?? 6);
-
-        if (!empty($otp['is_default'])) {
+        if (!empty($otpDetails['is_default'])) {
             return str_pad(
-                (string) $otp['default'],
-                $digits,
+                (string) ($otpDetails['default'] ?? '999999'),
+                $length,
                 '0',
                 STR_PAD_LEFT
             );
         }
 
-        return (string) random_int(
-            10 ** ($digits - 1),
-            (10 ** $digits) - 1
-        );
+        $min = 10 ** ($length - 1);
+        $max = (10 ** $length) - 1;
+
+        return (string) random_int($min, $max);
     }
 }

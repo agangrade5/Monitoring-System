@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+//use App\Services\MailConfigService;
 
 class SendOtpNotification extends Notification
 {
@@ -40,6 +41,9 @@ class SendOtpNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        // Load mail configuration from settings table
+        //app(MailConfigService::class)->apply();
+
         return (new MailMessage)
             ->subject('Your Login OTP - ' . config('app.name'))
             ->view('emails.auth.login-otp', [
