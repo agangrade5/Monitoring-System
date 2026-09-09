@@ -236,49 +236,6 @@
 
             <!-- Right Column: Quick Actions & System Overview -->
             <div class="col-lg-4 col-12">
-                <!-- System Performance & Health Status -->
-                <!-- <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-header border-0 py-3">
-                        <h6 class="mb-0 fw-bold text-body-emphasis">System Overview</h6>
-                        <small class="text-muted">High-level health & performance summary</small>
-                    </div>
-                    <div class="card-body pt-0">
-                        <div class="d-flex justify-content-between align-items-center p-3 mb-2 rounded-3 bg-body-secondary border">
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="bi bi-speedometer2 text-primary fs-5"></i>
-                                <span class="small fw-semibold">Average Response Time</span>
-                            </div>
-                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold">
-                                {{ $avgResponseTime }} ms
-                            </span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center p-3 mb-2 rounded-3 bg-body-secondary border">
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="bi bi-hdd-network text-success fs-5"></i>
-                                <span class="small fw-semibold">Monitored Nodes Online</span>
-                            </div>
-                            <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
-                                {{ $upIncidentsCount }} / {{ $totalMonitorsCount }}
-                            </span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center p-3 rounded-3 bg-body-secondary border">
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="bi bi-shield-check text-info fs-5"></i>
-                                <span class="small fw-semibold">System Health Status</span>
-                            </div>
-                            @if($downIncidentsCount === 0)
-                                <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
-                                    <i class="bi bi-check-circle-fill me-1"></i>Optimal
-                                </span>
-                            @else
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold">
-                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ $downIncidentsCount }} Degraded
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                </div> -->
-
                 <!-- Quick Action & Administration Tools -->
                 <div class="card border-0 shadow-sm rounded-4 mb-4">
                     <div class="card-header border-0 py-3">

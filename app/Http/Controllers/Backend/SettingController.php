@@ -45,7 +45,7 @@ class SettingController extends Controller
             'settings' => $settings,
             'otpData' => $settings['otp'],
             'twilioData' => $settings['twilio'],
-            'emailData' => $settings['email'],
+            'mailData' => $settings['mail'],
             'awsData' => $settings['aws'],
         ]);
     }
@@ -150,7 +150,7 @@ class SettingController extends Controller
     public function updateEmailSettings(EmailSettingRequest $request): JsonResponse
     {
         $validated = $request->validated();
-        $existingEmail = $this->settingRepository->getSettingArray('email');
+        $existingEmail = $this->settingRepository->getSettingArray('mail');
 
         $rawPassword = (string) ($validated['mail_password'] ?? '');
         if (!empty($rawPassword)) {
@@ -185,6 +185,7 @@ class SettingController extends Controller
                     'user_agent' => $request->userAgent(),
                 ]
             );
+
         return response()->json([
             'status' => true,
             'message' => 'Email (SMTP) Settings updated successfully!',
