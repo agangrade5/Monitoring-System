@@ -17,12 +17,36 @@ return [
     ],
 
     /**
-     * OTP Configuration
+     * System settings configuration
      */
-    'otp' => [
-        'max_time' => 60, // time in minutes
-        'otp_length' => 6, // in digits
-        'is_default' => true, // true=Fixed OTP or false=Dynamic OTP
-        'default' => 999999,
+    'settings' => [
+        'twilio' => [
+            'enable_twilio' => false,
+            'twilio_account_sid' => '',
+            'twilio_auth_token' => '',
+            'twilio_from_number' => '',
+        ],
+        'mail' => [
+            'mail_mailer' => 'smtp',
+            'mail_host' => '',
+            'mail_port' => 587,
+            'mail_encryption' => 'tls',
+            'mail_username' => '',
+            'mail_password' => '',
+            'mail_from_address' => '',
+            'mail_from_name' => 'Monitoring System',
+        ],
+        'aws' => [
+            'aws_access_key_id' => '',
+            'aws_secret_access_key' => '',
+            'aws_default_region' => 'us-east-1',
+            'aws_bucket' => '',
+        ],
+        'otp' => [
+            'max_time' => 90, // in seconds
+            'otp_length' => 6, // in digits
+            'is_default' => true, // true=Fixed OTP or false=Dynamic OTP
+            'default' => '999999',
+        ],
     ],
 ];

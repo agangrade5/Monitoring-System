@@ -10,7 +10,7 @@ use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\SettingRepositoryInterface;
 use App\Services\TwilioService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\{Auth, RateLimiter, Session};
+use Illuminate\Support\Facades\{Auth, Log, RateLimiter, Session};
 use Illuminate\View\View;
 
 class LoginController extends Controller
@@ -245,29 +245,21 @@ class LoginController extends Controller
         */
 
         Session::put('login_otp', [
-
             'user_id' => $user->id,
-
             'type' => $type,
-
             'value' => $value,
-
             'otp' => $otp,
-
             'expires_at' => now()->addSeconds(
                 $maxTime
             ),
-
             /*
             | Wrong OTP attempts
             */
             'attempts' => 0,
-
             /*
             | Maximum allowed wrong attempts
             */
             'max_attempts' => 3,
-
         ]);
 
         /*
@@ -275,23 +267,33 @@ class LoginController extends Controller
         | Send OTP
         |--------------------------------------------------------------------------
         */
-
-        if ($type === 'phone') {
-
-            $this->twilioService->sendOtp(
-                phone: $value,
-                otp: $otp,
-                expireTime: $maxTime
-            );
-
-        } else {
-
-            $user->notify(
-                new SendOtpNotification(
+        try {
+            if ($type === 'phone') {
+                $this->twilioService->sendOtp(
+                    phone: $value,
                     otp: $otp,
-                    otpExpireTime: $maxTime
-                )
-            );
+                    expireTime: $maxTime
+                );
+            } else {
+                $user->notify(
+                    new SendOtpNotification(
+                        otp: $otp,
+                        otpExpireTime: $maxTime
+                    )
+                );
+            }
+        } catch (\Throwable $e) {
+            Log::error('OTP delivery failed.', [
+                'user_id' => $user->id,
+                'type' => $type,
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Unable to send OTP. Please try again later.');
         }
 
         /*

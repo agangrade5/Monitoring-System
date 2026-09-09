@@ -14,11 +14,11 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-hdd-network"></i></span>
                     <select class="form-select" id="mail_mailer" name="mail_mailer">
-                        <option value="smtp" {{ ($emailData['mail_mailer'] ?? 'smtp') == 'smtp' ? 'selected' : '' }}>SMTP</option>
-                        <option value="sendmail" {{ ($emailData['mail_mailer'] ?? 'smtp') == 'sendmail' ? 'selected' : '' }}>Sendmail</option>
-                        <option value="mailgun" {{ ($emailData['mail_mailer'] ?? 'smtp') == 'mailgun' ? 'selected' : '' }}>Mailgun</option>
-                        <option value="ses" {{ ($emailData['mail_mailer'] ?? 'smtp') == 'ses' ? 'selected' : '' }}>Amazon SES</option>
-                        <option value="postmark" {{ ($emailData['mail_mailer'] ?? 'smtp') == 'postmark' ? 'selected' : '' }}>Postmark</option>
+                        <option value="smtp" {{ ($mailData['mail_mailer'] ?? 'smtp') == 'smtp' ? 'selected' : '' }}>SMTP</option>
+                        <option value="sendmail" {{ ($mailData['mail_mailer'] ?? 'smtp') == 'sendmail' ? 'selected' : '' }}>Sendmail</option>
+                        <option value="mailgun" {{ ($mailData['mail_mailer'] ?? 'smtp') == 'mailgun' ? 'selected' : '' }}>Mailgun</option>
+                        <option value="ses" {{ ($mailData['mail_mailer'] ?? 'smtp') == 'ses' ? 'selected' : '' }}>Amazon SES</option>
+                        <option value="postmark" {{ ($mailData['mail_mailer'] ?? 'smtp') == 'postmark' ? 'selected' : '' }}>Postmark</option>
                     </select>
                 </div>
             </div>
@@ -27,7 +27,7 @@
                 <label class="form-label fw-semibold text-secondary small" for="mail_host">Mail Host</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-globe"></i></span>
-                    <input type="text" class="form-control" id="mail_host" name="mail_host" placeholder="smtp.gmail.com" value="{{ $emailData['mail_host'] ?? '' }}">
+                    <input type="text" class="form-control" id="mail_host" name="mail_host" placeholder="smtp.gmail.com" value="{{ $mailData['mail_host'] ?? '' }}">
                 </div>
             </div>
 
@@ -35,7 +35,7 @@
                 <label class="form-label fw-semibold text-secondary small" for="mail_port">Mail Port</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-hash"></i></span>
-                    <input type="text" class="form-control" id="mail_port" name="mail_port" placeholder="587" value="{{ $emailData['mail_port'] ?? '587' }}">
+                    <input type="text" class="form-control" id="mail_port" name="mail_port" placeholder="587" value="{{ $mailData['mail_port'] ?? '587' }}">
                 </div>
             </div>
 
@@ -44,9 +44,9 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
                     <select class="form-select" id="mail_encryption" name="mail_encryption">
-                        <option value="tls" {{ ($emailData['mail_encryption'] ?? 'tls') == 'tls' ? 'selected' : '' }}>TLS</option>
-                        <option value="ssl" {{ ($emailData['mail_encryption'] ?? 'tls') == 'ssl' ? 'selected' : '' }}>SSL</option>
-                        <option value="none" {{ ($emailData['mail_encryption'] ?? 'tls') == 'none' ? 'selected' : '' }}>None</option>
+                        <option value="tls" {{ ($mailData['mail_encryption'] ?? 'tls') == 'tls' ? 'selected' : '' }}>TLS</option>
+                        <option value="ssl" {{ ($mailData['mail_encryption'] ?? 'tls') == 'ssl' ? 'selected' : '' }}>SSL</option>
+                        <option value="none" {{ ($mailData['mail_encryption'] ?? 'tls') == 'none' ? 'selected' : '' }}>None</option>
                     </select>
                 </div>
             </div>
@@ -55,7 +55,7 @@
                 <label class="form-label fw-semibold text-secondary small" for="mail_username">Username</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input type="text" class="form-control" id="mail_username" name="mail_username" placeholder="Mail username" value="{{ $emailData['mail_username'] ?? '' }}">
+                    <input type="text" class="form-control" id="mail_username" name="mail_username" placeholder="Mail username" value="{{ $mailData['mail_username'] ?? '' }}">
                 </div>
             </div>
 
@@ -63,7 +63,7 @@
                 <label class="form-label fw-semibold text-secondary small" for="mail_password">Password</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-key"></i></span>
-                    <input type="password" class="form-control" id="mail_password" name="mail_password" placeholder="Mail password" value="{{ $emailData['mail_password_decrypted'] ?? '' }}">
+                    <input type="password" class="form-control" id="mail_password" name="mail_password" placeholder="Mail password" value="{{ $mailData['mail_password_decrypted'] ?? '' }}">
                     <x-toggle-password-btn target="mail_password" />
                 </div>
             </div>
@@ -72,7 +72,7 @@
                 <label class="form-label fw-semibold text-secondary small" for="mail_from_address">From Email Address</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                    <input type="email" class="form-control" id="mail_from_address" name="mail_from_address" placeholder="noreply@example.com" value="{{ $emailData['mail_from_address'] ?? '' }}">
+                    <input type="email" class="form-control" id="mail_from_address" name="mail_from_address" placeholder="noreply@example.com" value="{{ $mailData['mail_from_address'] ?? '' }}">
                 </div>
             </div>
 
@@ -80,7 +80,7 @@
                 <label class="form-label fw-semibold text-secondary small" for="mail_from_name">From Sender Name</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                    <input type="text" class="form-control" id="mail_from_name" name="mail_from_name" placeholder="Monitoring System" value="{{ $emailData['mail_from_name'] ?? '' }}">
+                    <input type="text" class="form-control" id="mail_from_name" name="mail_from_name" placeholder="Monitoring System" value="{{ $mailData['mail_from_name'] ?? '' }}">
                 </div>
             </div>
 

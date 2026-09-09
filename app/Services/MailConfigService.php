@@ -5,22 +5,37 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
+use App\Repositories\Contracts\SettingRepositoryInterface;
 
 class MailConfigService
 {
+    /**
+     * Constructor
+     *
+     * @param SettingRepositoryInterface $settingRepository
+     *
+     * @return void
+     */
+    public function __construct(
+        private readonly SettingRepositoryInterface $settingRepository,
+    ) {
+    }
+
+    /**
+     * Apply mail config
+     *
+     * @return void
+     */
     public function apply(): void
     {
-        $setting = DB::table('settings')
-            ->where('type', 'email')
-            ->first();
+        $mailDetails =
+            $this->settingRepository->getSettingArray('mail');
 
-        if (!$setting) {
+        if (!$mailDetails) {
             return;
         }
 
-        $data = json_decode($setting->value, true);
-
-        $mailPassword = $data['mail_password'] ?? null;
+        $mailPassword = $mailDetails['mail_password'] ?? null;
         if (!empty($mailPassword)) {
             try {
                 $mailPassword = Crypt::decryptString($mailPassword);
@@ -30,16 +45,14 @@ class MailConfigService
         }
 
         config([
-            'mail.default' => $data['mail_mailer'] ?? 'smtp',
-
-            'mail.mailers.smtp.host' => $data['mail_host'] ?? null,
-            'mail.mailers.smtp.port' => $data['mail_port'] ?? 587,
-            'mail.mailers.smtp.encryption' => $data['mail_encryption'] ?? 'tls',
-            'mail.mailers.smtp.username' => $data['mail_username'] ?? null,
+            'mail.default' => $mailDetails['mail_mailer'] ?? 'smtp',
+            'mail.mailers.smtp.host' => $mailDetails['mail_host'] ?? null,
+            'mail.mailers.smtp.port' => (int) ($mailDetails['mail_port'] ?? 587),
+            'mail.mailers.smtp.encryption' => $mailDetails['mail_encryption'] ?? 'tls',
+            'mail.mailers.smtp.username' => $mailDetails['mail_username'] ?? null,
             'mail.mailers.smtp.password' => $mailPassword,
-
-            'mail.from.address' => $data['mail_from_address'] ?? null,
-            'mail.from.name' => $data['mail_from_name'] ?? 'Monitoring System',
+            'mail.from.address' => $mailDetails['mail_from_address'] ?? null,
+            'mail.from.name' => $mailDetails['mail_from_name'] ?? config('app.name'),
         ]);
     }
 }
