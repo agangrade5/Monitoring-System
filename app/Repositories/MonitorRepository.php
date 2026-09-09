@@ -45,7 +45,12 @@ class MonitorRepository implements MonitorRepositoryInterface
      */
     public function findById(int $id): ?Monitor
     {
-        return $this->model->with(['user', 'settings', 'checkResult'])->find($id);
+        return $this->model->with([
+            'user',
+            'settings',
+            'checkResult',
+            'logs' => fn($q) => $q->latest()
+        ])->find($id);
     }
 
     /**

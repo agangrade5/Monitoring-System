@@ -85,6 +85,14 @@ class Monitor extends Model
     }
 
     /**
+     * Get monitor history logs.
+     */
+    public function logs()
+    {
+        return $this->hasMany(MonitorLog::class);
+    }
+
+    /**
      * Dynamic magic getter to support relation property fallbacks seamlessly.
      */
     public function __get($key)
@@ -111,4 +119,5 @@ class Monitor extends Model
 
         return null;
     }
+    
 }

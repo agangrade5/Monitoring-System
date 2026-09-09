@@ -42,7 +42,7 @@ class CheckPhpVersionJob implements ShouldQueue
         }
 
         try {
-            $response = Http::timeout(15)->withoutVerifying()->get($monitor->url);
+            $response = Http::timeout(5)->withoutVerifying()->get($monitor->url);
 
             $phpVersion = $this->extractPhpVersion($response);
             $wpVersion  = $this->extractWordPressVersion($response->body());

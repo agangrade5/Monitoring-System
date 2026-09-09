@@ -67,32 +67,57 @@ class UserController extends Controller
       *
       * @return \Illuminate\Http\RedirectResponse
       */
-  public function storeUser(UserRequest $request)
+    public function storeUser(UserRequest $request)
     {
         $validated = $request->validated();
         $user = $this->userRepository->create($validated);
         // Assign default 'user' role
         $user->assignRole('user');
+
+        $message = 'User created successfully.';
+
+        if ($request->ajax() || $request->wantsJson()) {
+            session()->flash('success', $message);
+            return response()->json([
+                'status' => true,
+                'message' => $message,
+                'user' => $user,
+            ]);
+        }
+
         return redirect()
             ->back()
-            ->with('success', 'User created successfully.');
+            ->with('success', $message);
     }
-     /**
+
+    /**
      * Update an existing user.
      *
-     * @param Request $request
+     * @param UserRequest $request
      * @param int $id
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
     public function updateUser(UserRequest $request, int $id)
     {
-
         $validated = $request->validated();
         $this->userRepository->update($id, $validated);
+        $user = $this->userRepository->findById($id);
+
+        $message = 'User updated successfully.';
+
+        if ($request->ajax() || $request->wantsJson()) {
+            session()->flash('success', $message);
+            return response()->json([
+                'status' => true,
+                'message' => $message,
+                'user' => $user,
+            ]);
+        }
+
         return redirect()
             ->back()
-            ->with('success', 'User updated successfully.');
+            ->with('success', $message);
     }
 
      /**

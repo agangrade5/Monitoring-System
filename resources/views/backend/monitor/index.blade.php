@@ -158,6 +158,10 @@
                                                  <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
                                                      <i class="bi bi-x-circle-fill"></i> Expired
                                                  </span>
+                                             @elseif($sslStatus === 'invalid')
+                                                 <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-exclamation-octagon-fill"></i> Invalid
+                                                 </span>
                                              @else
                                                  <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                      <i class="bi bi-shield-slash"></i> No SSL

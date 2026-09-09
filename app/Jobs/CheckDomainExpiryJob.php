@@ -69,7 +69,7 @@ class CheckDomainExpiryJob implements ShouldQueue
 
         try {
 
-            $response = Http::timeout(15)
+            $response = Http::timeout(5)
                 ->acceptJson()
                 ->withoutVerifying()
                 ->get("https://rdap.org/domain/{$domain}");

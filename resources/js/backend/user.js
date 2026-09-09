@@ -99,6 +99,104 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // 4. AJAX Form Submission for Add & Edit User Modals
+    function handleUserFormSubmit(formId, modalId) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Clear previous errors
+            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            form.querySelectorAll('.invalid-feedback.dynamic-error').forEach(el => el.remove());
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Processing...
+                `;
+            }
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': formData.get('_token') || ''
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.status === 422) {
+                    // Show inline validation errors
+                    if (data.errors) {
+                        for (const [field, messages] of Object.entries(data.errors)) {
+                            const input = form.querySelector(`[name="${field}"]`);
+                            if (input) {
+                                input.classList.add('is-invalid');
+                                const errorDiv = document.createElement('div');
+                                errorDiv.className = 'invalid-feedback dynamic-error d-block mt-1';
+                                errorDiv.textContent = Array.isArray(messages) ? messages[0] : messages;
+                                const inputGroup = input.closest('.input-group');
+                                if (inputGroup) {
+                                    inputGroup.after(errorDiv);
+                                } else {
+                                    input.after(errorDiv);
+                                }
+                            }
+                        }
+                    }
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error('Please correct the highlighted errors.');
+                    }
+                    return;
+                }
+
+                if (response.ok && data.status) {
+                    // Hide modal
+                    const modalEl = document.getElementById(modalId);
+                    if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modalInstance.hide();
+                    }
+
+                    // Reload page cleanly - session flash will show single toast notification
+                    window.location.reload();
+                    return;
+                }
+
+                const msg = data.message || 'An error occurred while saving user.';
+                if (typeof toastr !== 'undefined') {
+                    toastr.error(msg);
+                } else {
+                    alert(msg);
+                }
+            } catch (err) {
+                console.error(err);
+                if (typeof toastr !== 'undefined') {
+                    toastr.error('An unexpected error occurred.');
+                }
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
+            }
+        });
+    }
+
+    handleUserFormSubmit('add-user-form', 'addUserModal');
+    handleUserFormSubmit('edit-user-form', 'editUserModal');
 });
 
 document.addEventListener('DOMContentLoaded', function () {

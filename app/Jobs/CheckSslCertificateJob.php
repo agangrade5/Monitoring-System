@@ -50,9 +50,15 @@ class CheckSslCertificateJob implements ShouldQueue
         // 1. Perform strict cURL SSL verification (detects invalid CA, missing intermediate chain, host mismatch)
         $ch = curl_init($monitor->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+
+        $caPath = ini_get('curl.cainfo') ?: (file_exists(storage_path('cacert.pem')) ? storage_path('cacert.pem') : null);
+        if ($caPath && file_exists($caPath)) {
+            curl_setopt($ch, CURLOPT_CAINFO, $caPath);
+        }
+
         curl_setopt($ch, CURLOPT_NOBODY, true);
 
         curl_exec($ch);
@@ -74,7 +80,7 @@ class CheckSslCertificateJob implements ShouldQueue
             "ssl://{$host}:443",
             $errno,
             $errstr,
-            10,
+            5,
             STREAM_CLIENT_CONNECT,
             $context
         );
@@ -128,16 +134,13 @@ class CheckSslCertificateJob implements ShouldQueue
 
         $daysRemaining = (int) ceil(now()->diffInDays($expiresAt, false));
 
-        if (!$isCaValid) {
-            $status = 'invalid';
-        } else {
-            $status = match (true) {
-                $daysRemaining < 0 => 'expired',
-                $daysRemaining <= 7 => 'critical',
-                $daysRemaining <= 30 => 'warning',
-                default => 'valid',
-            };
-        }
+        $status = match (true) {
+            !$isCaValid => 'invalid',
+            $daysRemaining < 0 => 'expired',
+            $daysRemaining <= 7 => 'critical',
+            $daysRemaining <= 30 => 'warning',
+            default => 'valid',
+        };
 
         $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
             'ssl_enabled' => true,

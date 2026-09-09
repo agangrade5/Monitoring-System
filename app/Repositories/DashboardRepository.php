@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Repositories\Contracts\DashboardRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Activitylog\Models\Activity;
+use APp\Models\MonitorLog;
 
 class DashboardRepository implements DashboardRepositoryInterface
 {
@@ -21,7 +22,7 @@ class DashboardRepository implements DashboardRepositoryInterface
     {
         $data = [];
         $data['users'] = $user;
-        $data['monitors'] = $monitors = Monitor::with('user')->latest()->get();
+        $data['monitors'] = $monitors = Monitor::with(['user', 'settings', 'checkResult', 'logs'])->latest()->get();
         $data['activeMonitorsCount'] = $monitors->where('is_active', true)->count();
         $data['totalMonitorsCount'] = $monitors->count();
 
@@ -46,10 +47,10 @@ class DashboardRepository implements DashboardRepositoryInterface
                 || in_array($domainStatus, ['warning', 'expired']);
         })->count();
 
-        // 1. Monitors that recently went down or have critical status
-         $data['downMonitors'] = $monitors
-            ->filter(fn ($m) => strtolower(trim($m->status ?? '')) === 'down')
-            ->sortByDesc(fn ($m) => $m->last_down_at ?? $m->updated_at);
+        // 1. All Active Monitors (DOWN monitors sorted first)
+         $data['downMonitors'] = $monitors 
+            ->where('is_active', true)
+            ->sortByDesc(fn ($m) => strtolower(trim($m->status ?? '')) === 'down' ? 1 : 0);
 
         // 2. Recent Active Monitors
          $data['recentActiveMonitors'] = $monitors
@@ -87,7 +88,7 @@ class DashboardRepository implements DashboardRepositoryInterface
     {
         $data = [];
         $userId = $user->id;
-        $query = Monitor::query()->where('user_id', $userId);
+        $query = Monitor::query()->with(['user', 'settings', 'checkResult', 'logs'])->where('user_id', $userId);
 
         $data['monitors'] = $monitors = $query->latest()->get();
         $data['activeMonitorsCount'] = $monitors->where('is_active', true)->count();
@@ -111,10 +112,8 @@ class DashboardRepository implements DashboardRepositoryInterface
                 || in_array($domainStatus, ['warning', 'expired']);
         })->count();
 
-        // 1. Monitors that recently went down or have critical status
-        $data['downMonitors'] = $monitors
-            ->filter(fn ($m) => strtolower(trim($m->status ?? '')) === 'down')
-            ->sortByDesc(fn ($m) => $m->last_down_at ?? $m->updated_at);
+        // 1. All Active Monitors (DOWN monitors sorted first)
+           $data['downMonitors'] = MonitorLog::with('monitor')->get();
 
         // 2. Recent user activities for this logged-in user
         $data['recentActivities'] = class_exists(Activity::class)

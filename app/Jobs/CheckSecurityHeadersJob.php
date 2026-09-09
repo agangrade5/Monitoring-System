@@ -43,7 +43,7 @@ class CheckSecurityHeadersJob implements ShouldQueue
                 $url = "http://" . $url;
             }
 
-            $response = Http::timeout(15)
+            $response = Http::timeout(5)
                 ->withOptions([
                     'allow_redirects' => true,
                     'verify' => false,
