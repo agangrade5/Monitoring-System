@@ -60,12 +60,13 @@ class SettingController extends Controller
     public function updateOtpSettings(OtpSettingRequest $request): JsonResponse
     {
         $validated = $request->validated();
+        $existingOtp = $this->settingRepository->getSettingArray('otp');
 
         $payload = [
             'max_time' => (int) $validated['otp_max_time'],
             'otp_length' => (int) $validated['otp_length'],
             'is_default' => (bool) $validated['otp_is_default'],
-            'default' => (string) $validated['otp_default'],
+            'default' => (string) (!empty($validated['otp_default']) ? $validated['otp_default'] : ($existingOtp['default'] ?? '999999')),
         ];
 
             $Setting =   $this->settingRepository->saveSetting('otp', $payload);

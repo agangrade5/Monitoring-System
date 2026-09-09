@@ -11,22 +11,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         userSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
-            const rows = document.querySelectorAll('tbody tr');
+            const rows = document.querySelectorAll('table tbody tr');
 
             rows.forEach((row) => {
                 if (row.querySelector('.py-5')) return;
-                const nameNode = row.querySelector('.fw-bold');
-                const emailNode = row.querySelector('.text-secondary');
 
-                if (nameNode && emailNode) {
-                    const name = nameNode.textContent.toLowerCase();
-                    const email = emailNode.textContent.toLowerCase();
-
-                    if (name.includes(query) || email.includes(query)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
+                const text = row.textContent.toLowerCase();
+                if (!query || text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
                 }
             });
         });
