@@ -36,9 +36,7 @@ class TestMonitorAlertNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-    // Load mail configuration from settings table
-        app(MailConfigService::class)->apply();    
-    $showUrl = route('monitor.show', $this->monitor->id);
+        $showUrl = route('monitor.show', $this->monitor->id);
 
         return (new MailMessage)
             ->subject('[Test Alert] Monitor Test Notification: ' . $this->monitor->name)

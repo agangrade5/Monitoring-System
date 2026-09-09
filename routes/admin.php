@@ -223,7 +223,7 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | User & Monitoring Routes
+    | Common Routes - Admin + User
     |--------------------------------------------------------------------------
     */
     Route::middleware('role:user|admin')
