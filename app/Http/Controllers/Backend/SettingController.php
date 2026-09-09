@@ -170,7 +170,7 @@ class SettingController extends Controller
             'mail_from_name' => (string) ($validated['mail_from_name'] ?? ''),
         ];
 
-        $Setting = $this->settingRepository->saveSetting('email', $payload);
+        $Setting = $this->settingRepository->saveSetting('mail', $payload);
              /*
             |--------------------------------------------------------------------------
             | Activity Log
