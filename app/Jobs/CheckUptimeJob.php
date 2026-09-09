@@ -28,7 +28,7 @@ class CheckUptimeJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $monitor = Monitor::with('settings')->find($this->monitorId);
+        $monitor = Monitor::with(['settings', 'checkResult'])->find($this->monitorId);
 
         if (!$monitor || !$monitor->is_active) {
             return;
@@ -48,7 +48,24 @@ class CheckUptimeJob implements ShouldQueue
 
             $responseTimeMs = max(1, (int) round((microtime(true) - $startTime) * 1000));
 
-            if ($response->successful()) {
+            $isHttpSuccess = $response->successful();
+
+            // Refresh checkResult relation to ensure latest SSL & Domain status
+            $monitor->load(['settings', 'checkResult']);
+
+            // Check if SSL check is enabled and SSL certificate is expired or invalid
+            $sslExpired = false;
+            if ($monitor->settings?->check_ssl && in_array($monitor->checkResult?->ssl_status, ['expired', 'invalid'])) {
+                $sslExpired = true;
+            }
+
+            // Check if Domain check is enabled and Domain is expired
+            $domainExpired = false;
+            if ($monitor->settings?->check_domain && $monitor->checkResult?->domain_status === 'expired') {
+                $domainExpired = true;
+            }
+
+            if ($isHttpSuccess && !$sslExpired && !$domainExpired) {
                 $monitor->update([
                     'status' => 'up',
                     'response_time' => $responseTimeMs,

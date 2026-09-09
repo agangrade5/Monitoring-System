@@ -9,6 +9,7 @@ use App\Notifications\SendOtpNotification;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\SettingRepositoryInterface;
 use App\Services\TwilioService;
+use App\services\MailConfigService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\{Auth, RateLimiter, Session};
 use Illuminate\View\View;
@@ -171,7 +172,7 @@ class LoginController extends Controller
     public function sendOtp(
         UserLoginRequest $request
     ): RedirectResponse {
-
+        app(MailConfigService::class)->apply();   
         $type = $request->input('login_type');
 
         /*
@@ -730,12 +731,13 @@ class LoginController extends Controller
 
         request()->session()->invalidate();
         request()->session()->regenerateToken();
-
+        // Check role before logout
+          $isAdmin = $user->hasRole('admin');
         return redirect()
-            ->route('admin.login')
-            ->with(
-                'success',
-                'You have been logged out successfully.'
-            );
+        ->route($isAdmin ? 'admin.login' : 'login')
+        ->with(
+            'success',
+            'You have been logged out successfully.'
+        );
     }
 }

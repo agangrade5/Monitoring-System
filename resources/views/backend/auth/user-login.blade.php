@@ -145,32 +145,77 @@
                     </label>
                     <div class="input-group">
 
-                        <!-- Country Code -->
-                        <select
-                            name="country_code"
-                            id="country_code"
-                            class="form-select"
-                            style="max-width: 120px;"
-                        >
-                            <option
-                                value="+91"
-                                {{ old('country_code', '+91') === '+91' ? 'selected' : '' }}
+                        <!-- Country Code Custom Dropdown -->
+                        @php
+                            $countries = config('countries.countries');
+                            $selectedCode = old('country_code', '+91');
+                            $selectedCountry = collect($countries)->firstWhere('code', $selectedCode) ?? $countries[0];
+                        @endphp
+
+                        <div class="position-relative" style="width: 110px;">
+                            {{-- Actual form value --}}
+                            <input
+                                type="hidden"
+                                name="country_code"
+                                id="country_code"
+                                value="{{ $selectedCountry['code'] }}"
                             >
-                                🇮🇳 +91
-                            </option>
-                            <option
-                                value="+1"
-                                {{ old('country_code') === '+1' ? 'selected' : '' }}
+
+                            {{-- Select box button --}}
+                            <button
+                                type="button"
+                                id="loginCountryDropdownBtn"
+                                class="btn border-0 bg-transparent text-white d-flex align-items-center justify-content-between h-100 px-2.5 w-100"
+                                style="border-right: 1px solid rgba(255, 255, 255, 0.12) !important;"
                             >
-                                🇺🇸 +1
-                            </option>
-                            <option
-                                value="+44"
-                                {{ old('country_code') === '+44' ? 'selected' : '' }}
+                                <div class="d-flex align-items-center gap-1.5 overflow-hidden">
+                                    <img
+                                        id="loginSelectedFlag"
+                                        src="{{ asset('assets/images/flags/' . $selectedCountry['iso'] . '.svg') }}"
+                                        width="20"
+                                        height="15"
+                                        alt="{{ $selectedCountry['name'] }}"
+                                        class="rounded-1 border border-secondary shadow-xs flex-shrink-0"
+                                    >
+                                    <span id="loginSelectedCode" class="fw-semibold text-white small">
+                                        {{ $selectedCountry['code'] }}
+                                    </span>
+                                </div>
+                                <i class="bi bi-chevron-down ms-1 text-secondary small"></i>
+                            </button>
+
+                            {{-- Options --}}
+                            <div
+                                id="loginCountryDropdown"
+                                class="country-dropdown-menu position-absolute rounded-3 d-none py-1 mt-1 start-0"
+                                style="top: 100%; min-width: 250px !important;"
                             >
-                                🇬🇧 +44
-                            </option>
-                        </select>
+                                @foreach ($countries as $country)
+                                    <div
+                                        class="country-option d-flex align-items-center justify-content-between px-3 py-2"
+                                        data-code="{{ $country['code'] }}"
+                                        data-name="{{ $country['name'] }}"
+                                        data-iso="{{ $country['iso'] }}"
+                                    >
+                                        <div class="d-flex align-items-center gap-2 overflow-hidden me-3">
+                                            <img
+                                                src="{{ asset('assets/images/flags/' . $country['iso'] . '.svg') }}"
+                                                width="18"
+                                                height="14"
+                                                alt="{{ $country['name'] }}"
+                                                class="rounded-1 border shadow-xs flex-shrink-0"
+                                            >
+                                            <span class="small fw-medium text-dark text-truncate">
+                                                {{ $country['name'] }}
+                                            </span>
+                                        </div>
+                                        <span class="small text-secondary font-mono fw-semibold flex-shrink-0">
+                                            {{ $country['code'] }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
 
                         <!-- Phone -->
                         <input

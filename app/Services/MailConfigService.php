@@ -30,16 +30,14 @@ class MailConfigService
         }
 
         config([
-            'mail.default' => $data['mail_mailer'] ?? 'smtp',
-
-            'mail.mailers.smtp.host' => $data['mail_host'] ?? null,
-            'mail.mailers.smtp.port' => $data['mail_port'] ?? 587,
-            'mail.mailers.smtp.encryption' => $data['mail_encryption'] ?? 'tls',
-            'mail.mailers.smtp.username' => $data['mail_username'] ?? null,
-            'mail.mailers.smtp.password' => $mailPassword,
-
-            'mail.from.address' => $data['mail_from_address'] ?? null,
-            'mail.from.name' => $data['mail_from_name'] ?? 'Monitoring System',
-        ]);
+                'mail.default' => !empty($data['mail_mailer'])? $data['mail_mailer']: 'smtp',
+                'mail.mailers.smtp.host' => $data['mail_host'] ?? null,
+                'mail.mailers.smtp.port' => (int) ($data['mail_port'] ?? 587),
+                'mail.mailers.smtp.encryption' => $data['mail_encryption'] ?? 'tls',
+                'mail.mailers.smtp.username' => $data['mail_username'] ?? null,
+                'mail.mailers.smtp.password' => $mailPassword,
+                'mail.from.address' => $data['mail_from_address'] ?: $data['mail_username'],
+                'mail.from.name' => $data['mail_from_name'] ?? 'Monitoring System',
+                ]);
     }
 }

@@ -210,6 +210,7 @@
                             <div class="fw-bold fs-5 {{ ($monitor->checkResult?->ssl_status === 'valid') ? 'text-success' : 'text-warning' }}">
                                 {{ $monitor->checkResult?->ssl_days_remaining ?? 0 }} days
                             </div>
+                            
                             <div class="text-muted" style="font-size: 0.75rem;">{{ ucfirst($monitor->checkResult?->ssl_status ?? 'Valid') }}</div>
                         @endif
                     </div>
@@ -470,9 +471,20 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted small">Status:</span>
-                                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
-                                    {{ ucfirst($monitor->checkResult?->ssl_status ?? 'N/A') }}
-                                </span>
+                               @php
+                                $sslStatus = strtolower($monitor->checkResult?->ssl_status ?? '');
+                            @endphp
+
+                            <span class="badge rounded-pill
+                                @if($sslStatus === 'valid')
+                                    bg-success-subtle text-success border border-success-subtle
+                                @elseif($sslStatus === 'expired')
+                                    bg-danger-subtle text-danger border border-danger-subtle
+                                @else
+                                    bg-secondary-subtle text-secondary border border-secondary-subtle
+                                @endif">
+                                {{ ucfirst($monitor->checkResult?->ssl_status ?? 'N/A') }}
+                            </span>
                             </div>
                         @endif
                     </div>

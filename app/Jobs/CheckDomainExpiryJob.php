@@ -100,13 +100,17 @@ class CheckDomainExpiryJob implements ShouldQueue
 
             $expiry = \Carbon\Carbon::parse($expiryDate);
 
+            $domainStatus = $expiry->isPast() ? 'expired' : 'active';
+
             $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'domain_expires_at' => $expiry,
-                'domain_status' => $expiry->isPast()
-                    ? 'expired'
-                    : 'active',
+                'domain_status' => $domainStatus,
                 'domain_checked_at' => now(),
             ]);
+
+            if ($domainStatus === 'expired') {
+                $monitor->update(['status' => 'down', 'last_down_at' => now()]);
+            }
 
         } catch (Throwable $e) {
 

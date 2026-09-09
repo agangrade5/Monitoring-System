@@ -140,6 +140,7 @@
                                                         data-name="{{ $user['name'] }}"
                                                         data-email="{{ $user['email'] }}"
                                                         data-phone="{{ $user['phone_number'] }}"
+                                                        data-country-code="{{ $user['country_code'] ?? '+91' }}"
                                                         data-active="{{ $user['is_active'] ? 1 : 0 }}"
                                                         title="Edit User"
                                                     >

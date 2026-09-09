@@ -75,7 +75,10 @@
 <meta name="supported-color-schemes" content="light dark" />
 <link rel="preload" href="{{ asset('assets/css/backend/admin.css') }}" as="style" />
 <!--end::Accessibility Features-->
-
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/flag-icons@7.3.2/css/flag-icons.min.css"
+/>
 <!--begin::Favicon-->
 <link rel="icon" type="image/png" href="{{ asset('assets/images/backend/logo/monitoring-48.png') }}" />
 <!--end::Favicon-->

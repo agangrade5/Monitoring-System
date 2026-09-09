@@ -47,6 +47,21 @@ class CheckSslCertificateJob implements ShouldQueue
             return;
         }
 
+        // 1. Perform strict cURL SSL verification (detects invalid CA, missing intermediate chain, host mismatch)
+        $ch = curl_init($monitor->url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+
+        curl_exec($ch);
+        $curlErrno = curl_errno($ch);
+        curl_close($ch);
+
+        $isCaValid = ($curlErrno === 0);
+
+        // 2. Connect with peer cert capture to parse details
         $context = stream_context_create([
             'ssl' => [
                 'capture_peer_cert' => true,
@@ -66,8 +81,11 @@ class CheckSslCertificateJob implements ShouldQueue
 
         if (!$socket) {
             $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
+                'ssl_enabled' => true,
                 'ssl_status' => 'invalid',
             ]);
+
+            $monitor->update(['status' => 'down', 'last_down_at' => now()]);
 
             return;
         }
@@ -80,8 +98,11 @@ class CheckSslCertificateJob implements ShouldQueue
             !isset($params['options']['ssl']['peer_certificate'])
         ) {
             $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
+                'ssl_enabled' => true,
                 'ssl_status' => 'invalid',
             ]);
+
+            $monitor->update(['status' => 'down', 'last_down_at' => now()]);
 
             return;
         }
@@ -92,8 +113,11 @@ class CheckSslCertificateJob implements ShouldQueue
 
         if (!$certificate || !isset($certificate['validTo_time_t'])) {
             $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
+                'ssl_enabled' => true,
                 'ssl_status' => 'invalid',
             ]);
+
+            $monitor->update(['status' => 'down', 'last_down_at' => now()]);
 
             return;
         }
@@ -104,12 +128,16 @@ class CheckSslCertificateJob implements ShouldQueue
 
         $daysRemaining = (int) ceil(now()->diffInDays($expiresAt, false));
 
-        $status = match (true) {
-            $daysRemaining < 0 => 'expired',
-            $daysRemaining <= 7 => 'critical',
-            $daysRemaining <= 30 => 'warning',
-            default => 'valid',
-        };
+        if (!$isCaValid) {
+            $status = 'invalid';
+        } else {
+            $status = match (true) {
+                $daysRemaining < 0 => 'expired',
+                $daysRemaining <= 7 => 'critical',
+                $daysRemaining <= 30 => 'warning',
+                default => 'valid',
+            };
+        }
 
         $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
             'ssl_enabled' => true,
@@ -117,5 +145,9 @@ class CheckSslCertificateJob implements ShouldQueue
             'ssl_days_remaining' => max(0, $daysRemaining),
             'ssl_status' => $status,
         ]);
+
+        if (in_array($status, ['expired', 'invalid'])) {
+            $monitor->update(['status' => 'down', 'last_down_at' => now()]);
+        }
     }
 }
