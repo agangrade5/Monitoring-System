@@ -49,4 +49,49 @@ return [
             'default' => '999999',
         ],
     ],
+
+        /**
+         * Security configuration
+         */
+            
+        'securityHeaders' => [
+                'strict-transport-security' => [
+                    'name' => 'Strict-Transport-Security (HSTS)',
+                    'description' => 'Forces secure HTTPS connections and prevents SSL stripping attacks.',
+                    'present' => false, 
+                    'value' => null,
+                ],
+                'content-security-policy' => [
+                    'name' => 'Content-Security-Policy (CSP)',
+                    'description' => 'Mitigates Cross-Site Scripting (XSS) and malicious data injection.',
+                    'present' => false,
+                    'value' => null,
+                ],
+                'x-frame-options' => [
+                    'name' => 'X-Frame-Options',
+                    'description' => 'Prevents Clickjacking by controlling iframe embedding.',
+                    'present' => false,
+                    'value' => null,
+                ],
+                'x-content-type-options' => [
+                    'name' => 'X-Content-Type-Options',
+                    'description' => 'Blocks MIME-type sniffing to prevent malicious script execution.',
+                    'present' => false,
+                    'value' => null,
+                ],
+                'referrer-policy' => [
+                    'name' => 'Referrer-Policy',
+                    'description' => 'Controls referrer information sent in HTTP requests.',
+                    'present' => false,
+                    'value' => null,
+                ],
+                'permissions-policy' => [
+                    'name' => 'Permissions-Policy',
+                    'description' => 'Restricts browser permissions (Camera, Geolocation, Microphone).',
+                    'present' => false,
+                    'value' => null,
+                ],
+        ],
+
+      
 ];

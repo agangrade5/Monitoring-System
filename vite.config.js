@@ -7,15 +7,31 @@ import path from 'path';
 function copyBackendImages() {
     return {
         name: 'copy-backend-images',
-        closeBundle() {
-            const srcDir = path.resolve(__dirname, 'resources/images/backend');
-            const destDir = path.resolve(__dirname, 'public/assets/images/backend');
 
-            if (fs.existsSync(srcDir)) {
-                fs.mkdirSync(destDir, { recursive: true });
-                fs.cpSync(srcDir, destDir, { recursive: true });
-                console.log('Backend images copied to', destDir);
-            }
+        closeBundle() {
+            const folders = [
+                {
+                    src: path.resolve(__dirname, 'resources/images/backend'),
+                    dest: path.resolve(__dirname, 'public/assets/images/backend'),
+                },
+                {
+                    src: path.resolve(__dirname, 'resources/images/flags'),
+                    dest: path.resolve(__dirname, 'public/assets/images/flags'),
+                },
+            ];
+
+            folders.forEach(({ src, dest }) => {
+                if (fs.existsSync(src)) {
+                    fs.mkdirSync(dest, { recursive: true });
+
+                    fs.cpSync(src, dest, {
+                        recursive: true,
+                        force: true,
+                    });
+
+                    console.log('Images copied to:', dest);
+                }
+            });
         },
     };
 }

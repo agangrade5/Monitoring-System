@@ -47,6 +47,8 @@
                     @enderror
                 </div>
 
+                
+
                 <!-- Password field -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold text-secondary-emphasis small" for="password">Password</label>

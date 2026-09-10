@@ -1,6 +1,8 @@
 @extends('layouts.backend.app')
 @section('title', 'Monitor Websites & Domains')
 @section('content')
+
+
 <!--begin::App Content Header-->
 <div class="app-content-header">
     <div class="container-fluid">
@@ -78,6 +80,7 @@
                                             </td>
                                     {{-- 1. Website Details --}}
                                     <td class="ps-3">
+                                       
                                         <div class="fw-semibold text-body-emphasis fs-6">
                                             <a href="{{ route('monitor.show', $monitor->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
                                                 {{ $monitor->name }}
@@ -95,6 +98,12 @@
                                                 </a>
                                             </div>
                                         @endif
+                                        <div class="monitor-preparing-badge d-none my-1">
+                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill d-inline-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.725rem;">
+                                                <span class="spinner-border spinner-border-sm text-secondary" role="status" style="width: 0.72rem; height: 0.72rem; border-width: 0.14em;"></span>
+                                                <span class="fw-semibold">HTTP Preparing...</span>
+                                            </span>
+                                        </div>
                                         @if(auth()->check() && auth()->user()->hasRole('admin') && $monitor->user)
                                             <div class="mt-1">
                                                 <span class="badge bg-light text-secondary border small" title="Created by {{ $monitor->user->name }}">
@@ -105,7 +114,7 @@
                                     </td>
 
                                      {{-- 2. Uptime Status --}}
-                                     <td>
+                                     <td class="col-uptime-status">
                                          @if(!($monitor->settings?->check_uptime))
                                              <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                  <i class="bi bi-slash-circle"></i> Disabled
@@ -133,7 +142,7 @@
                                      </td>
 
                                      {{-- 3. SSL Status --}}
-                                     <td>
+                                     <td class="col-ssl-status">
                                          @if(!($monitor->settings?->check_ssl))
                                              <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                  <i class="bi bi-slash-circle"></i> Disabled
@@ -157,6 +166,10 @@
                                              @elseif($sslStatus === 'expired')
                                                  <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
                                                      <i class="bi bi-x-circle-fill"></i> Expired
+                                                 </span>
+                                             @elseif($sslStatus === 'invalid')
+                                                 <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
+                                                     <i class="bi bi-exclamation-octagon-fill"></i> Invalid
                                                  </span>
                                              @else
                                                  <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
@@ -183,7 +196,7 @@
                                      </td>
 
                                      {{-- 4. PHP Version --}}
-                                     <td>
+                                     <td class="col-php-status">
                                          @if(!($monitor->settings?->check_php))
                                              <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                  <i class="bi bi-slash-circle"></i> Disabled
@@ -209,7 +222,7 @@
                                      </td>
 
                                      {{-- 5. Domain Expiry --}}
-                                     <td>
+                                     <td class="col-domain-status">
                                          @if(!($monitor->settings?->check_domain))
                                              <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                  <i class="bi bi-slash-circle"></i> Disabled
@@ -218,6 +231,7 @@
                                              @php
                                                  $domainStatus = $monitor->checkResult?->domain_status;
                                                  $domainExpiresAt = $monitor->checkResult?->domain_expires_at;
+                                                 $domainRegistrar = $monitor->checkResult?->domain_registrar;
                                              @endphp
 
                                              @if($domainStatus === 'active')
@@ -250,6 +264,12 @@
                                                      {{ \App\Helpers\UtilityHelper::formatDateTime($domainExpiresAt, 'd M Y') }}
                                                  </div>
 
+                                                 @if($domainRegistrar)
+                                                     <div class="text-muted small font-mono">
+                                                         {{ Str::limit($domainRegistrar, 20) }}
+                                                     </div>
+                                                 @endif
+
                                                  <div class="text-muted small font-mono" style="font-size: 12px;">
                                                      @if($domainDaysRemaining < 0)
                                                          Expired {{ abs($domainDaysRemaining) }} days ago
@@ -264,7 +284,7 @@
                                      </td>
 
                                      {{-- 6. Security Grade --}}
-                                     <td>
+                                     <td class="col-security-status">
                                          @if(!($monitor->settings?->check_security_headers))
                                              <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                  <i class="bi bi-slash-circle"></i> Disabled

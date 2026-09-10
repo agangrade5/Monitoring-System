@@ -40,33 +40,99 @@
                             @endif
                         </div>
                     </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold text-secondary small" for="edit_user_phone">
-                                Mobile Number
-                            </label>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary small" for="edit_user_phone">
+                            Mobile Number
+                        </label>
 
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-phone"></i>
-                                </span>
+                        <div class="input-group">
+                            @php
+                                $countries = config('countries.countries');
+                                $selectedCode = old('country_code', '+91');
+                                $selectedCountry = collect($countries)->firstWhere('code', $selectedCode) ?? $countries[0];
+                            @endphp
+
+                            <div class="position-relative" style="width: 110px;">
+                                {{-- Actual form value --}}
                                 <input
-                                    type="tel"
-                                    name="phone_number"
-                                    id="edit_user_phone"
-                                    class="form-control @if(old('form_type') === 'edit') @error('phone_number') is-invalid @enderror @endif"
-                                    value="{{ old('form_type') === 'edit' ? old('phone_number') : '' }}"
-                                    placeholder="Enter mobile number"
-                                    maxlength="10"
-                                    required
+                                    type="hidden"
+                                    name="country_code"
+                                    id="edit_country_code"
+                                    value="{{ $selectedCountry['code'] }}"
                                 >
 
-                                @if(old('form_type') === 'edit')
-                                    @error('phone_number')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                @endif
+                                {{-- Select box button --}}
+                                <button
+                                    type="button"
+                                    id="editCountryDropdownBtn"
+                                    class="form-select bg-light-subtle d-flex align-items-center justify-content-between rounded-end-0 h-100 px-2.5"
+                                >
+                                    <div class="d-flex align-items-center gap-1.5 overflow-hidden">
+                                        <img
+                                            id="editSelectedFlag"
+                                            src="{{ asset('assets/images/flags/' . $selectedCountry['iso'] . '.svg') }}"
+                                            width="18"
+                                            height="14"
+                                            alt="{{ $selectedCountry['name'] }}"
+                                            class="rounded-1 border shadow-xs flex-shrink-0"
+                                        >
+                                        <span id="editSelectedCode" class="fw-semibold text-dark small">
+                                            {{ $selectedCountry['code'] }}
+                                        </span>
+                                    </div>
+                                </button>
+
+                                {{-- Options --}}
+                                <div
+                                    id="editCountryDropdown"
+                                    class="country-dropdown-menu position-absolute bg-white rounded-3 d-none py-1 mt-1 start-0"
+                                    style="top: 100%;"
+                                >
+                                    @foreach ($countries as $country)
+                                        <div
+                                            class="edit-country-option country-option d-flex align-items-center justify-content-between px-3 py-2"
+                                            data-code="{{ $country['code'] }}"
+                                            data-name="{{ $country['name'] }}"
+                                            data-iso="{{ $country['iso'] }}"
+                                        >
+                                            <div class="d-flex align-items-center gap-2 overflow-hidden me-3">
+                                                <img
+                                                    src="{{ asset('assets/images/flags/' . $country['iso'] . '.svg') }}"
+                                                    width="18"
+                                                    height="14"
+                                                    alt="{{ $country['name'] }}"
+                                                    class="rounded-1 border shadow-xs flex-shrink-0"
+                                                >
+                                                <span class="small fw-medium text-dark text-truncate">
+                                                    {{ $country['name'] }}
+                                                </span>
+                                            </div>
+                                            <span class="small text-secondary font-mono fw-semibold flex-shrink-0">
+                                                {{ $country['code'] }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
+
+                            <input
+                                type="tel"
+                                name="phone_number"
+                                id="edit_user_phone"
+                                class="form-control rounded-start-0 @if(old('form_type') === 'edit') @error('phone_number') is-invalid @enderror @endif"
+                                value="{{ old('form_type') === 'edit' ? old('phone_number') : '' }}"
+                                placeholder="Enter mobile number"
+                                maxlength="10"
+                                required
+                            >
+
+                            @if(old('form_type') === 'edit')
+                                @error('phone_number')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @endif
                         </div>
+                    </div>
 
 
                     <div class="mb-3">

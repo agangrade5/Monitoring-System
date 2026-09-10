@@ -38,7 +38,7 @@
                             </div>
                             <div class="col-12 col-md-8 text-md-end">
                                 <div class="d-flex flex-wrap justify-content-md-end gap-2 align-items-center">
-                                    <div class="settings-search-wrapper w-auto">
+                                    <form method="GET" action="{{ route('admin.users.index') }}" class="settings-search-wrapper w-auto">
                                         <i class="bi bi-search"></i>
                                         <input
                                             type="search"
@@ -49,7 +49,7 @@
                                             aria-label="Search users"
                                             value="{{ request('search') }}"
                                         />
-                                    </div>
+                                    </form>
                                     <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
                                         <i class="bi bi-person-plus"></i>Add User
                                     </button>
@@ -139,6 +139,8 @@
                                                         data-id="{{ $user['id'] }}"
                                                         data-name="{{ $user['name'] }}"
                                                         data-email="{{ $user['email'] }}"
+                                                        data-phone="{{ $user['phone_number'] }}"
+                                                        data-country-code="{{ $user['country_code'] ?? '+91' }}"
                                                         data-active="{{ $user['is_active'] ? 1 : 0 }}"
                                                         title="Edit User"
                                                     >

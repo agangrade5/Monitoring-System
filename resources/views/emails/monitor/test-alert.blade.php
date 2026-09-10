@@ -16,6 +16,24 @@
     This is an on-demand test notification to verify your alert channel and recipient integration.
 </p>
 
+@php
+    $isDown = strtolower($monitor->status ?? 'up') === 'down';
+    $statusColor = $isDown ? '#dc2626' : '#16a34a';
+
+    $downReason = null;
+    if ($isDown) {
+        if ($monitor->settings?->check_ssl && in_array($monitor->checkResult?->ssl_status, ['expired', 'invalid'])) {
+            $downReason = ($monitor->checkResult?->ssl_status === 'expired')
+                ? 'SSL Certificate Expired'
+                : 'SSL Certificate Authority Invalid / Untrusted (ERR_CERT_AUTHORITY_INVALID)';
+        } elseif ($monitor->settings?->check_domain && $monitor->checkResult?->domain_status === 'expired') {
+            $downReason = 'Domain Name Expired';
+        } else {
+            $downReason = 'HTTP Connection / Service Unreachable';
+        }
+    }
+@endphp
+
 <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 25px; overflow: hidden;">
     <tr>
         <td style="padding: 12px 18px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #64748b; width: 35%; font-weight: 600;">Monitor Name:</td>
@@ -27,14 +45,30 @@
     </tr>
     <tr>
         <td style="padding: 12px 18px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #64748b; font-weight: 600;">Current Status:</td>
-        <td style="padding: 12px 18px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #16a34a; font-weight: 700;">
+        <td style="padding: 12px 18px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: {{ $statusColor }}; font-weight: 700;">
             ● {{ strtoupper($monitor->status ?? 'UP') }}
         </td>
     </tr>
     <tr>
         <td style="padding: 12px 18px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #64748b; font-weight: 600;">Incident Start At:</td>
-        <td style="padding: 12px 18px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #1e293b;">{{ $monitor->incident_started_at ?? 'N/A' }} </td>
+        <td style="padding: 12px 18px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #1e293b;">
+            @if($monitor->last_down_at)
+                {{ \App\Helpers\UtilityHelper::formatDateTime($monitor->last_down_at) }}
+            @elseif($isDown)
+                {{ now()->format('Y-m-d H:i:s T') }}
+            @else
+                N/A
+            @endif
+        </td>
     </tr>
+    @if($isDown && $downReason)
+    <tr>
+        <td style="padding: 12px 18px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #64748b; font-weight: 600;">Down Reason:</td>
+        <td style="padding: 12px 18px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #dc2626; font-weight: 600;">
+            {{ $downReason }}
+        </td>
+    </tr>
+    @endif
     <tr>
         <td style="padding: 12px 18px; font-size: 13px; color: #64748b; font-weight: 600;">Triggered At:</td>
         <td style="padding: 12px 18px; font-size: 14px; color: #1e293b;">{{ now()->format('Y-m-d H:i:s T') }}</td>

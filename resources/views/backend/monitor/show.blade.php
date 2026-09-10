@@ -207,9 +207,10 @@
                         @if(!($monitor->settings?->check_ssl))
                             <span class="badge bg-body-secondary text-secondary border mt-1"><i class="bi bi-slash-circle me-1"></i> Disabled</span>
                         @else
-                            <div class="fw-bold fs-5 {{ ($monitor->checkResult?->ssl_status === 'valid') ? 'text-success' : 'text-warning' }}">
+                            <div class="fw-bold fs-5 {{ ($monitor->checkResult?->ssl_status === 'valid') ? 'text-success' : 'text-danger' }}">
                                 {{ $monitor->checkResult?->ssl_days_remaining ?? 0 }} days
                             </div>
+                            
                             <div class="text-muted" style="font-size: 0.75rem;">{{ ucfirst($monitor->checkResult?->ssl_status ?? 'Valid') }}</div>
                         @endif
                     </div>
@@ -357,39 +358,51 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td class="ps-4">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <i class="bi bi-hdd-network text-primary"></i>
-                                                <span class="fw-semibold text-body-emphasis">HTTP Check Successful</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge bg-body-secondary text-secondary border">200 OK</span></td>
-                                        <td class="text-success fw-semibold">{{ $monitor->response_time }} ms</td>
-                                        <td class="pe-4 text-end text-muted small">{{ $monitor->last_checked_at}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="ps-4">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <i class="bi bi-shield-check text-success"></i>
-                                                <span class="fw-semibold text-body-emphasis">SSL Certificate Validated</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge bg-body-secondary text-secondary border">TLS 1.3</span></td>
-                                        <td class="text-success fw-semibold">0 ms</td>
-                                        <td class="pe-4 text-end text-muted small">{{ $monitor->ssl_checked_at }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="ps-4">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <i class="bi bi-globe2 text-info"></i>
-                                                <span class="fw-semibold text-body-emphasis">Domain RDAP Expiry Check</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge bg-body-secondary text-secondary border">RDAP OK</span></td>
-                                        <td class="text-muted small">N/A</td>
-                                        <td class="pe-4 text-end text-muted small">{{ $monitor->domain_checked_at }}</td>
-                                    </tr>
+                                    @forelse($monitor->logs as $log)
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    @if(strtolower($log->status) === 'down')
+                                                        <i class="bi bi-exclamation-triangle-fill text-danger fs-5 me-1"></i>
+                                                    @else
+                                                        <i class="bi bi-check-circle-fill text-success fs-5 me-1"></i>
+                                                    @endif
+                                                    <div>
+                                                        <span class="fw-semibold text-body-emphasis d-block">
+                                                            {{ $log->reason ?? $log->error_message ?? 'Status Check' }}
+                                                        </span>
+                                                        @if($log->error_message && $log->error_message !== $log->reason)
+                                                            <small class="text-danger small d-block">{{ $log->error_message }}</small>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if(strtolower($log->status) === 'down')
+                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
+                                                        <i class="bi bi-x-circle-fill me-1"></i> DOWN {{ $log->http_status_code ? '('.$log->http_status_code.')' : '' }}
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                                                        <i class="bi bi-check-circle-fill me-1"></i> UP
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="{{ strtolower($log->status) === 'down' ? 'text-danger' : 'text-success' }} fw-semibold">
+                                                {{ $log->response_time ? $log->response_time . ' ms' : 'N/A' }}
+                                            </td>
+                                            <td class="pe-4 text-end text-muted small">
+                                                {{ \App\Helpers\UtilityHelper::formatDateTime($log->checked_at) }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4 text-muted">
+                                                <i class="bi bi-shield-check text-success fs-3 d-block mb-1"></i>
+                                                <span>No downtime incidents recorded yet. Website is running smoothly.</span>
+                                            </td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -424,6 +437,10 @@
                                 @else
                                     <span class="badge bg-secondary-subtle text-secondary border rounded-pill">{{ ucfirst($monitor->checkResult?->domain_status ?? 'N/A') }}</span>
                                 @endif
+                            </div>
+                             <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Domain Registrar:</span>
+                                <span class="fw-semibold text-body-emphasis">{{ $monitor->checkResult?->domain_registrar ? ucfirst($monitor->checkResult->domain_registrar) : 'N/A' }} </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span class="text-muted small">Expiry Date:</span>
@@ -470,9 +487,20 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted small">Status:</span>
-                                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
-                                    {{ ucfirst($monitor->checkResult?->ssl_status ?? 'N/A') }}
-                                </span>
+                               @php
+                                $sslStatus = strtolower($monitor->checkResult?->ssl_status ?? '');
+                            @endphp
+
+                            <span class="badge rounded-pill
+                                @if($sslStatus === 'valid')
+                                    bg-success-subtle text-success border border-success-subtle
+                                @elseif($sslStatus === 'expired')
+                                    bg-danger-subtle text-danger border border-danger-subtle
+                                @else
+                                    bg-secondary-subtle text-secondary border border-secondary-subtle
+                                @endif">
+                                {{ ucfirst($monitor->checkResult?->ssl_status ?? 'N/A') }}
+                            </span>
                             </div>
                         @endif
                     </div>

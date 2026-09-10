@@ -14,6 +14,7 @@ use App\Http\Requests\Backend\Setting\AwsSettingRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use App\Helpers\UtilityHelper;
 
 class SettingController extends Controller
 {
@@ -59,6 +60,7 @@ class SettingController extends Controller
     public function updateOtpSettings(OtpSettingRequest $request): JsonResponse
     {
         $validated = $request->validated();
+        $existingOtp = $this->settingRepository->getSettingArray('otp');
 
         $payload = [
             'max_time' => (int) $validated['otp_max_time'],
@@ -67,7 +69,21 @@ class SettingController extends Controller
             'default' => (string) $validated['otp_default'],
         ];
 
-        $this->settingRepository->saveSetting('otp', $payload);
+            $setting =   $this->settingRepository->saveSetting('otp', $payload);
+             /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'Setting',
+                'Updated OTP Settings successfully.',
+                $setting,
+                [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
 
         return response()->json([
             'status' => true,
@@ -101,7 +117,21 @@ class SettingController extends Controller
             'twilio_from_number' => (string) ($validated['twilio_from_number'] ?? ''),
         ];
 
-        $this->settingRepository->saveSetting('twilio', $payload);
+        $setting = $this->settingRepository->saveSetting('twilio', $payload);
+          /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'Setting',
+                'Updated Twilio SMS Settings successfully.',
+                $setting,
+                [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
 
         return response()->json([
             'status' => true,
@@ -140,7 +170,21 @@ class SettingController extends Controller
             'mail_from_name' => (string) ($validated['mail_from_name'] ?? ''),
         ];
 
-        $this->settingRepository->saveSetting('mail', $payload);
+        $Setting = $this->settingRepository->saveSetting('mail', $payload);
+             /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'Setting',
+                'Updated Email (SMTP) Settings successfully.',
+                $Setting,
+                [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
 
         return response()->json([
             'status' => true,
@@ -175,8 +219,21 @@ class SettingController extends Controller
             'aws_bucket' => (string) ($validated['aws_bucket'] ?? ''),
         ];
 
-        $this->settingRepository->saveSetting('aws', $payload);
-
+        $Setting = $this->settingRepository->saveSetting('aws', $payload);
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'Setting',
+                'Updated AWS Cloud Settings successfully.',
+                $Setting,
+                [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
         return response()->json([
             'status' => true,
             'message' => 'AWS Cloud Settings updated successfully!',

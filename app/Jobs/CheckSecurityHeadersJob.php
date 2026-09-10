@@ -44,7 +44,7 @@ class CheckSecurityHeadersJob implements ShouldQueue
                 $url = "http://" . $url;
             }
 
-            $response = Http::timeout(15)
+            $response = Http::timeout(5)
                 ->withOptions([
                     'allow_redirects' => true,
                     'verify' => false,
@@ -58,35 +58,8 @@ class CheckSecurityHeadersJob implements ShouldQueue
                         : $value,
                 ]);
 
-            $securityHeaders = [
-                'strict-transport-security' => [
-                    'name' => 'Strict-Transport-Security (HSTS)',
-                    'description' => 'Forces secure HTTPS connections and prevents SSL stripping attacks.',
-                ],
-                'content-security-policy' => [
-                    'name' => 'Content-Security-Policy (CSP)',
-                    'description' => 'Mitigates Cross-Site Scripting (XSS) and malicious data injection.',
-                ],
-                'x-frame-options' => [
-                    'name' => 'X-Frame-Options',
-                    'description' => 'Prevents Clickjacking by controlling iframe embedding.',
-                ],
-                'x-content-type-options' => [
-                    'name' => 'X-Content-Type-Options',
-                    'description' => 'Blocks MIME-type sniffing to prevent malicious script execution.',
-                ],
-                'referrer-policy' => [
-                    'name' => 'Referrer-Policy',
-                    'description' => 'Controls referrer information sent in HTTP requests.',
-                ],
-                'permissions-policy' => [
-                    'name' => 'Permissions-Policy',
-                    'description' => 'Restricts browser permissions (Camera, Geolocation, Microphone).',
-                ],
-            ];
-
+            $securityHeaders =  config('constants.securityHeaders', []);
             $result = [];
-
             foreach ($securityHeaders as $key => $meta) {
                 $result[$key] = [
                     'name' => $meta['name'],
@@ -116,17 +89,8 @@ class CheckSecurityHeadersJob implements ShouldQueue
                 'monitor_id' => $this->monitorId,
                 'error' => $e->getMessage(),
             ]);
-
-            $defaultHeaders = [
-                'strict-transport-security' => ['name' => 'Strict-Transport-Security (HSTS)', 'description' => 'Forces secure HTTPS connections.', 'present' => false, 'value' => null],
-                'content-security-policy' => ['name' => 'Content-Security-Policy (CSP)', 'description' => 'Mitigates XSS.', 'present' => false, 'value' => null],
-                'x-frame-options' => ['name' => 'X-Frame-Options', 'description' => 'Prevents Clickjacking.', 'present' => false, 'value' => null],
-                'x-content-type-options' => ['name' => 'X-Content-Type-Options', 'description' => 'Blocks MIME sniffing.', 'present' => false, 'value' => null],
-                'referrer-policy' => ['name' => 'Referrer-Policy', 'description' => 'Controls referrer information.', 'present' => false, 'value' => null],
-                'permissions-policy' => ['name' => 'Permissions-Policy', 'description' => 'Restricts permissions.', 'present' => false, 'value' => null],
-            ];
-
-            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
+             $defaultHeaders =  config('constants.securityHeaders', []);
+             $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'security_headers' => $defaultHeaders,
                 'security_grade' => 'F',
             ]);

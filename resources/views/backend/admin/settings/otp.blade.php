@@ -11,9 +11,9 @@
             @csrf
 
             <div class="col-md-6">
-                <label class="form-label fw-semibold text-secondary small">Default Static OTP (is_default)</label>
+                <label class="form-label fw-semibold text-secondary small">Default Static OTP</label>
                 <div class="p-2 bg-light rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2" style="min-height: 38px;">
-                    <span class="fw-semibold text-body-emphasis small ms-2">Use Default OTP:</span>
+                    <!-- <span class="fw-semibold text-body-emphasis small ms-2">Use Default OTP:</span> -->
                     <div class="d-flex align-items-center gap-3 me-2">
                         <div class="form-check mb-0">
                             <input class="form-check-input cursor-pointer" type="radio" name="otp_is_default" id="otp_is_default_true" value="1" {{ ($otpData['is_default'] ?? true) ? 'checked' : '' }}>
@@ -33,7 +33,7 @@
             </div>
             {{-- 1. Max Time --}}
             <div class="col-md-6">
-                <label class="form-label fw-semibold text-secondary small" for="otp_max_time">OTP Max Expiry Time (max_time in Seconds)</label>
+                <label class="form-label fw-semibold text-secondary small" for="otp_max_time">OTP Max Expiry Time</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-clock-history"></i></span>
                     <select class="form-select" id="otp_max_time" name="otp_max_time">
@@ -69,12 +69,9 @@
 
             {{-- 4. Default Static OTP Code --}}
             <div class="col-md-6">
-                <label class="form-label fw-semibold text-secondary small" for="otp_default">Default Static OTP Code (default)</label>
+                <label class="form-label fw-semibold text-secondary small" for="otp_default">Default Static OTP Code</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
-                
-                
-                
                     <input type="text" class="form-control font-mono fw-bold" id="otp_default" name="otp_default" placeholder="e.g. {{ str_repeat('9', $otpData['otp_length'] ?? 6) }}" value="{{ $otpData['default'] ?? '999999' }}" maxlength="{{ $otpData['otp_length'] ?? 6 }}">
                 </div>
                 <small class="text-muted mt-1 d-block" id="otp_default_help">Static OTP code used when is_default is set to true.</small>

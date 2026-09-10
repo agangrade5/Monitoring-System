@@ -23,7 +23,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function create(array $data): User
     {
-       $data['password'] = Hash::make('password');
+        unset($data['password']);
 
         return User::create($data);
     }
@@ -108,11 +108,7 @@ class UserRepository implements UserRepositoryInterface
             return false;
         }
 
-        if (isset($data['password']) && !empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        } else {
-            unset($data['password']);
-        }
+        unset($data['password']);
 
         return $user->update($data);
     }

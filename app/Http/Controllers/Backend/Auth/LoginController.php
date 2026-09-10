@@ -158,7 +158,7 @@ class LoginController extends Controller
     public function sendOtp(
         UserLoginRequest $request
     ): RedirectResponse {
-
+         
         $type = $request->input('login_type');
 
         /*
@@ -936,12 +936,13 @@ class LoginController extends Controller
 
         request()->session()->invalidate();
         request()->session()->regenerateToken();
-
+        // Check role before logout
+          $isAdmin = $user->hasRole('admin');
         return redirect()
-            ->route('admin.login')
-            ->with(
-                'success',
-                'You have been logged out successfully.'
-            );
+        ->route($isAdmin ? 'admin.login' : 'login')
+        ->with(
+            'success',
+            'You have been logged out successfully.'
+        );
     }
 }

@@ -42,14 +42,20 @@ class UserRequest extends FormRequest
                 new NoScripts(),
                 new ValidEmailDomain(),
             ],
-
-            'phone_number' => [
-                'required',
-                'string',
-                'max:15',
-                Rule::unique('users', 'phone_number')->ignore($userId),
-                new ValidMobile(),
+             'country_code' => [
+                        'required',
+                        'string',
+                        'in:' . collect(config('countries.countries'))
+                            ->pluck('code')
+                            ->implode(','),
             ],
+
+           'phone_number' => [
+                    'required',
+                    'digits_between:10,15',
+                    Rule::unique('users', 'phone_number')->ignore($userId),
+                    new ValidMobile($this->input('country_code')),
+                ],
 
             'is_active' => [
                 'nullable',

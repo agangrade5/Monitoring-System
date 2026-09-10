@@ -204,6 +204,8 @@
                             <h5 class="mb-0 fw-bold">My Active Endpoints</h5>
                             <small class="text-muted">Currently active HTTP endpoints being monitored</small>
                         </div>
+
+                       
                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
                             {{ $downMonitors->count() }} Outages
                         </span>
@@ -221,44 +223,151 @@
                                 </thead>
                                 <tbody>
                                     @forelse($downMonitors as $down)
+                                        @php
+                                            $m = $down->monitor ?? $down;
+                                            $statusStr = strtolower($down->status ?? $m->status ?? '');
+                                            $sslStr = strtolower($m->ssl_status ?? '');
+                                            $logTime = $down->checked_at ?? ($statusStr === 'down' ? $m->last_down_at : $m->last_up_at);
+                                        @endphp
                                         <tr>
                                             <td class="ps-3">
                                                 <div class="fw-semibold text-body-emphasis">
-                                                    <a href="{{ route('monitor.show', $down->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
-                                                        {{ $down->name }}
+                                                    <a href="{{ route('monitor.show', $m->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
+                                                        {{ $m->name }}
                                                     </a>
                                                 </div>
                                                 <small class="text-muted text-truncate d-inline-block" style="max-width: 180px;">
-                                                    {{ $down->url ?? 'No URL' }}
+                                                    {{ $m->url ?? 'No URL' }}
                                                 </small>
                                             </td>
                                             <td>
-                                                <span class="small text-danger fw-semibold">
+                                                <span class="small {{ $statusStr === 'down' ? 'text-danger' : 'text-success' }} fw-semibold">
                                                     <i class="bi bi-clock-history me-1"></i>
-                                                    {{ $down->last_down_at ? $down->last_down_at->diffForHumans() : 'Recently detected' }}
+                                                    {{ $logTime ? $logTime->diffForHumans() : 'Recently detected' }}
                                                 </span>
                                             </td>
                                             <td>
-                                                @if(strtolower($down->status ?? '') === 'down')
+                                                @if($statusStr === 'down')
                                                     <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
                                                         <i class="bi bi-x-circle-fill me-1"></i> DOWN
                                                     </span>
-                                                @elseif(in_array(strtolower($down->ssl_status ?? ''), ['warning', 'expired', 'invalid']))
+                                                @elseif(in_array($sslStr, ['warning', 'expired', 'invalid']))
                                                     <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">
-                                                        <i class="bi bi-shield-exclamation me-1"></i> SSL {{ ucfirst($down->ssl_status) }}
+                                                        <i class="bi bi-shield-exclamation me-1"></i> SSL {{ ucfirst($sslStr) }}
                                                     </span>
                                                 @else
-                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">
-                                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Warning
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                                                        <i class="bi bi-check-circle-fill me-1"></i> UP
                                                     </span>
                                                 @endif
                                             </td>
                                             <td class="text-end pe-3">
-                                                <a href="{{ route('monitor.show', $down->id) }}" class="btn btn-outline-danger btn-sm py-1 px-2" title="Inspect Outage">
-                                                    <i class="bi bi-eye"></i> View
-                                                </a>
+                                                <button type="button" class="btn btn-outline-primary btn-sm py-1 px-2" data-bs-toggle="modal" data-bs-target="#outageModal_{{ $down->id }}" title="Inspect Outage Diagnostics">
+                                                    <i class="bi bi-eye me-1"></i> View
+                                                </button>
                                             </td>
                                         </tr>
+
+                                        {{-- Outage Diagnostics Modal Popup --}}
+                                        <div class="modal fade text-start" id="outageModal_{{ $down->id }}" tabindex="-1" aria-labelledby="outageModalLabel_{{ $down->id }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 720px;">
+                                                <div class="modal-content rounded-4 border-0 shadow-lg">
+                                                    <div class="modal-header {{ strtolower($down->status ?? '') === 'down' ? 'bg-danger' : 'bg-primary' }} text-white rounded-top-4 py-3 px-4 d-flex justify-content-between align-items-center">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <i class="bi {{ strtolower($down->status ?? '') === 'down' ? 'bi-exclamation-triangle-fill' : 'bi-shield-check' }} fs-5"></i>
+                                                            <h5 class="modal-title fw-bold mb-0 fs-6" id="outageModalLabel_{{ $down->id }}">
+                                                                Endpoint Health & Diagnostic Overview
+                                                            </h5>
+                                                        </div>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body p-4">
+                                                        @php
+                                                            $m = $down->monitor ?? $down;
+                                                            $logs = $m->logs ?? collect([$down]);
+                                                            $latestLog = $logs->first() ?? $down;
+                                                            $primaryReason = $latestLog?->reason ?? $latestLog?->error_message ?? (strtolower($m->status ?? '') === 'down' ? 'Website is currently unreachable.' : 'Website is online and operating normally.');
+                                                        @endphp
+
+                                                        {{-- Endpoint Header --}}
+                                                        <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                                                            <div>
+                                                                <h6 class="fw-bold mb-1 text-body-emphasis">{{ $m->name }}</h6>
+                                                                <a href="{{ $m->url }}" target="_blank" class="small text-muted text-decoration-none">
+                                                                    {{ $m->url }} <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                                                </a>
+                                                            </div>
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                @if(strtolower($m->status ?? '') === 'down')
+                                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-semibold">
+                                                                        <i class="bi bi-x-circle-fill me-1"></i> DOWN
+                                                                    </span>
+                                                                @else
+                                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-semibold">
+                                                                        <i class="bi bi-check-circle-fill me-1"></i> UP
+                                                                    </span>
+                                                                @endif
+                                                                <span class="badge bg-body-secondary text-secondary border px-3 py-2 rounded-pill small">
+                                                                    {{ $logs->count() }} Incident Logs
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        {{-- Primary Diagnostic Reason Box --}}
+                                                        <div class="alert {{ strtolower($m->status ?? '') === 'down' ? 'alert-danger bg-danger-subtle text-danger' : 'alert-success bg-success-subtle text-success' }} border-0 p-3 rounded-3 mb-3">
+                                                            <div class="fw-bold mb-1 small text-uppercase" style="letter-spacing: 0.5px;">
+                                                                <i class="bi {{ strtolower($m->status ?? '') === 'down' ? 'bi-exclamation-octagon' : 'bi-shield-check' }} me-1"></i> Diagnostic Status
+                                                            </div>
+                                                            <div class="fw-semibold small">
+                                                                {{ $primaryReason }}
+                                                            </div>
+                                                        </div>
+
+                                                        {{-- Diagnostic Metrics Grid --}}
+                                                        <div class="row g-3 mb-3">
+                                                            <div class="col-6">
+                                                                <div class="p-3 bg-body-tertiary rounded-3 border h-100 d-flex flex-column justify-content-center">
+                                                                    <div class="text-muted small mb-1">Last Status Change</div>
+                                                                    <div class="fw-semibold text-danger small">
+                                                                        <i class="bi bi-clock-history me-1"></i> {{ $m->last_down_at ? $m->last_down_at->diffForHumans() : 'Recently detected' }}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="p-3 bg-body-tertiary rounded-3 border h-100 d-flex flex-column justify-content-center">
+                                                                    <div class="text-muted small mb-1">HTTP Response Code</div>
+                                                                    <div class="fw-semibold text-body-emphasis small">
+                                                                        <i class="bi bi-code-slash me-1"></i> {{ $latestLog?->http_status_code ? $latestLog->http_status_code . ' HTTP' : 'No Response' }}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="p-3 bg-body-tertiary rounded-3 border h-100 d-flex flex-column justify-content-center">
+                                                                    <div class="text-muted small mb-1">Response Latency</div>
+                                                                    <div class="fw-semibold text-body-emphasis small">
+                                                                        <i class="bi bi-speedometer2 me-1"></i> {{ $latestLog?->response_time ? $latestLog->response_time . ' ms' : ($m->response_time ? $m->response_time . ' ms' : 'N/A') }}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="p-3 bg-body-tertiary rounded-3 border h-100 d-flex flex-column justify-content-center">
+                                                                    <div class="text-muted small mb-1">Last Checked At</div>
+                                                                    <div class="fw-semibold text-body-emphasis small" style="font-size: 0.775rem;">
+                                                                        <i class="bi bi-calendar-event me-1"></i> {{ $latestLog?->checked_at ? \App\Helpers\UtilityHelper::formatDateTime($latestLog->checked_at) : ($m->last_checked_at ? \App\Helpers\UtilityHelper::formatDateTime($m->last_checked_at) : 'N/A') }}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {{-- Incident Logs Table --}}
+                                                     
+
+                                                        {{-- Action Button --}}
+                                                       
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @empty
                                         <tr>
                                             <td colspan="4" class="text-center py-4">

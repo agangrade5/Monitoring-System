@@ -84,6 +84,7 @@ class SettingRepository implements SettingRepositoryInterface
      * Get setting record by type.
      *
      * @param string $type
+     * 
      * @return ?Setting
      */
     public function getSettingByType(string $type): ?Setting
@@ -96,6 +97,7 @@ class SettingRepository implements SettingRepositoryInterface
      *
      * @param string $type
      * @param array $defaults
+     * 
      * @return array
      */
     public function getSettingArray(string $type, array $defaults = []): array
@@ -117,6 +119,7 @@ class SettingRepository implements SettingRepositoryInterface
      *
      * @param string $type
      * @param array $data
+     * 
      * @return Setting
      */
     public function saveSetting(string $type, array $data): Setting

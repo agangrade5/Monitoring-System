@@ -540,6 +540,24 @@ body {
     color: #0d6efd !important;
 }
 
+/* Country Code Select Dropdown */
+.country-option {
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+.country-option:hover,
+.country-option.active {
+    background-color: rgba(13, 110, 253, 0.08) !important;
+}
+.country-dropdown-menu {
+    z-index: 1065 !important;
+    min-width: 250px !important;
+    max-height: 230px !important;
+    overflow-y: auto !important;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
 /* User directory helper styling */
 .user-initials-avatar {
     width: 40px;
@@ -584,7 +602,7 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
     border-radius: 24px !important;
     box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), 0 0 50px rgba(13, 110, 253, 0.04) !important;
     color: #f8fafc !important;
-    overflow: hidden;
+    overflow: visible !important;
 }
 
 .login-logo, .register-logo {
@@ -605,6 +623,7 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
 .login-card-body, .register-card-body {
     background: transparent !important;
     padding: 2.5rem 2rem !important;
+    overflow: visible !important;
 }
 
 .login-box-msg, .register-box-msg {
@@ -621,7 +640,7 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-radius: 12px !important;
     transition: all 0.25s ease-in-out !important;
-    overflow: hidden;
+    overflow: visible !important;
 }
 
 .login-box .input-group:focus-within, .register-box .input-group:focus-within {
@@ -706,6 +725,31 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
 .login-box .form-check-input:checked, .register-box .form-check-input:checked {
     background-color: #0d6efd !important;
     border-color: #0d6efd !important;
+}
+
+/* Login & Register Country Dropdown Menu */
+.login-box .country-dropdown-menu,
+.register-box .country-dropdown-menu {
+    background-color: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+.login-box .country-dropdown-menu .country-option:hover,
+.login-box .country-dropdown-menu .country-option.active,
+.register-box .country-dropdown-menu .country-option:hover,
+.register-box .country-dropdown-menu .country-option.active {
+    background-color: rgba(56, 189, 248, 0.15) !important;
+}
+
+.login-box .country-dropdown-menu .country-option span,
+.register-box .country-dropdown-menu .country-option span {
+    color: #f8fafc !important;
+}
+
+.login-box .country-dropdown-menu .country-option .text-secondary,
+.register-box .country-dropdown-menu .country-option .text-secondary {
+    color: #94a3b8 !important;
 }
 
 /* User Profile Menu Dropdown styling */
@@ -1054,4 +1098,11 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
 
 .quick-action-arrow {
     transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+.country-option {
+    cursor: pointer;
+}
+
+.country-option:hover {
+    background-color: #f8f9fa;
 }
