@@ -41,6 +41,24 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
+     * Method findAdminByEmail
+     *
+     * @param string $email
+     *
+     * @return User
+     */
+    public function findAdminByEmail(string $email): ?User
+    {
+        return User::query()
+            ->where('email', $email)
+            ->where('id', 1)
+            ->whereHas('roles', function ($query) {
+                $query->where('name', 'admin');
+            })
+            ->first();
+    }
+
+    /**
      * Method findByPhone
      *
      * @param string $phone
