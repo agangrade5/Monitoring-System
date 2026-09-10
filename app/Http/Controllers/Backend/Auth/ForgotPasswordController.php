@@ -48,7 +48,7 @@ class ForgotPasswordController extends Controller
         if (!$user) {
             return back()
                 ->withErrors([
-                    'email' => 'If an account exists for this email address, a password reset link has been sent.',
+                    'email' => 'Invalid email address. Please try again.',
                 ])
                 ->withInput();
         }
@@ -178,7 +178,7 @@ class ForgotPasswordController extends Controller
                     ) {
                         return;
                     }
-                    
+
                     $this->userRepository->updatePassword(
                         $user,
                         $password
