@@ -158,7 +158,7 @@ class LoginController extends Controller
     public function sendOtp(
         UserLoginRequest $request
     ): RedirectResponse {
-         
+
         $type = $request->input('login_type');
 
         /*
@@ -208,6 +208,30 @@ class LoginController extends Controller
             return back()
                 ->withErrors([
                     $type => 'No account found with these details.',
+                ])
+                ->withInput();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Check User Status
+        |--------------------------------------------------------------------------
+        */
+        if (!$user->is_active) {
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP requested for an inactive account.',
+                $user,
+                [
+                    'login_type' => $type,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
+            return back()
+                ->withErrors([
+                    $type => 'Your account is inactive. Please contact the administrator.',
                 ])
                 ->withInput();
         }
@@ -450,9 +474,69 @@ class LoginController extends Controller
             return redirect()
                 ->route('login')
                 ->withErrors([
-                    'otp' =>
-                        'OTP session expired. Please request a new OTP.',
+                    'otp' =>'OTP session expired. Please request a new OTP.',
                 ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Find User
+        |--------------------------------------------------------------------------
+        */
+        $user = $this->userRepository->findById(
+            $otpData['user_id']
+        );
+
+        if (!$user) {
+
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP verification attempted for a non-existent user account.',
+                null,
+                [
+                    'user_id' => $otpData['user_id'],
+                    'login_type' => $otpData['type'],
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
+            session()->forget('login_otp');
+
+            return back()
+                ->withErrors([
+                    'otp' => 'OTP verification attempted for a non-existent user account.',
+                ])
+                ->withInput();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Check User Status
+        |--------------------------------------------------------------------------
+        */
+        if (!$user->is_active) {
+
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP verification attempted for an inactive user account.',
+                $user,
+                [
+                    'user_id' => $user->id,
+                    'login_type' => $otpData['type'],
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
+            session()->forget('login_otp');
+
+            return back()
+                ->withErrors([
+                    'otp' => 'Your account is inactive. Please contact the administrator.',
+                ])
+                ->withInput();
+
         }
 
         /*
@@ -483,7 +567,7 @@ class LoginController extends Controller
             UtilityHelper::customActivityLog(
                 'auth',
                 'OTP verification attempt blocked.',
-                null,
+                $user,
                 [
                     'user_id' => $otpData['user_id'],
                     'login_type' => $otpData['type'],
@@ -522,7 +606,7 @@ class LoginController extends Controller
             UtilityHelper::customActivityLog(
                 'auth',
                 'OTP expired. Please resend OTP.',
-                null,
+                $user,
                 [
                     'user_id' => $otpData['user_id'],
                     'login_type' => $otpData['type'],
@@ -591,7 +675,7 @@ class LoginController extends Controller
                 $isNowBlocked
                     ? 'Invalid OTP entered. Maximum attempts reached, verification blocked.'
                     : 'Invalid OTP entered.',
-                null,
+                $user,
                 [
                     'user_id' => $otpData['user_id'],
                     'login_type' => $otpData['type'],
@@ -652,7 +736,7 @@ class LoginController extends Controller
             UtilityHelper::customActivityLog(
                 'auth',
                 'OTP verified but associated user account no longer exists.',
-                null,
+                $user,
                 [
                     'user_id' => $otpData['user_id'],
                     'login_type' => $otpData['type'],

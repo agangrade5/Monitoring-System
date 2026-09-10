@@ -66,24 +66,25 @@ class SettingController extends Controller
             'max_time' => (int) $validated['otp_max_time'],
             'otp_length' => (int) $validated['otp_length'],
             'is_default' => (bool) $validated['otp_is_default'],
-            'default' => (string) $validated['otp_default'],
+            'default' => (string) ( $validated['otp_default'] ?? $existingOtp['default'] ?? '' ),
         ];
 
-            $setting =   $this->settingRepository->saveSetting('otp', $payload);
-             /*
-            |--------------------------------------------------------------------------
-            | Activity Log
-            |--------------------------------------------------------------------------
-            */
-            UtilityHelper::customActivityLog(
-                'Setting',
-                'Updated OTP Settings successfully.',
-                $setting,
-                [
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]
-            );
+
+        $setting =   $this->settingRepository->saveSetting('otp', $payload);
+            /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'Setting',
+            'Updated OTP Settings successfully.',
+            $setting,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
 
         return response()->json([
             'status' => true,
@@ -170,7 +171,7 @@ class SettingController extends Controller
             'mail_from_name' => (string) ($validated['mail_from_name'] ?? ''),
         ];
 
-        $Setting = $this->settingRepository->saveSetting('mail', $payload);
+        $setting = $this->settingRepository->saveSetting('mail', $payload);
              /*
             |--------------------------------------------------------------------------
             | Activity Log
@@ -179,7 +180,7 @@ class SettingController extends Controller
             UtilityHelper::customActivityLog(
                 'Setting',
                 'Updated Email (SMTP) Settings successfully.',
-                $Setting,
+                $setting,
                 [
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),
@@ -219,7 +220,7 @@ class SettingController extends Controller
             'aws_bucket' => (string) ($validated['aws_bucket'] ?? ''),
         ];
 
-        $Setting = $this->settingRepository->saveSetting('aws', $payload);
+        $setting = $this->settingRepository->saveSetting('aws', $payload);
             /*
             |--------------------------------------------------------------------------
             | Activity Log
@@ -228,7 +229,7 @@ class SettingController extends Controller
             UtilityHelper::customActivityLog(
                 'Setting',
                 'Updated AWS Cloud Settings successfully.',
-                $Setting,
+                $setting,
                 [
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),

@@ -243,6 +243,13 @@
                             {{ $message }}
                         </div>
                     @enderror
+
+                    @error('otp')
+                        <div class="text-danger small mt-1">
+                            <i class="bi bi-exclamation-circle me-1"></i>
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
                 <!-- Send OTP -->

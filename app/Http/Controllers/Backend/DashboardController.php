@@ -36,9 +36,8 @@ class DashboardController extends Controller
      */
     public function admin(): View
     {
-        $data = $this->dashboardRepository->getAdminDashboardData(Auth::user());
         $user = Auth::user();
-
+        $data = $this->dashboardRepository->getAdminDashboardData($user);
         /*
         |--------------------------------------------------------------------------
         | Get recent activity logs
@@ -50,8 +49,6 @@ class DashboardController extends Controller
                 true,
                 5
             );
-            $data['user'] = $user;
-            $data['title'] = 'Admin Dashboard';
 
         return view('backend.admin.dashboard', $data);
     }
@@ -63,8 +60,8 @@ class DashboardController extends Controller
      */
     public function user(): View
     {
-        $data = $this->dashboardRepository->getUserDashboardData(Auth::user());
         $user = Auth::user();
+        $data = $this->dashboardRepository->getUserDashboardData($user);
 
         /*
         |--------------------------------------------------------------------------
@@ -77,8 +74,6 @@ class DashboardController extends Controller
                 false,
                 5
             );
-            $data['user'] = $user;
-            $data['title'] = 'User Dashboard';
 
         return view('backend.user.dashboard', $data);
     }
