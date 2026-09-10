@@ -67,6 +67,12 @@ class ForgotPasswordController extends Controller
                 'line' => $e->getLine(),
             ]);
 
+            return back()
+                ->withErrors([
+                    'email' => 'Unable to send the password reset email right now. Please try again later.',
+                ])
+                ->withInput();
+
             throw $e;
         }
 
