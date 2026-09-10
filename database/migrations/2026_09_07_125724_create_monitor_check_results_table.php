@@ -19,7 +19,9 @@ return new class extends Migration
             $table->timestamp('php_checked_at')->nullable();
             $table->string('domain_status')->nullable();
             $table->date('domain_expires_at')->nullable();
+            $table->integer('domain_days_remaining')->nullable();
             $table->timestamp('domain_checked_at')->nullable();
+            $table->string('domain_registrar')->nullable();
             $table->string('ssl_status')->nullable();
             $table->boolean('ssl_enabled')->default(false);    
             $table->integer('ssl_days_remaining')->nullable();

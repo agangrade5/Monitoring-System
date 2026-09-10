@@ -32,7 +32,7 @@ interface UserRepositoryInterface
      *
      * @return User
      */
-    public function findAdminByEmail(string $email): ?User
+    public function findAdminByEmail(string $email): ?User;
 
     /**
      * Method findByPhone

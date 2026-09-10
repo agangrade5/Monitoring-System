@@ -231,6 +231,7 @@
                                              @php
                                                  $domainStatus = $monitor->checkResult?->domain_status;
                                                  $domainExpiresAt = $monitor->checkResult?->domain_expires_at;
+                                                 $domainRegistrar = $monitor->checkResult?->domain_registrar;
                                              @endphp
 
                                              @if($domainStatus === 'active')
@@ -262,6 +263,12 @@
                                                      Exp:
                                                      {{ \App\Helpers\UtilityHelper::formatDateTime($domainExpiresAt, 'd M Y') }}
                                                  </div>
+
+                                                 @if($domainRegistrar)
+                                                     <div class="text-muted small font-mono">
+                                                         {{ Str::limit($domainRegistrar, 20) }}
+                                                     </div>
+                                                 @endif
 
                                                  <div class="text-muted small font-mono" style="font-size: 12px;">
                                                      @if($domainDaysRemaining < 0)

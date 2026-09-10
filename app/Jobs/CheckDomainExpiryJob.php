@@ -87,23 +87,32 @@ class CheckDomainExpiryJob implements ShouldQueue
             $data = $response->json();
 
             $expiryDate = $this->getExpiryDate($data);
+            $registrar = $this->getRegistrar($data);
 
             if (!$expiryDate) {
                 $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                     'domain_status' => 'unknown',
                     'domain_checked_at' => now(),
                     'domain_expires_at' => null,
+                    'domain_registrar' => $registrar,
                 ]);
 
                 return;
             }
 
             $expiry = \Carbon\Carbon::parse($expiryDate);
+            $daysRemaining = (int) ceil(now()->diffInDays($expiry, false));
 
-            $domainStatus = $expiry->isPast() ? 'expired' : 'active';
+            $domainStatus = match (true) {
+                $daysRemaining < 0 => 'expired',
+                $daysRemaining <= 30 => 'warning',
+                default => 'active',
+            };
 
             $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'domain_expires_at' => $expiry,
+                'domain_days_remaining' => max(0, $daysRemaining),
+                'domain_registrar' => $registrar,
                 'domain_status' => $domainStatus,
                 'domain_checked_at' => now(),
             ]);
@@ -138,6 +147,33 @@ class CheckDomainExpiryJob implements ShouldQueue
 
             if (($event['eventAction'] ?? null) === 'expiration') {
                 return $event['eventDate'] ?? null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the registrar name from the RDAP response.
+     * 
+     * @param array $data
+     * 
+     * @return string|null
+     */
+    private function getRegistrar(array $data): ?string
+    {
+        foreach ($data['entities'] ?? [] as $entity) {
+            if (in_array('registrar', $entity['roles'] ?? [])) {
+                if (isset($entity['vcardArray'][1]) && is_array($entity['vcardArray'][1])) {
+                    foreach ($entity['vcardArray'][1] as $vc) {
+                        if (is_array($vc) && isset($vc[0]) && $vc[0] === 'fn' && isset($vc[3])) {
+                            return $vc[3];
+                        }
+                    }
+                }
+                if (!empty($entity['fn'])) {
+                    return $entity['fn'];
+                }
             }
         }
 

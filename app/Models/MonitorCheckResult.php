@@ -13,6 +13,8 @@ class MonitorCheckResult extends Model
         'php_checked_at',
         'domain_status',
         'domain_expires_at',
+        'domain_days_remaining',
+        'domain_registrar',
         'domain_checked_at',
         'ssl_status',
         'ssl_enabled',

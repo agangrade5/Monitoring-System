@@ -134,6 +134,8 @@ class CheckSslCertificateJob implements ShouldQueue
 
         $daysRemaining = (int) ceil(now()->diffInDays($expiresAt, false));
 
+        $issuer = isset($certificate['issuer']) ? ($certificate['issuer']['O'] ?? $certificate['issuer']['CN'] ?? (is_array($certificate['issuer']) ? implode(', ', $certificate['issuer']) : $certificate['issuer'])) : null;
+
         $status = match (true) {
             !$isCaValid => 'invalid',
             $daysRemaining < 0 => 'expired',
@@ -146,6 +148,7 @@ class CheckSslCertificateJob implements ShouldQueue
             'ssl_enabled' => true,
             'ssl_expires_at' => $expiresAt,
             'ssl_days_remaining' => max(0, $daysRemaining),
+            'ssl_issuer' => $issuer,
             'ssl_status' => $status,
         ]);
 
