@@ -66,10 +66,10 @@ class SettingController extends Controller
             'max_time' => (int) $validated['otp_max_time'],
             'otp_length' => (int) $validated['otp_length'],
             'is_default' => (bool) $validated['otp_is_default'],
-            'default' => (string) (!empty($validated['otp_default']) ? $validated['otp_default'] : ($existingOtp['default'] ?? '999999')),
+            'default' => (string) $validated['otp_default'],
         ];
 
-            $Setting =   $this->settingRepository->saveSetting('otp', $payload);
+            $setting =   $this->settingRepository->saveSetting('otp', $payload);
              /*
             |--------------------------------------------------------------------------
             | Activity Log
@@ -78,7 +78,7 @@ class SettingController extends Controller
             UtilityHelper::customActivityLog(
                 'Setting',
                 'Updated OTP Settings successfully.',
-                $Setting,
+                $setting,
                 [
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),
@@ -117,7 +117,7 @@ class SettingController extends Controller
             'twilio_from_number' => (string) ($validated['twilio_from_number'] ?? ''),
         ];
 
-        $Setting = $this->settingRepository->saveSetting('twilio', $payload);
+        $setting = $this->settingRepository->saveSetting('twilio', $payload);
           /*
             |--------------------------------------------------------------------------
             | Activity Log
@@ -126,7 +126,7 @@ class SettingController extends Controller
             UtilityHelper::customActivityLog(
                 'Setting',
                 'Updated Twilio SMS Settings successfully.',
-                $Setting,
+                $setting,
                 [
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),

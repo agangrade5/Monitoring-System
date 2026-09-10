@@ -23,9 +23,9 @@ class OtpSettingRequest extends FormRequest
     {
         return [
             'otp_max_time' => ['required', 'numeric', 'in:15,30,60,90'],
-            'otp_length' => ['required', 'numeric', 'in:4,5,6'],
+            'otp_length' => ['required', 'numeric', 'in:6'],
             'otp_is_default' => ['required', 'in:0,1'],
-            'otp_default' => ['required_if:otp_is_default,1', 'nullable', 'string', 'digits_between:4,6'],
+            'otp_default' => ['required_if:otp_is_default,1', 'nullable', 'string', 'digits_between:6'],
         ];
     }
 

@@ -19,7 +19,6 @@ class ValidMobile implements ValidationRule
     ): void {
         // Spaces, -, (, ) remove
         $mobile = preg_replace('/[\s\-\(\)]/', '', (string) $value);
-
         $patterns = [
 
             // India - 10 digits, starts 6-9

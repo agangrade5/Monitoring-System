@@ -50,13 +50,12 @@ class UserRequest extends FormRequest
                             ->implode(','),
             ],
 
-            'phone_number' => [
-                'required',
-                'string',
-                'max:15',
-                Rule::unique('users', 'phone_number')->ignore($userId),
-                new ValidMobile($this->input('country_code')),
-            ],
+           'phone_number' => [
+                    'required',
+                    'digits_between:10,15',
+                    Rule::unique('users', 'phone_number')->ignore($userId),
+                    new ValidMobile($this->input('country_code')),
+                ],
 
             'is_active' => [
                 'nullable',

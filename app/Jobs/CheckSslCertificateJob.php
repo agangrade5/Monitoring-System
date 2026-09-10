@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Monitor;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Http;
 
 class CheckSslCertificateJob implements ShouldQueue
 {

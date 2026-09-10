@@ -89,7 +89,7 @@ class CheckSecurityHeadersJob implements ShouldQueue
                 'monitor_id' => $this->monitorId,
                 'error' => $e->getMessage(),
             ]);
-             $defaultHeaders =  config('constants.defaultHeaders', []);
+             $defaultHeaders =  config('constants.securityHeaders', []);
              $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'security_headers' => $defaultHeaders,
                 'security_grade' => 'F',

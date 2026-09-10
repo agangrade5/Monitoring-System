@@ -9,7 +9,6 @@ use App\Notifications\SendOtpNotification;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\SettingRepositoryInterface;
 use App\Services\TwilioService;
-use App\services\MailConfigService;
 use Carbon\Carbon;
 use DateTimeZone;
 use Illuminate\Http\RedirectResponse;
@@ -159,7 +158,7 @@ class LoginController extends Controller
     public function sendOtp(
         UserLoginRequest $request
     ): RedirectResponse {
-        app(MailConfigService::class)->apply();   
+         
         $type = $request->input('login_type');
 
         /*
