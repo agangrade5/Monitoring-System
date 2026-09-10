@@ -47,13 +47,15 @@ class DashboardRepository implements DashboardRepositoryInterface
                 || in_array($domainStatus, ['warning', 'expired']);
         })->count();
 
-        // 1. All Active Monitors (DOWN monitors sorted first)
-         $data['downMonitors'] = $monitors 
-            ->where('is_active', true)
-            ->sortByDesc(fn ($m) => strtolower(trim($m->status ?? '')) === 'down' ? 1 : 0);
+        // 1. Recent outage logs (only DOWN incidents, strictly capped at 10 items max)
+        $data['downMonitors'] = MonitorLog::with('monitor')
+            ->where('status', 'down')
+            ->latest()
+            ->take(10)
+            ->get();
 
         // 2. Recent Active Monitors
-         $data['recentActiveMonitors'] = $monitors
+        $data['recentActiveMonitors'] = $monitors
             ->where('is_active', true)
             ->sortByDesc(fn ($m) => $m->last_checked_at ?? $m->updated_at)
             ->take(8);
@@ -112,10 +114,17 @@ class DashboardRepository implements DashboardRepositoryInterface
                 || in_array($domainStatus, ['warning', 'expired']);
         })->count();
 
-        // 1. All Active Monitors (DOWN monitors sorted first)
-           $data['downMonitors'] = MonitorLog::with('monitor')->get();
+        // 1. Recent outage logs for this user (only DOWN incidents, strictly capped at 10 items max)
+        $data['downMonitors'] = MonitorLog::with('monitor')
+            ->where('status', 'down')
+            ->whereHas('monitor', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+            ->latest()
+            ->take(10)
+            ->get();
 
-        // 2. Recent user activities for this logged-in user
+        // 2. Recent user activities for this logged-in user (max 10)
         $data['recentActivities'] = class_exists(Activity::class)
             ? Activity::with('causer')->where('causer_id', $userId)->latest()->take(10)->get()
             : collect();

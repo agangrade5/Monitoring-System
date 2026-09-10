@@ -83,22 +83,12 @@ class CheckUptimeJob implements ShouldQueue
             $isHealthy = $isHttpSuccess && !$sslExpired && !$domainExpired;
 
             if ($isHealthy) {
-                // Website is UP and healthy
+                // Website is UP and healthy (Do NOT create monitor_logs entry for UP status)
                 $monitor->update([
                     'status' => 'up',
                     'response_time' => $responseTimeMs,
                     'last_checked_at' => $checkedAt,
                     'last_up_at' => $checkedAt,
-                ]);
-
-                MonitorLog::create([
-                    'monitor_id' => $monitor->id,
-                    'status' => 'up',
-                    'reason' => 'Website is reachable',
-                    'http_status_code' => $httpStatusCode,
-                    'response_time' => $responseTimeMs,
-                    'error_message' => null,
-                    'checked_at' => $checkedAt,
                 ]);
             } else {
                 // Website is DOWN due to HTTP failure, Invalid/Expired SSL, or Expired Domain

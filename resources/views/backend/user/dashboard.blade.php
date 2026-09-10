@@ -223,40 +223,46 @@
                                 </thead>
                                 <tbody>
                                     @forelse($downMonitors as $down)
+                                        @php
+                                            $m = $down->monitor ?? $down;
+                                            $statusStr = strtolower($down->status ?? $m->status ?? '');
+                                            $sslStr = strtolower($m->ssl_status ?? '');
+                                            $logTime = $down->checked_at ?? ($statusStr === 'down' ? $m->last_down_at : $m->last_up_at);
+                                        @endphp
                                         <tr>
                                             <td class="ps-3">
                                                 <div class="fw-semibold text-body-emphasis">
-                                                    <a href="{{ route('monitor.show', $down->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
-                                                        {{ $down->monitor->name }}
+                                                    <a href="{{ route('monitor.show', $m->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
+                                                        {{ $m->name }}
                                                     </a>
                                                 </div>
                                                 <small class="text-muted text-truncate d-inline-block" style="max-width: 180px;">
-                                                    {{ $down->monitor->url ?? 'No URL' }}
+                                                    {{ $m->url ?? 'No URL' }}
                                                 </small>
                                             </td>
                                             <td>
-                                                <span class="small text-danger fw-semibold">
+                                                <span class="small {{ $statusStr === 'down' ? 'text-danger' : 'text-success' }} fw-semibold">
                                                     <i class="bi bi-clock-history me-1"></i>
-                                                    {{  $down->checked_at ? $down->checked_at->diffForHumans() : 'Recently detected' }}
+                                                    {{ $logTime ? $logTime->diffForHumans() : 'Recently detected' }}
                                                 </span>
                                             </td>
                                             <td>
-                                                @if(strtolower( $down->monitor->status ?? '') === 'down')
+                                                @if($statusStr === 'down')
                                                     <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
                                                         <i class="bi bi-x-circle-fill me-1"></i> DOWN
                                                     </span>
-                                                @elseif(in_array(strtolower ($down->monitor->ssl_status ?? ''), ['warning', 'expired', 'invalid']))
+                                                @elseif(in_array($sslStr, ['warning', 'expired', 'invalid']))
                                                     <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">
-                                                        <i class="bi bi-shield-exclamation me-1"></i> SSL {{ ucfirst( $down->monitor->ssl_status) }}
+                                                        <i class="bi bi-shield-exclamation me-1"></i> SSL {{ ucfirst($sslStr) }}
                                                     </span>
                                                 @else
-                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">
-                                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Warning
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                                                        <i class="bi bi-check-circle-fill me-1"></i> UP
                                                     </span>
                                                 @endif
                                             </td>
                                             <td class="text-end pe-3">
-                                                <button type="button" class="btn btn-outline-danger btn-sm py-1 px-2" data-bs-toggle="modal" data-bs-target="#outageModal_{{ $down->id }}" title="Inspect Outage Diagnostics">
+                                                <button type="button" class="btn btn-outline-primary btn-sm py-1 px-2" data-bs-toggle="modal" data-bs-target="#outageModal_{{ $down->id }}" title="Inspect Outage Diagnostics">
                                                     <i class="bi bi-eye me-1"></i> View
                                                 </button>
                                             </td>
@@ -266,11 +272,11 @@
                                         <div class="modal fade text-start" id="outageModal_{{ $down->id }}" tabindex="-1" aria-labelledby="outageModalLabel_{{ $down->id }}" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 720px;">
                                                 <div class="modal-content rounded-4 border-0 shadow-lg">
-                                                    <div class="modal-header bg-danger text-white rounded-top-4 py-3 px-4 d-flex justify-content-between align-items-center">
+                                                    <div class="modal-header {{ strtolower($down->status ?? '') === 'down' ? 'bg-danger' : 'bg-primary' }} text-white rounded-top-4 py-3 px-4 d-flex justify-content-between align-items-center">
                                                         <div class="d-flex align-items-center gap-2">
-                                                            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                                                            <i class="bi {{ strtolower($down->status ?? '') === 'down' ? 'bi-exclamation-triangle-fill' : 'bi-shield-check' }} fs-5"></i>
                                                             <h5 class="modal-title fw-bold mb-0 fs-6" id="outageModalLabel_{{ $down->id }}">
-                                                                Outage Diagnostics & Log History
+                                                                Endpoint Health & Diagnostic Overview
                                                             </h5>
                                                         </div>
                                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -292,22 +298,30 @@
                                                                 </a>
                                                             </div>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-semibold">
-                                                                    <i class="bi bi-x-circle-fill me-1"></i> DOWN
+                                                                @if(strtolower($m->status ?? '') === 'down')
+                                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-semibold">
+                                                                        <i class="bi bi-x-circle-fill me-1"></i> DOWN
+                                                                    </span>
+                                                                @else
+                                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-semibold">
+                                                                        <i class="bi bi-check-circle-fill me-1"></i> UP
+                                                                    </span>
+                                                                @endif
+                                                                <span class="badge bg-body-secondary text-secondary border px-3 py-2 rounded-pill small">
+                                                                    {{ $logs->count() }} Incident Logs
                                                                 </span>
-                                                               
                                                             </div>
                                                         </div>
 
                                                         {{-- Primary Diagnostic Reason Box --}}
-                                                        <div class="alert alert-danger bg-danger-subtle text-danger border-0 p-3 rounded-3 mb-3">
+                                                        <div class="alert {{ strtolower($m->status ?? '') === 'down' ? 'alert-danger bg-danger-subtle text-danger' : 'alert-success bg-success-subtle text-success' }} border-0 p-3 rounded-3 mb-3">
                                                             <div class="fw-bold mb-1 small text-uppercase" style="letter-spacing: 0.5px;">
-                                                                <i class="bi bi-exclamation-octagon me-1"></i> Diagnostic Status
+                                                                <i class="bi {{ strtolower($m->status ?? '') === 'down' ? 'bi-exclamation-octagon' : 'bi-shield-check' }} me-1"></i> Diagnostic Status
                                                             </div>
                                                             <div class="fw-semibold small">
                                                                 {{ $primaryReason }}
                                                             </div>
-                                                        </div>$down->
+                                                        </div>
 
                                                         {{-- Diagnostic Metrics Grid --}}
                                                         <div class="row g-3 mb-3">

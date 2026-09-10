@@ -1,6 +1,8 @@
 @extends('layouts.backend.app')
 @section('title', 'Monitor Websites & Domains')
 @section('content')
+
+
 <!--begin::App Content Header-->
 <div class="app-content-header">
     <div class="container-fluid">
@@ -78,7 +80,7 @@
                                             </td>
                                     {{-- 1. Website Details --}}
                                     <td class="ps-3">
-                                        <div data-testid="monitor-row-status-802239338" class="css-19e8aza"><div class="css-1g34l9y" style="backface-visibility: hidden;"></div><div class="css-8zgren"></div></div>
+                                       
                                         <div class="fw-semibold text-body-emphasis fs-6">
                                             <a href="{{ route('monitor.show', $monitor->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
                                                 {{ $monitor->name }}
@@ -96,6 +98,12 @@
                                                 </a>
                                             </div>
                                         @endif
+                                        <div class="monitor-preparing-badge d-none my-1">
+                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill d-inline-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.725rem;">
+                                                <span class="spinner-border spinner-border-sm text-secondary" role="status" style="width: 0.72rem; height: 0.72rem; border-width: 0.14em;"></span>
+                                                <span class="fw-semibold">HTTP Preparing...</span>
+                                            </span>
+                                        </div>
                                         @if(auth()->check() && auth()->user()->hasRole('admin') && $monitor->user)
                                             <div class="mt-1">
                                                 <span class="badge bg-light text-secondary border small" title="Created by {{ $monitor->user->name }}">
@@ -106,7 +114,7 @@
                                     </td>
 
                                      {{-- 2. Uptime Status --}}
-                                     <td>
+                                     <td class="col-uptime-status">
                                          @if(!($monitor->settings?->check_uptime))
                                              <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                  <i class="bi bi-slash-circle"></i> Disabled
@@ -134,7 +142,7 @@
                                      </td>
 
                                      {{-- 3. SSL Status --}}
-                                     <td>
+                                     <td class="col-ssl-status">
                                          @if(!($monitor->settings?->check_ssl))
                                              <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                  <i class="bi bi-slash-circle"></i> Disabled
@@ -188,7 +196,7 @@
                                      </td>
 
                                      {{-- 4. PHP Version --}}
-                                     <td>
+                                     <td class="col-php-status">
                                          @if(!($monitor->settings?->check_php))
                                              <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                  <i class="bi bi-slash-circle"></i> Disabled
@@ -214,7 +222,7 @@
                                      </td>
 
                                      {{-- 5. Domain Expiry --}}
-                                     <td>
+                                     <td class="col-domain-status">
                                          @if(!($monitor->settings?->check_domain))
                                              <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                  <i class="bi bi-slash-circle"></i> Disabled
@@ -269,7 +277,7 @@
                                      </td>
 
                                      {{-- 6. Security Grade --}}
-                                     <td>
+                                     <td class="col-security-status">
                                          @if(!($monitor->settings?->check_security_headers))
                                              <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
                                                  <i class="bi bi-slash-circle"></i> Disabled
