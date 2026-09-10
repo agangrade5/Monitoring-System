@@ -43,6 +43,19 @@ class UtilityHelper
             $activity->performedOn($subject);
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Causer
+        |--------------------------------------------------------------------------
+        | Causer is the user who is performing the action or causing the event.
+        | It can be null if the event is not caused by a user.
+        */
+        $causer = auth()->user() ?? $subject;
+
+        if ($causer) {
+            $activity->causedBy($causer);
+        }
+
         if (!empty($properties)) {
             $activity->withProperties($properties);
         }

@@ -1,6 +1,8 @@
 @extends('layouts.auth.app')
+@section('title', $title)
 @section('content')
-<div class="login-box">
+
+<main class="login-box">
     <div class="login-logo">
         <a href="/">
             <img
@@ -105,7 +107,7 @@
             </div>
         </div>
     </div>
-</div>
+</main>
 
 @endsection
 
