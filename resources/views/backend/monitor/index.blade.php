@@ -78,6 +78,7 @@
                                             </td>
                                     {{-- 1. Website Details --}}
                                     <td class="ps-3">
+                                        <div data-testid="monitor-row-status-802239338" class="css-19e8aza"><div class="css-1g34l9y" style="backface-visibility: hidden;"></div><div class="css-8zgren"></div></div>
                                         <div class="fw-semibold text-body-emphasis fs-6">
                                             <a href="{{ route('monitor.show', $monitor->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
                                                 {{ $monitor->name }}

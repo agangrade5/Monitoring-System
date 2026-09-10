@@ -25,7 +25,7 @@
                 <input type="hidden" name="token" value="{{ $token }}">
 
                 <!-- Email field -->
-                <!-- <div class="mb-3">
+                <div class="mb-3">
                     <label class="form-label fw-semibold text-secondary-emphasis small" for="email">Email Address</label>
                     <div class="input-group">
                         <div class="input-group-text">
@@ -44,17 +44,9 @@
                     @error('email')
                         <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
                     @enderror
-                </div> -->
+                </div>
 
-                <input
-                            id="email"
-                            type="hidden"
-                            class="form-control"
-                            placeholder="Email Address"
-                            name="email"
-                            value="{{ old('email') }}"
-                            required
-                        >
+                
 
                 <!-- Password field -->
                 <div class="mb-3">
