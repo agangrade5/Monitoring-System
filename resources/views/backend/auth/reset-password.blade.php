@@ -23,6 +23,7 @@
                 @csrf
 
                 <input type="hidden" name="token" value="{{ $token }}">
+                <input type="hidden" name="timezone" id="timezone">
 
                 <!-- Email field -->
                 <div class="mb-3">

@@ -35,6 +35,25 @@ class ForgotPasswordController extends Controller
     public function sendResetLink(
         ForgotPasswordRequest $request
     ): RedirectResponse {
+
+        $email = $request->validated('email');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Only Admin User ID 1 Can Reset Password
+        |--------------------------------------------------------------------------
+        */
+        $user = $this->userRepository->findAdminByEmail($email);
+
+        if (!$user) {
+            return back()
+                ->withErrors([
+                    'email' => 'If an account exists for this email address, a password reset link has been sent.',
+                ])
+                ->withInput();
+        }
+
+
         try {
             $status = Password::sendResetLink(
                 $request->only('email')
@@ -42,11 +61,13 @@ class ForgotPasswordController extends Controller
 
             Log::info('Password reset link response', [
                 'email' => $request->email,
+                'user_id' => $user->id,
                 'status' => $status,
             ]);
         } catch (\Throwable $e) {
             Log::error('Password reset email failed', [
                 'email' => $request->email,
+                'user_id' => $user->id,
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -54,10 +75,6 @@ class ForgotPasswordController extends Controller
 
             throw $e;
         }
-
-        $user = $this->userRepository->findByEmail(
-            $request->validated('email')
-        );
 
         if ($status === Password::RESET_LINK_SENT) {
 
@@ -81,7 +98,7 @@ class ForgotPasswordController extends Controller
                 'If an account exists for this email address, a password reset link has been sent.'
             );
         }
-        
+
         if ($status === Password::RESET_THROTTLED) {
             return back()
                 ->withErrors([
@@ -134,9 +151,34 @@ class ForgotPasswordController extends Controller
     public function resetPassword(
         ResetPasswordRequest $request
     ): RedirectResponse {
+
+        $email = $request->validated('email');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Only Admin User ID 1 Can Reset Password
+        |--------------------------------------------------------------------------
+        */
+        $user = $this->userRepository->findAdminByEmail($email);
+        if (!$user) {
+            return back()
+                ->withErrors([
+                    'email' => 'This password reset request is not allowed.',
+                ])
+                ->withInput();
+        }
+
         $status = Password::reset(
             $request->validated(),
-                function ($user, $password) {
+                function ($user, $password) use ($email) {
+                    if (
+                        (int) $user->id !== 1 ||
+                        !$user->hasRole('admin') ||
+                        $user->email !== $email
+                    ) {
+                        return;
+                    }
+                    
                     $this->userRepository->updatePassword(
                         $user,
                         $password
@@ -150,8 +192,14 @@ class ForgotPasswordController extends Controller
 
         if ($status === Password::PASSWORD_RESET) {
 
-            $user = $this->userRepository->findByEmail(
-                $request->validated('email')
+            /*
+            |--------------------------------------------------------------------------
+            | Set User Timezone
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::setUserTimezone(
+                $user,
+                $request->input('timezone') ?? null
             );
 
             /*
@@ -187,7 +235,7 @@ class ForgotPasswordController extends Controller
         UtilityHelper::customActivityLog(
             'auth',
             'Password reset failed.',
-            null,
+            $user,
             [
                 'email' => $request->validated('email'),
                 'reason' => __($status),
