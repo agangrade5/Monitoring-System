@@ -58,14 +58,8 @@ class ForgotPasswordController extends Controller
             $status = Password::sendResetLink(
                 $request->only('email')
             );
-
-            Log::info('Password reset link response', [
-                'email' => $request->email,
-                'user_id' => $user->id,
-                'status' => $status,
-            ]);
         } catch (\Throwable $e) {
-            Log::error('Password reset email failed', [
+            Log::channel('auth')->error('Password reset email failed', [
                 'email' => $request->email,
                 'user_id' => $user->id,
                 'message' => $e->getMessage(),
@@ -95,7 +89,7 @@ class ForgotPasswordController extends Controller
             );
             return back()->with(
                 'success',
-                'If an account exists for this email address, a password reset link has been sent.'
+                'Password reset link sent successfully.'
             );
         }
 

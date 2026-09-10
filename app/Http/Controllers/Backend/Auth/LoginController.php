@@ -325,7 +325,7 @@ class LoginController extends Controller
                 ]
             );
         } catch (\Throwable $e) {
-            Log::error('OTP delivery failed.', [
+            Log::channel('auth')->error('OTP delivery failed.', [
                 'user_id' => $user->id,
                 'type' => $type,
                 'exception' => get_class($e),
