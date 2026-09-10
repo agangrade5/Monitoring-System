@@ -10,8 +10,10 @@ use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\SettingRepositoryInterface;
 use App\Services\TwilioService;
 use App\services\MailConfigService;
+use Carbon\Carbon;
+use DateTimeZone;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\{Auth, Log, RateLimiter, Session};
+use Illuminate\Support\Facades\{Auth, Log, Session};
 use Illuminate\View\View;
 
 class LoginController extends Controller
@@ -112,7 +114,7 @@ class LoginController extends Controller
         ];
         $timezone = $timezoneAliases[$timezone] ?? $timezone;
         try {
-            new \DateTimeZone($timezone);
+            new DateTimeZone($timezone);
 
             $user->timezone = $timezone;
             $user->save();
@@ -140,9 +142,9 @@ class LoginController extends Controller
             [
                 'user_id' => $user->id,
                 'email' => $user->email,
+                'remember' => $remember,
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'remember' => $remember,
             ]
         );
 
@@ -182,11 +184,8 @@ class LoginController extends Controller
         */
 
         if ($type === 'email') {
-
             $value = $request->input('email');
-
         } else {
-
             $countryCode =
                 $request->input('country_code');
 
@@ -207,6 +206,25 @@ class LoginController extends Controller
             : $this->userRepository->findByPhone($value);
 
         if (!$user) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - OTP Requested For Unknown Account
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP requested for a non-existent account.',
+                null,
+                [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'login_type' => $type,
+                    'value' => $value,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
 
             return back()
                 ->withErrors([
@@ -283,6 +301,24 @@ class LoginController extends Controller
                     )
                 );
             }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - OTP Sent Successfully
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP sent successfully.',
+                $user,
+                [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'login_type' => $type,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
         } catch (\Throwable $e) {
             Log::error('OTP delivery failed.', [
                 'user_id' => $user->id,
@@ -291,10 +327,31 @@ class LoginController extends Controller
                 'message' => $e->getMessage(),
             ]);
 
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - OTP Delivery Failed
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP delivery failed.',
+                $user,
+                [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'login_type' => $type,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'Unable to send OTP. Please try again later.');
+                ->with(
+                    'error',
+                    'Unable to send OTP. Please try again later.'
+                );
         }
 
         /*
@@ -319,7 +376,6 @@ class LoginController extends Controller
     public function showVerifyOtp(): View|RedirectResponse
     {
         if (!session()->has('login_otp')) {
-
             return redirect()
                 ->route('login')
                 ->withErrors([
@@ -369,6 +425,23 @@ class LoginController extends Controller
 
         if (!$otpData) {
 
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - OTP Session Expired/Missing
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP verification attempted with no active OTP session.',
+                null,
+                [
+                    'user_id' => $otpData['user_id'],
+                    'type' => $otpData['type'],
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
             return redirect()
                 ->route('login')
                 ->withErrors([
@@ -397,6 +470,24 @@ class LoginController extends Controller
 
         if ($attempts >= $maxAttempts) {
 
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - OTP Verification Blocked
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP verification attempt blocked.',
+                null,
+                [
+                    'user_id' => $otpData['user_id'],
+                    'login_type' => $otpData['type'],
+                    'max_attempts' => $maxAttempts,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
             return back()
                 ->withErrors([
                     'otp' =>
@@ -417,6 +508,23 @@ class LoginController extends Controller
                 )
             )
         ) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - OTP Expired
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP expired. Please resend OTP.',
+                null,
+                [
+                    'user_id' => $otpData['user_id'],
+                    'login_type' => $otpData['type'],
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
 
             return back()
                 ->withErrors([
@@ -466,14 +574,40 @@ class LoginController extends Controller
                     $maxAttempts - $attempts
                 );
 
+            $isNowBlocked = $attempts >= $maxAttempts;
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - Invalid OTP
+            | (merged the two separate logs - "Invalid OTP entered" +
+            |  "blocked after maximum attempts" - into a single log call
+            |  with a status flag, since both fired for the same user action)
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                $isNowBlocked
+                    ? 'Invalid OTP entered. Maximum attempts reached, verification blocked.'
+                    : 'Invalid OTP entered.',
+                null,
+                [
+                    'user_id' => $otpData['user_id'],
+                    'login_type' => $otpData['type'],
+                    'attempt' => $attempts,
+                    'max_attempts' => $maxAttempts,
+                    'remaining_attempts' => $remaining,
+                    'blocked' => $isNowBlocked,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
             /*
             |--------------------------------------------------------------------------
             | Maximum Attempts Reached
             |--------------------------------------------------------------------------
             */
 
-            if ($attempts >= $maxAttempts) {
-
+            if ($isNowBlocked) {
                 return back()
                     ->withErrors([
                         'otp' =>
@@ -507,6 +641,23 @@ class LoginController extends Controller
         );
 
         if (!$user) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - User Not Found After Valid OTP
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP verified but associated user account no longer exists.',
+                null,
+                [
+                    'user_id' => $otpData['user_id'],
+                    'login_type' => $otpData['type'],
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
 
             session()->forget('login_otp');
 
@@ -549,17 +700,10 @@ class LoginController extends Controller
             'User logged in successfully using OTP.',
             $user,
             [
-                'user_id' =>
-                    $user->id,
-
-                'login_type' =>
-                    $otpData['type'],
-
-                'ip' =>
-                    $request->ip(),
-
-                'user_agent' =>
-                    $request->userAgent(),
+                'user_id' => $user->id,
+                'login_type' => $otpData['type'],
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
             ]
         );
 
@@ -593,6 +737,23 @@ class LoginController extends Controller
         */
 
         if (!$otpData) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - Resend Attempted With No OTP Session
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP resend attempted with no active OTP session.',
+                null,
+                [
+                    'user_id' => $otpData['user_id'],
+                    'login_type' => $otpData['type'],
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]
+            );
 
             return redirect()
                 ->route('login')
@@ -631,27 +792,22 @@ class LoginController extends Controller
         | Reset OTP Session
         |--------------------------------------------------------------------------
         */
-
         session()->put(
             'login_otp',
             [
-                'user_id' =>
-                    $otpData['user_id'],
-                'type' =>
-                    $otpData['type'],
-                'value' =>
-                    $otpData['value'],
-                'otp' =>
-                    $otp,
-                'expires_at' =>
-                    now()->addSeconds($maxTime),
+                'user_id' => $otpData['user_id'],
+                'type' => $otpData['type'],
+                'value' => $otpData['value'],
+                'otp' => $otp,
+                'expires_at' => now()->addSeconds($maxTime),
                 /*
                 | Reset wrong attempts
                 */
-                'attempts' =>
-                    0,
-                'max_attempts' =>
-                    3,
+                'attempts' => 0,
+                /*
+                | Reset max attempts
+                */
+                'max_attempts' => 3,
             ]
         );
 
@@ -666,6 +822,23 @@ class LoginController extends Controller
         );
 
         if (!$user) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log - User Not Found On Resend
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'auth',
+                'OTP resend attempted but associated user account no longer exists.',
+                null,
+                [
+                    'user_id' => $otpData['user_id'],
+                    'login_type' => $otpData['type'],
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]
+            );
 
             session()->forget('login_otp');
 
@@ -694,6 +867,24 @@ class LoginController extends Controller
                 )
             );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'auth',
+            'A new OTP has been sent successfully.',
+            $user,
+            [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'login_type' => $otpData['type'],
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]
+        );
 
         return redirect()
             ->route('login.verify')
@@ -724,6 +915,8 @@ class LoginController extends Controller
                 : 'User logged out successfully.',
             $user,
             [
+                'user_id' => $user->id,
+                'email' => $user->email,
                 'ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
             ]

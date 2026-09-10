@@ -96,7 +96,7 @@
                                         <th width="60">S.No</th>
                                         <th>User</th>
                                         <th>Activity</th>
-                                        <th>Event</th>
+                                        {{-- <th>Event</th> --}}
                                         <th>Date</th>
                                         <th width="80">Action</th>
                                     </tr>
@@ -154,7 +154,7 @@
                                             <td>
                                                 {{ $log->description }}
                                             </td>
-                                            <td>
+                                            {{-- <td>
                                                 <span
                                                     class="badge bg-{{ $eventClass }}-subtle text-{{ $eventClass }}"
                                                 >
@@ -162,7 +162,7 @@
 
                                                     {{ ucfirst($log->event ?? 'activity') }}
                                                 </span>
-                                            </td>
+                                            </td> --}}
                                             <td>
                                                 {{ \App\Helpers\UtilityHelper::formatDateTime($log->created_at) }}
                                             </td>
@@ -182,7 +182,7 @@
                                     @empty
                                         <tr>
                                             <td
-                                                colspan="6"
+                                                colspan="5"
                                                 class="text-center py-4 text-muted"
                                             >
                                                 No activity logs found.

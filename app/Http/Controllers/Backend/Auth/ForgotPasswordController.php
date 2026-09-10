@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Backend\Auth\{ForgotPasswordRequest, ResetPasswordRequest};
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\{Auth, Password};
+use Illuminate\Support\Facades\{Auth, Log, Password};
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -35,15 +35,32 @@ class ForgotPasswordController extends Controller
     public function sendResetLink(
         ForgotPasswordRequest $request
     ): RedirectResponse {
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        try {
+            $status = Password::sendResetLink(
+                $request->only('email')
+            );
+
+            Log::info('Password reset link response', [
+                'email' => $request->email,
+                'status' => $status,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Password reset email failed', [
+                'email' => $request->email,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            throw $e;
+        }
 
         $user = $this->userRepository->findByEmail(
             $request->validated('email')
         );
 
         if ($status === Password::RESET_LINK_SENT) {
+
             /*
             |--------------------------------------------------------------------------
             | Activity Log - Reset Link Sent
@@ -63,6 +80,14 @@ class ForgotPasswordController extends Controller
                 'success',
                 'If an account exists for this email address, a password reset link has been sent.'
             );
+        }
+        
+        if ($status === Password::RESET_THROTTLED) {
+            return back()
+                ->withErrors([
+                    'email' => 'A password reset link was recently requested. Please wait a moment before trying again.',
+                ])
+                ->withInput();
         }
 
         /*
