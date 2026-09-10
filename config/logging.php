@@ -127,6 +127,25 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        /**
+         * custom auth log.
+         */
+        'auth' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/auth.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+        /**
+         * custom monitoring log.
+         */
+        'monitoring' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/monitoring.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
     ],
 
 ];

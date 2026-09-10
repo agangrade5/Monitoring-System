@@ -15,7 +15,7 @@ class AdminUserSeeder extends Seeder
     {
         $admin = User::updateOrCreate(
             [
-                'email' => 'admin@mailinator.com',
+                'email' => 'monitoring_system@mailinator.com',
             ],
             [
                 'name' => 'Administrator',
