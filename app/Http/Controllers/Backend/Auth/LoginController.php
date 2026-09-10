@@ -515,7 +515,6 @@ class LoginController extends Controller
         | Submitted OTP
         |--------------------------------------------------------------------------
         */
-
         $otp =
             implode(
                 '',
@@ -527,7 +526,6 @@ class LoginController extends Controller
         | Invalid OTP
         |--------------------------------------------------------------------------
         */
-
         if (
             !hash_equals(
                 (string) $otpData['otp'],
@@ -612,7 +610,6 @@ class LoginController extends Controller
         | Find User
         |--------------------------------------------------------------------------
         */
-
         $user = $this->userRepository->findById(
             $otpData['user_id']
         );
@@ -664,7 +661,7 @@ class LoginController extends Controller
         */
         UtilityHelper::setUserTimezone(
             $user,
-            $otpData['timezone'] ?? null
+            $request->input('timezone') ?? null
         );
 
         /*

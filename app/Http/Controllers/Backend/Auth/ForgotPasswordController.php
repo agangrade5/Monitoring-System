@@ -81,7 +81,7 @@ class ForgotPasswordController extends Controller
                 'If an account exists for this email address, a password reset link has been sent.'
             );
         }
-        
+
         if ($status === Password::RESET_THROTTLED) {
             return back()
                 ->withErrors([
@@ -152,6 +152,16 @@ class ForgotPasswordController extends Controller
 
             $user = $this->userRepository->findByEmail(
                 $request->validated('email')
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Set User Timezone
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::setUserTimezone(
+                $user,
+                $request->input('timezone') ?? null
             );
 
             /*

@@ -1,12 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Set timezone
-    const timezoneInput = document.getElementById('timezone');
-    if (timezoneInput) {
-        timezoneInput.value =
-            Intl.DateTimeFormat().resolvedOptions().timeZone;
-    }
-
     const otpForm = document.getElementById('otp-form');
 
     if (!otpForm) {
