@@ -198,8 +198,6 @@ class LoginController extends Controller
                 'OTP requested for a non-existent account.',
                 null,
                 [
-                    'user_id' => $user->id,
-                    'email' => $user->email,
                     'login_type' => $type,
                     'value' => $value,
                     'ip' => $request->ip(),
@@ -210,6 +208,36 @@ class LoginController extends Controller
             return back()
                 ->withErrors([
                     $type => 'No account found with these details.',
+                ])
+                ->withInput();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Admin Restriction
+        |--------------------------------------------------------------------------
+        | Admin can only login through the admin login page.
+        | OTP login is not allowed for admin users.
+        |--------------------------------------------------------------------------
+        */
+        if ($user->hasRole('admin')) {
+
+            UtilityHelper::customActivityLog(
+                'auth',
+                'Admin user attempted to login through OTP.',
+                $user,
+                [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'login_type' => $type,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
+            return back()
+                ->withErrors([
+                    $type => 'Admin users cannot login using OTP.',
                 ])
                 ->withInput();
         }
