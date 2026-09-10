@@ -107,25 +107,10 @@ class LoginController extends Controller
         | Set timezone
         |--------------------------------------------------------------------------
         */
-        $timezone = $request->input('timezone');
-        $timezoneAliases = [
-            'Asia/Calcutta' => 'Asia/Kolkata',
-        ];
-        $timezone = $timezoneAliases[$timezone] ?? $timezone;
-        try {
-            new DateTimeZone($timezone);
-
-            $user->timezone = $timezone;
-            $user->save();
-
-        } catch (\Exception $e) {
-            // Invalid timezone - keep existing timezone
-        }
-        $user->refresh();
-        session([
-            'user_timezone' => $user->timezone
-                ?? config('app.timezone', 'UTC'),
-        ]);
+        UtilityHelper::setUserTimezone(
+            $user,
+            $request->input('timezone')
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -181,7 +166,6 @@ class LoginController extends Controller
         | Get Login Value
         |--------------------------------------------------------------------------
         */
-
         if ($type === 'email') {
             $value = $request->input('email');
         } else {
@@ -199,13 +183,11 @@ class LoginController extends Controller
         | Find User
         |--------------------------------------------------------------------------
         */
-
         $user = $type === 'email'
             ? $this->userRepository->findByEmail($value)
             : $this->userRepository->findByPhone($value);
 
         if (!$user) {
-
             /*
             |--------------------------------------------------------------------------
             | Activity Log - OTP Requested For Unknown Account
@@ -237,7 +219,6 @@ class LoginController extends Controller
         | OTP Settings
         |--------------------------------------------------------------------------
         */
-
         $otpDetails =
             $this->settingRepository
                 ->getSettingArray('otp');
@@ -251,7 +232,6 @@ class LoginController extends Controller
         | Generate OTP
         |--------------------------------------------------------------------------
         */
-
         $otp = UtilityHelper::generateOtp(
             $otpDetails
         );
@@ -261,15 +241,13 @@ class LoginController extends Controller
         | Store OTP Session
         |--------------------------------------------------------------------------
         */
-
         Session::put('login_otp', [
             'user_id' => $user->id,
             'type' => $type,
             'value' => $value,
             'otp' => $otp,
-            'expires_at' => now()->addSeconds(
-                $maxTime
-            ),
+            'timezone' => $request->input('timezone'),
+            'expires_at' => now()->addSeconds($maxTime),
             /*
             | Wrong OTP attempts
             */
@@ -673,7 +651,6 @@ class LoginController extends Controller
         | Login
         |--------------------------------------------------------------------------
         */
-
         Auth::login($user);
 
         request()
@@ -682,10 +659,19 @@ class LoginController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | Set User Timezone
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::setUserTimezone(
+            $user,
+            $otpData['timezone'] ?? null
+        );
+
+        /*
+        |--------------------------------------------------------------------------
         | Remove OTP Session
         |--------------------------------------------------------------------------
         */
-
         session()->forget('login_otp');
 
         /*
@@ -693,7 +679,6 @@ class LoginController extends Controller
         | Activity Log
         |--------------------------------------------------------------------------
         */
-
         UtilityHelper::customActivityLog(
             'auth',
             'User logged in successfully using OTP.',
@@ -798,6 +783,7 @@ class LoginController extends Controller
                 'type' => $otpData['type'],
                 'value' => $otpData['value'],
                 'otp' => $otp,
+                'timezone' => $otpData['timezone'] ?? null,
                 'expires_at' => now()->addSeconds($maxTime),
                 /*
                 | Reset wrong attempts

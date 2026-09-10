@@ -59,6 +59,9 @@
                 data-max-attempts="{{ $maxAttempts }}"
             >
                 @csrf
+
+                <input type="hidden" name="timezone" id="timezone">
+
                 <div class="otp-container d-flex justify-content-center gap-2 mb-4">
                     @for ($i = 0; $i < 6; $i++)
                         <input
