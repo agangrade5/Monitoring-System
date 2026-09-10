@@ -66,7 +66,7 @@
                                         <th class="ps-4">S.No</th>
                                         <th>User</th>
                                         <th>Log Name</th>
-                                        <th>Event</th>
+                                        {{-- <th>Event</th> --}}
                                         <th>Description</th>
                                         <th>Date & Time</th>
                                         <th class="text-end">Actions</th>
@@ -138,14 +138,14 @@
                                             </span>
                                         </td>
                                         <!-- Event -->
-                                        <td>
+                                        {{-- <td>
                                             <span
                                                 class="badge bg-{{ $eventClass }}-subtle text-{{ $eventClass }}"
                                             >
                                                 <i class="bi {{ $eventIcon }} me-1"></i>
                                                 {{ ucfirst($log->event ?? 'activity') }}
                                             </span>
-                                        </td>
+                                        </td> --}}
                                         <!-- Description -->
                                         <td>
                                             <div
@@ -199,7 +199,7 @@
                                     </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center py-5">
+                                            <td colspan="6" class="text-center py-5">
                                                 <div class="text-muted">
                                                     <i class="bi bi-clipboard-x fs-1 d-block mb-3"></i>
                                                     <h6 class="fw-semibold">No Activity Logs Found</h6>

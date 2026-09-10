@@ -22,7 +22,7 @@
                 password reset link.
             </p>
 
-            <form method="POST" action="{{ route('password.email') }}" class="auth-submit-form" class="needs-validation" novalidate>
+            <form method="POST" action="{{ route('admin.password.email') }}" class="auth-submit-form" class="needs-validation" novalidate>
                 @csrf
 
                 <!-- Email field -->

@@ -5,7 +5,7 @@
     Reset Your Password
 </h2>
 
-<p>Hello {{ $user->name }},</p>
+<p>Hello {{ Str::ucfirst($user->name ?? 'User') }},</p>
 
 <p>
     We received a request to reset the password for your
