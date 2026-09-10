@@ -52,6 +52,7 @@ class CustomResetPasswordNotification extends Notification
 
         Log::info('Password reset URL generated', [
             'email' => $notifiable->getEmailForPasswordReset(),
+            'url' => $url
         ]);
 
         return (new MailMessage)

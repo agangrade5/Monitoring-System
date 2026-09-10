@@ -438,6 +438,10 @@
                                     <span class="badge bg-secondary-subtle text-secondary border rounded-pill">{{ ucfirst($monitor->checkResult?->domain_status ?? 'N/A') }}</span>
                                 @endif
                             </div>
+                             <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Domain Registrar:</span>
+                                <span class="fw-semibold text-body-emphasis">{{ $monitor->checkResult?->domain_registrar ? ucfirst($monitor->checkResult->domain_registrar) : 'N/A' }} </span>
+                            </div>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span class="text-muted small">Expiry Date:</span>
                                 <span class="fw-semibold text-body-emphasis">{{ $monitor->checkResult?->domain_expires_at ? \App\Helpers\UtilityHelper::formatDateTime($monitor->checkResult->domain_expires_at, 'd M Y') : 'N/A' }}</span>
