@@ -32,7 +32,7 @@ DB_PASSWORD=password
 
 #### application start process
 - Login page for admin http://{APP_URL}/admin/login
-- Admin Details ( admin@mailinator.com / Admin@123 )
+- Admin Details ( monitoring_system@mailinator.com / Admin@123 )
 - Login page for user http://{APP_URL}/login
 - after successfully login you will be redirected to a static dashboard page
 # Monitoring-System
