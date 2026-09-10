@@ -19,13 +19,13 @@
             <p class="login-box-msg mb-1 fs-6">
                 Create a new password for your account.
             </p>
-            <form method="POST" action="{{ route('password.update') }}" class="auth-submit-form" class="needs-validation" novalidate>
+            <form method="POST" action="{{ route('admin.password.update') }}" class="auth-submit-form" class="needs-validation" novalidate>
                 @csrf
 
                 <input type="hidden" name="token" value="{{ $token }}">
 
                 <!-- Email field -->
-                <div class="mb-3">
+                <!-- <div class="mb-3">
                     <label class="form-label fw-semibold text-secondary-emphasis small" for="email">Email Address</label>
                     <div class="input-group">
                         <div class="input-group-text">
@@ -44,7 +44,17 @@
                     @error('email')
                         <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
                     @enderror
-                </div>
+                </div> -->
+
+                <input
+                            id="email"
+                            type="hidden"
+                            class="form-control"
+                            placeholder="Email Address"
+                            name="email"
+                            value="{{ old('email') }}"
+                            required
+                        >
 
                 <!-- Password field -->
                 <div class="mb-3">
