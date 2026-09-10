@@ -7,14 +7,19 @@
 <!--begin::App Content Header-->
 <div class="app-content-header">
     <div class="container-fluid">
-        <div class="page-header d-flex justify-content-between align-items-center">
-            <div>
+        <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+             <div>
                 <h4 class="page-title pt-2">System Settings</h4>
                 <p class="page-subtitle text-muted mb-0">Configure and manage your account preferences.</p>
-            </div>
-            <div class="text-muted d-none d-sm-block">
-                <i class="bi bi-gear-fill me-1"></i>Settings
-            </div>
+             </div>
+             <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb float-sm-end mb-0">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">System Settings</li>
+                  </ol>
+                </nav>
+             </div>
         </div>
     </div>
 </div>
@@ -42,7 +47,7 @@
                                 <i class="bi bi-chat-text me-2"></i>Twilio Settings
                             </a>
                             <a href="#email-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-envelope-paper me-2"></i>Email Settings
+                                <i class="bi bi-envelope-paper me-2"></i>Mail Settings
                             </a>
                             <a href="#aws-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                 <i class="bi bi-cloud me-2"></i>AWS Settings

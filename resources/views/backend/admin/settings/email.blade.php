@@ -2,7 +2,7 @@
     <div class="card-header d-flex align-items-center">
         <i class="bi bi-envelope-paper-fill fs-4 me-2 text-primary"></i>
         <div>
-            <h5 class="mb-0 fw-bold">Email (SMTP) Settings</h5>
+            <h5 class="mb-0 fw-bold">Mail (SMTP) Settings</h5>
             <small class="text-muted">Configure mail server credentials and sender details for system emails.</small>
         </div>
     </div>
