@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class CustomResetPasswordNotification extends Notification
 {
@@ -38,12 +39,20 @@ class CustomResetPasswordNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        Log::info('Custom password reset notification triggered', [
+            'email' => $notifiable->getEmailForPasswordReset(),
+        ]);
+
         $url = url(
             route('admin.password.reset', [
                 'token' => $this->token,
                 'email' => $notifiable->getEmailForPasswordReset(),
             ], false)
         );
+
+        Log::info('Password reset URL generated', [
+            'email' => $notifiable->getEmailForPasswordReset(),
+        ]);
 
         return (new MailMessage)
             ->subject('Reset Your Password - ' . config('app.name'))
