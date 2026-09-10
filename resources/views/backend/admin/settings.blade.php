@@ -33,23 +33,22 @@
                             <a href="#account" class="settings-nav-link active mb-1" data-bs-toggle="pill" role="tab" aria-selected="true">
                                 <i class="bi bi-person me-2"></i>Account Settings
                             </a>
-                             @role('admin')
-                            <a href="#change-password" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-shield-lock me-2"></i>Change Password
-                            </a>
-                             
-                            <a href="#twilio-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-chat-text me-2"></i>Twilio Settings
-                            </a>
-                            <a href="#email-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-envelope-paper me-2"></i>Email Settings
-                            </a>
-                            <a href="#aws-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-cloud me-2"></i>AWS Settings
-                            </a>
-                            <a href="#otp-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
-                                <i class="bi bi-shield-check me-2"></i>OTP Settings
-                            </a>
+                            @role('admin')
+                                <a href="#change-password" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
+                                    <i class="bi bi-shield-lock me-2"></i>Change Password
+                                </a>
+                                <a href="#email-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
+                                    <i class="bi bi-envelope-paper me-2"></i>Email Settings
+                                </a>
+                                <a href="#otp-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
+                                    <i class="bi bi-shield-check me-2"></i>OTP Settings
+                                </a>
+                                <a href="#twilio-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
+                                    <i class="bi bi-chat-text me-2"></i>Twilio Settings
+                                </a>
+                                <a href="#aws-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
+                                    <i class="bi bi-cloud me-2"></i>AWS Settings
+                                </a>
                             @endrole
                         </div>
                     </div>
@@ -67,21 +66,21 @@
                     <div class="tab-pane fade" id="change-password" role="tabpanel">
                         @include('backend.admin.settings.change-password')
                     </div>
-                    <!-- Twilio Setting Tab -->
-                    <div class="tab-pane fade" id="twilio-setting" role="tabpanel">
-                        @include('backend.admin.settings.twilio')
-                    </div>
                     <!-- Email Setting Tab -->
                     <div class="tab-pane fade" id="email-setting" role="tabpanel">
                         @include('backend.admin.settings.email')
                     </div>
-                    <!-- AWS Setting Tab -->
-                    <div class="tab-pane fade" id="aws-setting" role="tabpanel">
-                        @include('backend.admin.settings.aws')
-                    </div>
                     <!-- OTP Setting Tab -->
                     <div class="tab-pane fade" id="otp-setting" role="tabpanel">
                         @include('backend.admin.settings.otp')
+                    </div>
+                    <!-- Twilio Setting Tab -->
+                    <div class="tab-pane fade" id="twilio-setting" role="tabpanel">
+                        @include('backend.admin.settings.twilio')
+                    </div>
+                    <!-- AWS Setting Tab -->
+                    <div class="tab-pane fade" id="aws-setting" role="tabpanel">
+                        @include('backend.admin.settings.aws')
                     </div>
                 </div>
             </div>

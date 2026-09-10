@@ -194,43 +194,6 @@
                             </table>
                         </div>
                     </div>
-
-                    <!-- Card Footer with Pagination -->
-                    @if($recentActivities instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $recentActivities->total() > 0)
-                        <div class="card-footer border-0 bg-transparent py-3">
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                <div class="small text-muted fw-medium">
-                                    Showing {{ $recentActivities->firstItem() }} to {{ $recentActivities->lastItem() }} of {{ $recentActivities->total() }} system logs
-                                </div>
-                                @if($recentActivities->hasPages())
-                                    <div>
-                                        <ul class="pagination pagination-sm m-0">
-                                            <!-- Previous Page Link -->
-                                            <li class="page-item {{ $recentActivities->onFirstPage() ? 'disabled' : '' }}">
-                                                <a class="page-link" href="{{ $recentActivities->previousPageUrl() ?? '#' }}" aria-label="Previous">
-                                                    <i class="bi bi-chevron-left"></i>
-                                                </a>
-                                            </li>
-
-                                            <!-- Page Number Links -->
-                                            @for ($page = 1; $page <= $recentActivities->lastPage(); $page++)
-                                                <li class="page-item {{ $recentActivities->currentPage() == $page ? 'active' : '' }}">
-                                                    <a class="page-link" href="{{ $recentActivities->url($page) }}">{{ $page }}</a>
-                                                </li>
-                                            @endfor
-
-                                            <!-- Next Page Link -->
-                                            <li class="page-item {{ $recentActivities->hasMorePages() ? '' : 'disabled' }}">
-                                                <a class="page-link" href="{{ $recentActivities->nextPageUrl() ?? '#' }}" aria-label="Next">
-                                                    <i class="bi bi-chevron-right"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
                 </div>
             </div>
 
