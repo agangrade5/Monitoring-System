@@ -61,22 +61,29 @@ class SettingController extends Controller
      */
     public function updateNotificationSettings(Request $request): JsonResponse
     {
-         $channels = config('constants.notifications.channels');
-         $keys = config('constants.notifications.keys');
-         $payload = [
-            $channels['email'] => [
-                $keys['enabled'] => (bool) $request->input('email_enabled', false),
-                $keys['down_event'] => (bool) $request->input('email_down_event', false),
-                $keys['up_event'] => (bool) $request->input('email_up_event', false),
-                $keys['ssl_domain_expiry'] => (bool) $request->input('email_ssl_domain_expiry', false),
-            ],
 
-            $channels['sms'] => [
-                $keys['enabled'] => (bool) $request->input('sms_enabled', false),
-                $keys['down_event'] => (bool) $request->input('sms_down_event', false),
-                $keys['up_event'] => (bool) $request->input('sms_up_event', false),
-                $keys['ssl_domain_expiry'] => (bool) $request->input('sms_ssl_domain_expiry', false),
-            ],
+        $notificationDefaults = config('constants.user_defaults.notifications');
+
+        $payload = [
+            'email' => array_combine(
+                array_keys($notificationDefaults['email']),
+                [
+                    $request->boolean('email_enabled'),
+                    $request->boolean('email_down_event'),
+                    $request->boolean('email_up_event'),
+                    $request->boolean('email_ssl_domain_expiry'),
+                ]
+            ),
+
+            'sms' => array_combine(
+                array_keys($notificationDefaults['sms']),
+                [
+                    $request->boolean('sms_enabled'),
+                    $request->boolean('sms_down_event'),
+                    $request->boolean('sms_up_event'),
+                    $request->boolean('sms_ssl_domain_expiry'),
+                ]
+            ),
         ];
 
         $setting = $this->settingRepository->saveSetting('notifications', $payload, Auth::id());
@@ -107,15 +114,16 @@ class SettingController extends Controller
      */
     public function updateReportSettings(Request $request): JsonResponse
     {
-        $reportEmail = config('constants.reports.report_email');
+      
+        $reportEmail = config('constants.user_defaults.report.report_email');
+
         $payload = [
-              'report_email' => [
-                        $reportEmail['enabled'] => (bool) $request->input('report_email_enabled', false),
-                        $reportEmail['weekly'] => (bool) $request->input('report_weekly', false),
-                        $reportEmail['monthly'] => (bool) $request->input('report_monthly', false),
+            'report_email' => [
+                'enabled' => $request->boolean('report_email_enabled'),
+                'weekly' => $request->boolean('report_weekly'),
+                'monthly' => $request->boolean('report_monthly'),
             ],
         ];
-
         $setting = $this->settingRepository->saveSetting('report', $payload, Auth::id());
 
         UtilityHelper::customActivityLog(

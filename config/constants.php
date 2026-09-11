@@ -94,33 +94,34 @@ return [
                 ],
         ],
 
-        /**
-         * Notification configuration
-         */
-      'notifications' => [
-
-        'channels' => [
-            'email' => 'email',
-            'sms' => 'sms',
-        ],
-
-        'keys' => [
-            'enabled' => 'enabled',
-            'down_event' => 'down_event',
-            'up_event' => 'up_event',
-            'ssl_domain_expiry' => 'ssl_domain_expiry',
-        ],
-
-    ],
-    /**
-     * Report configuration
-     * */
     
-     'reports' => [
-        'report_email' => [
-            'enabled' => 'enabled',
-            'weekly' => 'weekly',
-            'monthly' => 'monthly',
+
+     /**
+      * User settings configuration
+      */
+
+    'user_defaults' => [
+        'notifications' => [
+            'email' => [
+                'enabled' => false,
+                'down_event' => false,
+                'up_event' => false,
+                'ssl_domain_expiry' => false,
+            ],
+            'sms' => [
+                'enabled' => false,
+                'down_event' => false,
+                'up_event' => false,
+                'ssl_domain_expiry' => false,
+            ],
+        ],
+
+        'report' => [
+            'report_email' => [
+                'enabled' => false,
+                'weekly' => false,
+                'monthly' => false,
+            ],
         ],
     ],
 ];

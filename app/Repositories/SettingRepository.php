@@ -81,44 +81,17 @@ class SettingRepository implements SettingRepositoryInterface
         }
 
         // Process User-Specific Settings (Notifications & Reports)
-        $notificationKeys = config('constants.notifications.keys');
-        $notificationChannels = config('constants.notifications.channels');
-        $reportKeys = config('constants.reports.report_email');
-        $userDefaults = [
-            'notifications' => [
-                $notificationChannels['email'] => [
-                    $notificationKeys['enabled'] => false,
-                    $notificationKeys['down_event'] => false,
-                    $notificationKeys['up_event'] => false,
-                    $notificationKeys['ssl_domain_expiry'] => false,
-                ],
-
-                $notificationChannels['sms'] => [
-                    $notificationKeys['enabled'] => false,
-                    $notificationKeys['down_event'] => false,
-                    $notificationKeys['up_event'] => false,
-                    $notificationKeys['ssl_domain_expiry'] => false,
-                ],
-            ],
-
-            'report' => [
-                'report_email' => [
-                    $reportKeys['enabled'] => false,
-                    $reportKeys['weekly'] => false,
-                    $reportKeys['monthly'] => false,
-                ],
-            ],
-        ];
-
+        // Default values
+       $userDefaults = config('constants.user_defaults');
         foreach ($userDefaults as $type => $defaultValues) {
-            $userSettingModel = $userSettings[$type] ?? null;
+                 $userSettingModel = $userSettings[$type] ?? null;
 
-            if ($userSettingModel && !empty($userSettingModel->value)) {
-                $decoded = json_decode($userSettingModel->value, true);
-                $result[$type] = is_array($decoded) ? array_merge($defaultValues, $decoded) : $defaultValues;
-            } else {
-                $result[$type] = $defaultValues;
-            }
+                if ($userSettingModel && !empty($userSettingModel->value)) {
+                    $decoded = json_decode($userSettingModel->value, true);
+                    $result[$type] = is_array($decoded) ? array_merge($defaultValues, $decoded) : $defaultValues;
+                } else {
+                    $result[$type] = $defaultValues;
+                }
         }
 
         return $result;
