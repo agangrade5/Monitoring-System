@@ -147,7 +147,7 @@ class SettingController extends Controller
             'max_time' => (int) $validated['otp_max_time'],
             'otp_length' => (int) $validated['otp_length'],
             'is_default' => (bool) $validated['otp_is_default'],
-            'default' => (string) $validated['otp_default'],
+            'default' => (string) ( $validated['otp_default'] ?? $existingOtp['default'] ?? '' ),
         ];
 
             $setting =   $this->settingRepository->saveSetting('otp', $payload);
@@ -165,6 +165,22 @@ class SettingController extends Controller
                     'user_agent' => $request->userAgent(),
                 ]
             );
+
+        $setting =   $this->settingRepository->saveSetting('otp', $payload);
+            /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'Setting',
+            'Updated OTP Settings successfully.',
+            $setting,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
 
         return response()->json([
             'status' => true,

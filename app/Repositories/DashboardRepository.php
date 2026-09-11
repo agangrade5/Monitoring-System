@@ -9,7 +9,6 @@ use App\Repositories\Contracts\DashboardRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Activitylog\Models\Activity;
 
-
 class DashboardRepository implements DashboardRepositoryInterface
 {
     /**
@@ -22,7 +21,7 @@ class DashboardRepository implements DashboardRepositoryInterface
     public function getAdminDashboardData(User $user): array
     {
         $data = [];
-        $data['users'] = $user;
+        $data['user'] = $user;
         $data['monitors'] = $monitors = Monitor::with(['user', 'settings', 'checkResult', 'logs'])->latest()->get();
         $data['activeMonitorsCount'] = $monitors->where('is_active', true)->count();
         $data['totalMonitorsCount'] = $monitors->count();
@@ -61,21 +60,6 @@ class DashboardRepository implements DashboardRepositoryInterface
             ->sortByDesc(fn ($m) => $m->last_checked_at ?? $m->updated_at)
             ->take(8);
 
-        // 3. Recent system and user activities with pagination
-        if (class_exists(Activity::class)) {
-            $data['recentActivities'] = Activity::with('causer')
-                ->latest()
-                ->paginate(10)
-                ->withQueryString();
-        } else {
-            $data['recentActivities'] = new LengthAwarePaginator(
-                collect(),
-                0,
-                10,
-                1,
-                ['path' => request()->url(), 'query' => request()->query()]
-            );
-        }
         $data['title'] = 'Admin Dashboard';
         return $data;
     }
@@ -93,6 +77,7 @@ class DashboardRepository implements DashboardRepositoryInterface
         $userId = $user->id;
         $query = Monitor::query()->with(['user', 'settings', 'checkResult', 'logs'])->where('user_id', $userId);
 
+        $data['user'] = $user;
         $data['monitors'] = $monitors = $query->latest()->get();
         $data['activeMonitorsCount'] = $monitors->where('is_active', true)->count();
         $data['totalMonitorsCount'] = $monitors->count();
@@ -125,10 +110,6 @@ class DashboardRepository implements DashboardRepositoryInterface
             ->take(10)
             ->get();
 
-        // 2. Recent user activities for this logged-in user (max 10)
-        $data['recentActivities'] = class_exists(Activity::class)
-            ? Activity::with('causer')->where('causer_id', $userId)->latest()->take(10)->get()
-            : collect();
         $data['title'] = 'User Dashboard';
         return $data;
     }

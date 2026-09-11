@@ -81,12 +81,7 @@
                             <h5 class="mb-0 fw-bold">Recent System Logs</h5>
                             <small class="text-muted">Latest server updates</small>
                         </div>
-                        @php
-                            $activityLogsRoute = auth()->user()->hasRole('admin')
-                                ? route('admin.activity-logs.index')
-                                : route('activity-logs.index');
-                        @endphp
-                        <a href="{{ $activityLogsRoute }}" class="btn btn-outline-primary btn-sm px-3">View All Logs</a>
+                        <a href="{{ route('activity-logs.index') }}" class="btn btn-outline-primary btn-sm px-3">View All Logs</a>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -205,7 +200,7 @@
                             <small class="text-muted">Currently active HTTP endpoints being monitored</small>
                         </div>
 
-                       
+
                         <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">
                             {{ $downMonitors->count() }} Outages
                         </span>
@@ -360,10 +355,10 @@
                                                         </div>
 
                                                         {{-- Incident Logs Table --}}
-                                                     
+
 
                                                         {{-- Action Button --}}
-                                                       
+
                                                     </div>
                                                 </div>
                                             </div>

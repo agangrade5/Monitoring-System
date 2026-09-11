@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('log-name');
     const logUser =
         document.getElementById('log-user');
-    const logEvent =
-        document.getElementById('log-event');
+    /* const logEvent =
+        document.getElementById('log-event'); */
     const logDate =
         document.getElementById('log-date');
     const logDescription =
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function resetModal() {
         logName.textContent = 'N/A';
         logUser.textContent = 'N/A';
-        logEvent.textContent = 'N/A';
+        //logEvent.textContent = 'N/A';
         logDate.textContent = 'N/A';
         logDescription.textContent = 'N/A';
         logProperties.textContent = '{}';
@@ -117,8 +117,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         log.log_name ?? 'N/A';
                     logUser.textContent =
                         log.causer ?? 'System';
-                    logEvent.textContent =
-                        log.event ?? 'N/A';
+                    /* logEvent.textContent =
+                        log.event ?? 'N/A'; */
                     logDate.textContent =
                         log.created_at ?? 'N/A';
                     logDescription.textContent =

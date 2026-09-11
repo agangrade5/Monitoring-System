@@ -79,14 +79,15 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getAllUsers(?string $search = null): LengthAwarePaginator
     {
-        return User::when($search, function ($query, $search) {
+        return User::withoutRole('Admin')
+            ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->latest()
-            ->paginate(10);
+            ->paginate(config('constants.pagination_limit.defaultPagination'));
     }
 
     /**
