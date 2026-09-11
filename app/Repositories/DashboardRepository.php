@@ -2,9 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Monitor;
-use App\Models\User;
-use App\Models\MonitorLog;
+use App\Models\{User,MonitorLog,Monitor};
 use App\Repositories\Contracts\DashboardRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Activitylog\Models\Activity;
