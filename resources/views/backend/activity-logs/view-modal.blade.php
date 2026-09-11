@@ -72,7 +72,7 @@
                             </div>
                         </div>
                         <!-- Event -->
-                        <div class="col-md-6">
+                        {{-- <div class="col-md-6">
                             <div class="fw-semibold mb-1">
                                 Event
                             </div>
@@ -82,7 +82,7 @@
                             >
                                 N/A
                             </div>
-                        </div>
+                        </div> --}}
                         <!-- Date -->
                         <div class="col-md-6">
                             <div class="fw-semibold mb-1">

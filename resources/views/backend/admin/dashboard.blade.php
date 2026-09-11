@@ -79,13 +79,11 @@
                             <h5 class="mb-0 fw-bold">Recent System Logs</h5>
                             <small class="text-muted">Latest server updates</small>
                         </div>
-                        @php
-                            $activityLogsRoute = auth()->user()->hasRole('admin')
-                                ? route('admin.activity-logs.index')
-                                : route('activity-logs.index');
-                        @endphp
                         @can('activity-logs.view-all')
-                            <a href="{{ $activityLogsRoute }}" class="btn btn-outline-primary btn-sm px-3">View All Logs</a>
+                            <a href="{{ route('admin.activity-logs.index') }}"
+                            class="btn btn-outline-primary btn-sm px-3">
+                                View All Logs
+                            </a>
                         @endcan
                     </div>
                     <div class="card-body p-0">

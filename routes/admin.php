@@ -316,7 +316,7 @@ Route::middleware('auth')->group(function () {
             | Activity Logs
             |--------------------------------------------------------------------------
             */
-            Route::middleware('permission:activity-logs.view-all')
+            Route::middleware('permission:activity-logs.view')
                 ->get('/activity-logs', [ActivityLogController::class, 'index'])
                 ->name('activity-logs.index');
 
@@ -324,8 +324,10 @@ Route::middleware('auth')->group(function () {
                 ->get('/activity-logs/{id}', [ActivityLogController::class, 'show'])
                 ->name('activity-logs.show');
 
-            Route::middleware(['permission:activity-logs.delete', 'role:admin'])
-                ->delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])
+            Route::middleware([
+                'permission:activity-logs.delete',
+                'role:admin'
+            ])->delete('/activity-logs/{id}', [ActivityLogController::class,'destroy'])
                 ->name('activity-logs.destroy');
         });
 

@@ -21,6 +21,20 @@
                 {{ $title }}
             </h5>
 
+            @if ($errors->has('login'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    {{ $errors->first('login') }}
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close"
+                    ></button>
+                </div>
+            @endif
+
             <form
                 method="POST"
                 action="{{ route('login.send-otp') }}"
@@ -238,13 +252,6 @@
                     @enderror
 
                     @error('country_code')
-                        <div class="text-danger small mt-1">
-                            <i class="bi bi-exclamation-circle me-1"></i>
-                            {{ $message }}
-                        </div>
-                    @enderror
-
-                    @error('otp')
                         <div class="text-danger small mt-1">
                             <i class="bi bi-exclamation-circle me-1"></i>
                             {{ $message }}
