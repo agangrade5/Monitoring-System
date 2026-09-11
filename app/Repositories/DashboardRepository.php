@@ -4,10 +4,11 @@ namespace App\Repositories;
 
 use App\Models\Monitor;
 use App\Models\User;
+use App\Models\MonitorLog;
 use App\Repositories\Contracts\DashboardRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Activitylog\Models\Activity;
-use APp\Models\MonitorLog;
+
 
 class DashboardRepository implements DashboardRepositoryInterface
 {
@@ -47,7 +48,7 @@ class DashboardRepository implements DashboardRepositoryInterface
                 || in_array($domainStatus, ['warning', 'expired']);
         })->count();
 
-        // 1. Recent outage logs (only DOWN incidents, strictly capped at 10 items max)
+       // 1. Recent outage logs for this user (only DOWN incidents, strictly capped at 10 items max)
         $data['downMonitors'] = MonitorLog::with('monitor')
             ->where('status', 'down')
             ->latest()

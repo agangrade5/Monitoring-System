@@ -55,6 +55,7 @@ export default defineConfig({
                 'resources/js/backend/aws-settings.js',
                 'resources/js/backend/user-login.js',
                 'resources/js/backend/verify-otp.js',
+                'resources/js/backend/notification-settings.js',
             ],
             buildDirectory: 'assets',
             refresh: true,

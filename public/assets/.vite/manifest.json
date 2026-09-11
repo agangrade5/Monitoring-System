@@ -56,6 +56,12 @@
     "src": "resources/js/backend/monitor.js",
     "isEntry": true
   },
+  "resources/js/backend/notification-settings.js": {
+    "file": "js/backend/notification-settings.js",
+    "name": "notification-settings",
+    "src": "resources/js/backend/notification-settings.js",
+    "isEntry": true
+  },
   "resources/js/backend/otp-settings.js": {
     "file": "js/backend/otp-settings.js",
     "name": "otp-settings",

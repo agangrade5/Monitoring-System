@@ -120,24 +120,32 @@
                                                  <i class="bi bi-slash-circle"></i> Disabled
                                              </span>
                                          @else
-                                             <div class="d-flex align-items-center gap-1 mb-1">
-                                                 @if($monitor->status === 'down')
-                                                     <span class="badge rounded-pill text-bg-danger d-inline-flex align-items-center gap-1">
-                                                         <i class="bi bi-x-circle-fill"></i> DOWN
-                                                     </span>
-                                                 @else
-                                                     <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                                         <i class="bi bi-check-circle-fill"></i> UP
-                                                     </span>
+                                             <div class="status-checking-badge d-none mb-1">
+                                                 <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill d-inline-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.725rem;">
+                                                     <span class="spinner-border spinner-border-sm text-secondary" role="status" style="width: 0.72rem; height: 0.72rem; border-width: 0.14em;"></span>
+                                                     <span class="fw-semibold">Checking Uptime...</span>
+                                                 </span>
+                                             </div>
+                                             <div class="status-content">
+                                                 <div class="d-flex align-items-center gap-1 mb-1">
+                                                     @if($monitor->status === 'down')
+                                                         <span class="badge rounded-pill text-bg-danger d-inline-flex align-items-center gap-1">
+                                                             <i class="bi bi-x-circle-fill"></i> DOWN
+                                                         </span>
+                                                     @else
+                                                         <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                                                             <i class="bi bi-check-circle-fill"></i> UP
+                                                         </span>
+                                                     @endif
+                                                 </div>
+                                                 @if($monitor->last_checked_at)
+                                                     <div class="text-muted small">
+                                                          {{ \App\Helpers\UtilityHelper::formatDateTime($monitor->last_checked_at, 'd M Y') }}
+                                                          <br>
+                                                          {{ \App\Helpers\UtilityHelper::formatDateTime($monitor->last_checked_at, 'h:i:s A') }}
+                                                     </div>
                                                  @endif
                                              </div>
-                                             @if($monitor->last_checked_at)
-                                                 <div class="text-muted small">
-                                                      {{ \App\Helpers\UtilityHelper::formatDateTime($monitor->last_checked_at, 'd M Y') }}
-                                                      <br>
-                                                      {{ \App\Helpers\UtilityHelper::formatDateTime($monitor->last_checked_at, 'h:i:s A') }}
-                                                 </div>
-                                             @endif
                                          @endif
                                      </td>
 
@@ -148,50 +156,58 @@
                                                  <i class="bi bi-slash-circle"></i> Disabled
                                              </span>
                                          @else
-                                             @php
-                                                 $sslStatus = $monitor->checkResult?->ssl_status;
-                                                 $sslExpiresAt = $monitor->checkResult?->ssl_expires_at;
-                                                 $sslIssuer = $monitor->checkResult?->ssl_issuer;
-                                                 $sslDaysRemaining = $monitor->checkResult?->ssl_days_remaining;
-                                             @endphp
+                                             <div class="status-checking-badge d-none mb-1">
+                                                 <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill d-inline-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.725rem;">
+                                                     <span class="spinner-border spinner-border-sm text-secondary" role="status" style="width: 0.72rem; height: 0.72rem; border-width: 0.14em;"></span>
+                                                     <span class="fw-semibold">Checking SSL...</span>
+                                                 </span>
+                                             </div>
+                                             <div class="status-content">
+                                                 @php
+                                                     $sslStatus = $monitor->checkResult?->ssl_status;
+                                                     $sslExpiresAt = $monitor->checkResult?->ssl_expires_at;
+                                                     $sslIssuer = $monitor->checkResult?->ssl_issuer;
+                                                     $sslDaysRemaining = $monitor->checkResult?->ssl_days_remaining;
+                                                 @endphp
 
-                                             @if($sslStatus === 'valid')
-                                                 <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-check-circle-fill"></i> Valid 
-                                                 </span>
-                                             @elseif($sslStatus === 'warning')
-                                                 <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-exclamation-triangle-fill"></i> Warning
-                                                 </span>
-                                             @elseif($sslStatus === 'expired')
-                                                 <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-x-circle-fill"></i> Expired
-                                                 </span>
-                                             @elseif($sslStatus === 'invalid')
-                                                 <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-exclamation-octagon-fill"></i> Invalid
-                                                 </span>
-                                             @else
-                                                 <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-shield-slash"></i> No SSL
-                                                 </span>
-                                             @endif
-
-                                             @if($sslExpiresAt)
-                                                 <div class="text-muted small mt-1">
-                                                     Exp: {{ \App\Helpers\UtilityHelper::formatDateTime($sslExpiresAt, 'd M Y') }}
-                                                 </div>
-
-                                                 @if($sslIssuer)
-                                                     <div class="text-muted small font-mono">
-                                                         {{ Str::limit($sslIssuer, 20) }}
-                                                     </div>
+                                                 @if($sslStatus === 'valid')
+                                                     <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-check-circle-fill"></i> Valid 
+                                                     </span>
+                                                 @elseif($sslStatus === 'warning')
+                                                     <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-exclamation-triangle-fill"></i> Warning
+                                                     </span>
+                                                 @elseif($sslStatus === 'expired')
+                                                     <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-x-circle-fill"></i> Expired
+                                                     </span>
+                                                 @elseif($sslStatus === 'invalid')
+                                                     <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-exclamation-octagon-fill"></i> Invalid
+                                                     </span>
+                                                 @else
+                                                     <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-shield-slash"></i> No SSL
+                                                     </span>
                                                  @endif
 
-                                                 <div class="text-muted small font-mono" style="font-size: 12px;">
-                                                     {{ $sslDaysRemaining ?? 0 }} days remaining
-                                                 </div>
-                                             @endif
+                                                 @if($sslExpiresAt)
+                                                     <div class="text-muted small mt-1">
+                                                         Exp: {{ \App\Helpers\UtilityHelper::formatDateTime($sslExpiresAt, 'd M Y') }}
+                                                     </div>
+
+                                                     @if($sslIssuer)
+                                                         <div class="text-muted small font-mono">
+                                                             {{ Str::limit($sslIssuer, 20) }}
+                                                         </div>
+                                                     @endif
+
+                                                     <div class="text-muted small font-mono" style="font-size: 12px;">
+                                                         {{ $sslDaysRemaining ?? 0 }} days remaining
+                                                     </div>
+                                                 @endif
+                                             </div>
                                          @endif
                                      </td>
 
@@ -202,22 +218,30 @@
                                                  <i class="bi bi-slash-circle"></i> Disabled
                                              </span>
                                          @else
-                                             @php
-                                                 $phpVersion = $monitor->checkResult?->php_version;
-                                             @endphp
-                                             @if($phpVersion && strtolower($phpVersion) !== 'unknown')
-                                                 <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 fw-semibold">
-                                                     <i class="bi bi-filetype-php"></i> PHP {{ $phpVersion }}
+                                             <div class="status-checking-badge d-none mb-1">
+                                                 <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill d-inline-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.725rem;">
+                                                     <span class="spinner-border spinner-border-sm text-secondary" role="status" style="width: 0.72rem; height: 0.72rem; border-width: 0.14em;"></span>
+                                                     <span class="fw-semibold">Checking PHP...</span>
                                                  </span>
-                                             @elseif(strtolower($phpVersion ?? '') === 'unknown')
-                                                 <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-question-circle"></i> Unknown
-                                                 </span>
-                                             @else
-                                                 <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-dash"></i> N/A
-                                                 </span>
-                                             @endif
+                                             </div>
+                                             <div class="status-content">
+                                                 @php
+                                                     $phpVersion = $monitor->checkResult?->php_version;
+                                                 @endphp
+                                                 @if($phpVersion && strtolower($phpVersion) !== 'unknown')
+                                                     <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 fw-semibold">
+                                                         <i class="bi bi-filetype-php"></i> PHP {{ $phpVersion }}
+                                                     </span>
+                                                 @elseif(strtolower($phpVersion ?? '') === 'unknown')
+                                                     <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-question-circle"></i> Unknown
+                                                     </span>
+                                                 @else
+                                                     <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-dash"></i> N/A
+                                                     </span>
+                                                 @endif
+                                             </div>
                                          @endif
                                      </td>
 
@@ -228,58 +252,66 @@
                                                  <i class="bi bi-slash-circle"></i> Disabled
                                              </span>
                                          @else
-                                             @php
-                                                 $domainStatus = $monitor->checkResult?->domain_status;
-                                                 $domainExpiresAt = $monitor->checkResult?->domain_expires_at;
-                                                 $domainRegistrar = $monitor->checkResult?->domain_registrar;
-                                             @endphp
-
-                                             @if($domainStatus === 'active')
-                                                 <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-check-circle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                             <div class="status-checking-badge d-none mb-1">
+                                                 <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill d-inline-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.725rem;">
+                                                     <span class="spinner-border spinner-border-sm text-secondary" role="status" style="width: 0.72rem; height: 0.72rem; border-width: 0.14em;"></span>
+                                                     <span class="fw-semibold">Checking Domain...</span>
                                                  </span>
-                                             @elseif($domainStatus === 'warning')
-                                                 <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-exclamation-triangle-fill"></i> {{ ucfirst($domainStatus) }} 
-                                                 </span>
-                                             @elseif($domainStatus === 'expired')
-                                                 <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-x-circle-fill"></i> {{ ucfirst($domainStatus) }} 
-                                                 </span>
-                                             @else
-                                                 <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
-                                                     <i class="bi bi-dash"></i> No expiry
-                                                 </span>
-                                             @endif
-                                             @if($domainExpiresAt)
+                                             </div>
+                                             <div class="status-content">
                                                  @php
-                                                     $domainDaysRemaining = now()->startOfDay()->diffInDays(
-                                                         $domainExpiresAt->copy()->startOfDay(),
-                                                         false
-                                                     );
+                                                     $domainStatus = $monitor->checkResult?->domain_status;
+                                                     $domainExpiresAt = $monitor->checkResult?->domain_expires_at;
+                                                     $domainRegistrar = $monitor->checkResult?->domain_registrar;
                                                  @endphp
 
-                                                 <div class="text-muted small mt-1">
-                                                     Exp:
-                                                     {{ \App\Helpers\UtilityHelper::formatDateTime($domainExpiresAt, 'd M Y') }}
-                                                 </div>
+                                                 @if($domainStatus === 'active')
+                                                     <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-check-circle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                     </span>
+                                                 @elseif($domainStatus === 'warning')
+                                                     <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-exclamation-triangle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                     </span>
+                                                 @elseif($domainStatus === 'expired')
+                                                     <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-x-circle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                     </span>
+                                                 @else
+                                                     <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
+                                                         <i class="bi bi-dash"></i> No expiry
+                                                     </span>
+                                                 @endif
+                                                 @if($domainExpiresAt)
+                                                     @php
+                                                         $domainDaysRemaining = now()->startOfDay()->diffInDays(
+                                                             $domainExpiresAt->copy()->startOfDay(),
+                                                             false
+                                                         );
+                                                     @endphp
 
-                                                 @if($domainRegistrar)
-                                                     <div class="text-muted small font-mono">
-                                                         {{ Str::limit($domainRegistrar, 20) }}
+                                                     <div class="text-muted small mt-1">
+                                                         Exp:
+                                                         {{ \App\Helpers\UtilityHelper::formatDateTime($domainExpiresAt, 'd M Y') }}
+                                                     </div>
+
+                                                     @if($domainRegistrar)
+                                                         <div class="text-muted small font-mono">
+                                                             {{ Str::limit($domainRegistrar, 20) }}
+                                                         </div>
+                                                     @endif
+
+                                                     <div class="text-muted small font-mono" style="font-size: 12px;">
+                                                         @if($domainDaysRemaining < 0)
+                                                             Expired {{ abs($domainDaysRemaining) }} days ago
+                                                         @elseif($domainDaysRemaining === 0)
+                                                             Expires today
+                                                         @else
+                                                             {{ $domainDaysRemaining }} days remaining
+                                                         @endif
                                                      </div>
                                                  @endif
-
-                                                 <div class="text-muted small font-mono" style="font-size: 12px;">
-                                                     @if($domainDaysRemaining < 0)
-                                                         Expired {{ abs($domainDaysRemaining) }} days ago
-                                                     @elseif($domainDaysRemaining === 0)
-                                                         Expires today
-                                                     @else
-                                                         {{ $domainDaysRemaining }} days remaining
-                                                     @endif
-                                                 </div>
-                                             @endif
+                                             </div>
                                          @endif
                                      </td>
 
@@ -290,29 +322,37 @@
                                                  <i class="bi bi-slash-circle"></i> Disabled
                                              </span>
                                          @else
-                                             @php
-                                                 $headers = $monitor->checkResult?->security_headers ?? [
-                                                     'strict-transport-security' => ['name' => 'HSTS', 'present' => false],
-                                                     'content-security-policy' => ['name' => 'CSP', 'present' => false],
-                                                     'x-frame-options' => ['name' => 'X-Frame', 'present' => false],
-                                                     'x-content-type-options' => ['name' => 'X-Content-Type', 'present' => false],
-                                                     'referrer-policy' => ['name' => 'Referrer', 'present' => false],
-                                                     'permissions-policy' => ['name' => 'Permissions', 'present' => false],
-                                                 ];
-                                             @endphp
+                                             <div class="status-checking-badge d-none mb-1">
+                                                 <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill d-inline-flex align-items-center gap-1 px-2 py-1" style="font-size: 0.725rem;">
+                                                     <span class="spinner-border spinner-border-sm text-secondary" role="status" style="width: 0.72rem; height: 0.72rem; border-width: 0.14em;"></span>
+                                                     <span class="fw-semibold">Checking Headers...</span>
+                                                 </span>
+                                             </div>
+                                             <div class="status-content">
+                                                 @php
+                                                     $headers = $monitor->checkResult?->security_headers ?? [
+                                                         'strict-transport-security' => ['name' => 'HSTS', 'present' => false],
+                                                         'content-security-policy' => ['name' => 'CSP', 'present' => false],
+                                                         'x-frame-options' => ['name' => 'X-Frame', 'present' => false],
+                                                         'x-content-type-options' => ['name' => 'X-Content-Type', 'present' => false],
+                                                         'referrer-policy' => ['name' => 'Referrer', 'present' => false],
+                                                         'permissions-policy' => ['name' => 'Permissions', 'present' => false],
+                                                     ];
+                                                 @endphp
 
-                                             <div class="d-flex flex-wrap gap-1">
-                                                 @foreach($headers as $header)
-                                                     @if($header['present'] ?? false)
-                                                         <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
-                                                             {{ $header['name'] }}
-                                                         </span>
-                                                     @else
-                                                         <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle">
-                                                             {{ $header['name'] }}
-                                                         </span>
-                                                     @endif
-                                                 @endforeach
+                                                 <div class="d-flex flex-wrap gap-1">
+                                                     @foreach($headers as $header)
+                                                         @if($header['present'] ?? false)
+                                                             <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
+                                                                 {{ $header['name'] }}
+                                                             </span>
+                                                         @else
+                                                             <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle">
+                                                                 {{ $header['name'] }}
+                                                             </span>
+                                                         @endif
+                                                     @endforeach
+                                                 </div>
                                              </div>
                                          @endif
                                      </td>
@@ -463,6 +503,6 @@
     </div>
 </div>
 
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/monitor.js')) !!}
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/monitor.js') . '?v=' . time()) !!}
 
 @endsection

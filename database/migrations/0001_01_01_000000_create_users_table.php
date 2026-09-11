@@ -21,7 +21,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(1);
             $table->string('timezone', 100)->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

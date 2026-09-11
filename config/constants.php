@@ -48,6 +48,7 @@ return [
             'is_default' => true, // true=Fixed OTP or false=Dynamic OTP
             'default' => '999999',
         ],
+       
     ],
 
         /**

@@ -3,8 +3,10 @@
 namespace App\Http\Requests\Backend\User;
 
 use App\Rules\NoScripts;
+use App\Rules\ValidMobile;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProfileUpdateRequest extends FormRequest
 {
@@ -25,6 +27,9 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = $this->user()?->id;
+        $countryCode = $this->input('country_code', $this->user()?->country_code ?? '+91') ?: '+91';
+
         return [
             'name' => [
                 'required',
@@ -32,6 +37,21 @@ class ProfileUpdateRequest extends FormRequest
                 'min:3',
                 'max:50',
                 new NoScripts(),
+            ],
+
+            'country_code' => [
+                'nullable',
+                'string',
+                'in:' . collect(config('countries.countries'))
+                    ->pluck('code')
+                    ->implode(','),
+            ],
+
+         'phone_number' => [
+                'required',
+                'digits:10',
+                Rule::unique('users', 'phone_number')->ignore($userId),
+                new ValidMobile($countryCode),
             ],
 
             'profile_image' => [

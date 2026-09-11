@@ -38,7 +38,7 @@ class SettingController extends Controller
     public function index(): View
     {
         $user = Auth::user();
-        $settings = $this->settingRepository->getAllSettingsFormatted();
+        $settings = $this->settingRepository->getAllSettingsFormatted($user?->id);
         return view('backend.admin.settings', [
             'title' => 'Settings',
             'user' => $user,
@@ -47,6 +47,87 @@ class SettingController extends Controller
             'twilioData' => $settings['twilio'],
             'mailData' => $settings['mail'],
             'awsData' => $settings['aws'],
+            'notificationData' => $settings['notifications'],
+            'reportData' => $settings['report'],
+        ]);
+    }
+
+    /**
+     * Update Notification settings in database settings table.
+     *
+     * @param Request $request
+     * 
+     * @return JsonResponse
+     */
+    public function updateNotificationSettings(Request $request): JsonResponse
+    {
+        $payload = [
+            'email' => [
+                'enabled' => (bool) $request->input('email_enabled', false),
+                'down_event' => (bool) $request->input('email_down_event', false),
+                'up_event' => (bool) $request->input('email_up_event', false),
+                'ssl_domain_expiry' => (bool) $request->input('email_ssl_domain_expiry', false),
+            ],
+            'sms' => [
+                'enabled' => (bool) $request->input('sms_enabled', false),
+                'down_event' => (bool) $request->input('sms_down_event', false),
+                'up_event' => (bool) $request->input('sms_up_event', false),
+                'ssl_domain_expiry' => (bool) $request->input('sms_ssl_domain_expiry', false),
+            ],
+        ];
+
+        $setting = $this->settingRepository->saveSetting('notifications', $payload, Auth::id());
+
+        UtilityHelper::customActivityLog(
+            'setting',
+            'Updated Alert Notification Settings successfully.',
+            $setting,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Notification settings updated successfully!',
+            'data' => $payload,
+        ]);
+    }
+
+    /**
+     * Update Email Report settings in database settings table.
+     *
+     * @param Request $request
+     * 
+     * @return JsonResponse
+     */
+    public function updateReportSettings(Request $request): JsonResponse
+    {
+        $payload = [
+            'report_email' => [
+                'enabled' => (bool) $request->input('report_email_enabled', false),
+                'Weekly' => (bool) $request->input('report_weekly', false),
+                'Monthly' => (bool) $request->input('report_monthly', false),
+            ],
+        ];
+
+        $setting = $this->settingRepository->saveSetting('report', $payload, Auth::id());
+
+        UtilityHelper::customActivityLog(
+            'setting',
+            'Updated Email Report Settings successfully.',
+            $setting,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Report settings updated successfully!',
+            'data' => $payload,
         ]);
     }
 
@@ -76,7 +157,7 @@ class SettingController extends Controller
             |--------------------------------------------------------------------------
             */
             UtilityHelper::customActivityLog(
-                'Setting',
+                'setting',
                 'Updated OTP Settings successfully.',
                 $setting,
                 [
@@ -124,7 +205,7 @@ class SettingController extends Controller
             |--------------------------------------------------------------------------
             */
             UtilityHelper::customActivityLog(
-                'Setting',
+                'setting',
                 'Updated Twilio SMS Settings successfully.',
                 $setting,
                 [
@@ -170,16 +251,16 @@ class SettingController extends Controller
             'mail_from_name' => (string) ($validated['mail_from_name'] ?? ''),
         ];
 
-        $Setting = $this->settingRepository->saveSetting('mail', $payload);
+        $setting = $this->settingRepository->saveSetting('mail', $payload);
              /*
             |--------------------------------------------------------------------------
             | Activity Log
             |--------------------------------------------------------------------------
             */
             UtilityHelper::customActivityLog(
-                'Setting',
+                'setting',
                 'Updated Email (SMTP) Settings successfully.',
-                $Setting,
+                $setting,
                 [
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),
@@ -219,16 +300,16 @@ class SettingController extends Controller
             'aws_bucket' => (string) ($validated['aws_bucket'] ?? ''),
         ];
 
-        $Setting = $this->settingRepository->saveSetting('aws', $payload);
+        $setting = $this->settingRepository->saveSetting('aws', $payload);
             /*
             |--------------------------------------------------------------------------
             | Activity Log
             |--------------------------------------------------------------------------
             */
             UtilityHelper::customActivityLog(
-                'Setting',
+                'setting',
                 'Updated AWS Cloud Settings successfully.',
-                $Setting,
+                $setting,
                 [
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),

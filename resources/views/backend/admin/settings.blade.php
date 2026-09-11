@@ -48,12 +48,20 @@
                                 <a href="#otp-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                     <i class="bi bi-shield-check me-2"></i>OTP Settings
                                 </a>
+                             
+                                
+                              
                                 <a href="#twilio-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                     <i class="bi bi-chat-text me-2"></i>Twilio Settings
                                 </a>
                                 <a href="#aws-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                     <i class="bi bi-cloud me-2"></i>AWS Settings
                                 </a>
+                            @endrole
+                            @role('user')
+                              <a  href="#notifications" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab"aria-selected="false">
+                                      <i class="bi bi-bell me-2"></i> Notifications & Reports
+                                   </a>
                             @endrole
                         </div>
                     </div>
@@ -79,6 +87,11 @@
                     <div class="tab-pane fade" id="otp-setting" role="tabpanel">
                         @include('backend.admin.settings.otp')
                     </div>
+
+                    <!-- Notification Setting Tab -->
+                    <div class="tab-pane fade" id="notifications" role="tabpanel">
+                        @include('backend.admin.settings.notifications')
+                    </div>
                     <!-- Twilio Setting Tab -->
                     <div class="tab-pane fade" id="twilio-setting" role="tabpanel">
                         @include('backend.admin.settings.twilio')
@@ -99,4 +112,5 @@
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/twilio-settings.js')) !!}
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/email-settings.js')) !!}
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/aws-settings.js')) !!}
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/notification-settings.js')) !!}
 @endsection

@@ -127,44 +127,168 @@
                             </div>
                             <div class="card-body">
                                 <p class="text-secondary small">Choose what to be notified about.</p>
-                                <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-                                    <div>
-                                        <p class="mb-0 fw-semibold">
-                                            <i class="bi bi-envelope-fill text-primary me-2"></i>
-                                            E-mail Notifications
-                                        </p>
-                                        <small class="text-muted">Receive alerts, weekly reports, and critical errors via email.</small>
-                                    </div>
-                                    <div class="form-check form-switch fs-5">
-                                        <input class="form-check-input notification-switch" type="checkbox" role="switch" id="notif-email" checked>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-                                    <div>
-                                        <p class="mb-0 fw-semibold">
-                                            <i class="bi bi-phone-fill text-warning me-2"></i>
-                                            SMS Notifications
-                                        </p>
-                                        <small class="text-muted">Get critical server down notifications directly to your phone.</small>
-                                    </div>
-                                    <div class="form-check form-switch fs-5">
-                                        <input class="form-check-input notification-switch" type="checkbox" role="switch" id="notif-sms">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-                                    <div>
-                                        <p class="mb-0 fw-semibold">
-                                            <i class="bi bi-megaphone-fill text-info me-2"></i>
-                                            System Announcements
-                                        </p>
-                                        <small class="text-muted">Receive updates regarding new features and site maintenance.</small>
-                                    </div>
-                                    <div class="form-check form-switch fs-5">
-                                        <input class="form-check-input notification-switch" type="checkbox" role="switch" id="notif-announcements" checked>
-                                    </div>
-                                </div>
-                                <button class="btn btn-primary mt-4 px-4 py-2" id="save-notif-btn">Save Preferences</button>
-                            </div>
+                                 <!-- E-mail Row -->
+                                 <div class="d-flex justify-content-between align-items-center py-3 border-bottom flex-wrap gap-3">
+                                     <div class="flex-grow-1" style="min-width: 250px;">
+                                         <p class="mb-0 fw-semibold">
+                                             <i class="bi bi-envelope-fill text-primary me-2"></i>
+                                             E-mail Notifications
+                                         </p>
+                                         <small class="text-muted">Receive alerts, weekly reports, and critical errors via email.</small>
+                                     </div>
+                                     <div class="d-flex align-items-center gap-3">
+                                         <!-- Dropdown for E-mail -->
+                                         <div class="dropdown custom-notify-events-dropdown position-relative" style="min-width: 260px;">
+                                             <button class="btn btn-outline-secondary btn-sm w-100 d-flex justify-content-between align-items-center text-start py-2 px-3 shadow-none dropdown-toggle rounded-3 border-secondary-subtle" 
+                                                     type="button" 
+                                                     id="notifyEventsDropdownUserEmail" 
+                                                     data-bs-toggle="dropdown" 
+                                                     data-bs-auto-close="outside" 
+                                                     aria-expanded="false"
+                                                     style="font-size: 0.85rem; background-color: #ffffff; color: #2d3748;">
+                                                 <span id="selected-events-text-user-email" class="text-truncate me-2 fw-medium">Select notify event(s)</span>
+                                             </button>
+                                             <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 p-2 mt-1 w-100" 
+                                                  aria-labelledby="notifyEventsDropdownUserEmail" 
+                                                  style="background-color: #1e2430; min-width: 250px; z-index: 1050;">
+                                                 <label class="dropdown-event-item d-flex align-items-center gap-2 px-3 py-2 rounded text-white cursor-pointer mb-1" for="user_email_event_down">
+                                                     <input class="form-check-input notify-event-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" value="down" id="user_email_event_down">
+                                                     <span class="small fw-medium event-label-text">Down events</span>
+                                                 </label>
+                                                 <label class="dropdown-event-item d-flex align-items-center gap-2 px-3 py-2 rounded text-white cursor-pointer mb-1" for="user_email_event_up">
+                                                     <input class="form-check-input notify-event-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" value="up" id="user_email_event_up">
+                                                     <span class="small fw-medium event-label-text">Up events</span>
+                                                 </label>
+                                                 <label class="dropdown-event-item d-flex align-items-center gap-2 px-3 py-2 rounded text-white cursor-pointer" for="user_email_event_ssl_domain">
+                                                     <input class="form-check-input notify-event-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" value="ssl_domain" id="user_email_event_ssl_domain">
+                                                     <span class="small fw-medium event-label-text">SSL & Domain expiry</span>
+                                                 </label>
+                                             </div>
+                                         </div>
+
+                                         <div class="form-check form-switch fs-5 mb-0">
+                                             <input class="form-check-input notification-switch" type="checkbox" role="switch" id="notif-email" checked>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <!-- SMS Row -->
+                                 <div class="d-flex justify-content-between align-items-center py-3 border-bottom flex-wrap gap-3">
+                                     <div class="flex-grow-1" style="min-width: 250px;">
+                                         <p class="mb-0 fw-semibold">
+                                             <i class="bi bi-phone-fill text-warning me-2"></i>
+                                             SMS Notifications
+                                         </p>
+                                         <small class="text-muted">Get critical server down notifications directly to your phone.</small>
+                                     </div>
+                                     <div class="d-flex align-items-center gap-3">
+                                         <!-- Dropdown for SMS -->
+                                         <div class="dropdown custom-notify-events-dropdown position-relative" style="min-width: 260px;">
+                                             <button class="btn btn-outline-secondary btn-sm w-100 d-flex justify-content-between align-items-center text-start py-2 px-3 shadow-none dropdown-toggle rounded-3 border-secondary-subtle" 
+                                                     type="button" 
+                                                     id="notifyEventsDropdownUserSms" 
+                                                     data-bs-toggle="dropdown" 
+                                                     data-bs-auto-close="outside" 
+                                                     aria-expanded="false"
+                                                     style="font-size: 0.85rem; background-color: #ffffff; color: #2d3748;">
+                                                 <span id="selected-events-text-user-sms" class="text-truncate me-2 fw-medium">Select notify event(s)</span>
+                                             </button>
+                                             <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 p-2 mt-1 w-100" 
+                                                  aria-labelledby="notifyEventsDropdownUserSms" 
+                                                  style="background-color: #1e2430; min-width: 250px; z-index: 1050;">
+                                                 <label class="dropdown-event-item d-flex align-items-center gap-2 px-3 py-2 rounded text-white cursor-pointer mb-1" for="user_sms_event_down">
+                                                     <input class="form-check-input notify-event-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" value="down" id="user_sms_event_down">
+                                                     <span class="small fw-medium event-label-text">Down events</span>
+                                                 </label>
+                                                 <label class="dropdown-event-item d-flex align-items-center gap-2 px-3 py-2 rounded text-white cursor-pointer mb-1" for="user_sms_event_up">
+                                                     <input class="form-check-input notify-event-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" value="up" id="user_sms_event_up">
+                                                     <span class="small fw-medium event-label-text">Up events</span>
+                                                 </label>
+                                                 <label class="dropdown-event-item d-flex align-items-center gap-2 px-3 py-2 rounded text-white cursor-pointer" for="user_sms_event_ssl_domain">
+                                                     <input class="form-check-input notify-event-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" value="ssl_domain" id="user_sms_event_ssl_domain">
+                                                     <span class="small fw-medium event-label-text">SSL & Domain expiry</span>
+                                                 </label>
+                                             </div>
+                                         </div>
+
+                                         <div class="form-check form-switch fs-5 mb-0">
+                                             <input class="form-check-input notification-switch" type="checkbox" role="switch" id="notif-sms">
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <div class="d-flex justify-content-between align-items-center py-3">
+                                     <div>
+                                         <p class="mb-0 fw-semibold">
+                                             <i class="bi bi-megaphone-fill text-info me-2"></i>
+                                             System Announcements
+                                         </p>
+                                         <small class="text-muted">Receive updates regarding new features and site maintenance.</small>
+                                     </div>
+                                     <div class="form-check form-switch fs-5">
+                                         <input class="form-check-input notification-switch" type="checkbox" role="switch" id="notif-announcements" checked>
+                                     </div>
+                                 </div>
+
+                                 <button class="btn btn-primary mt-4 px-4 py-2" id="save-notif-btn">Save Preferences</button>
+                             </div>
+
+                             <!-- E-mail Report Settings Card -->
+                             <div class="card settings-card mt-4">
+                                 <div class="card-header d-flex align-items-center">
+                                     <i class="bi bi-file-earmark-bar-graph fs-4 me-2 text-primary"></i>
+                                     <div>
+                                         <h5 class="mb-0 fw-bold">E-mail report settings</h5>
+                                         <small class="text-muted">Configure automated summary reports sent to your email</small>
+                                     </div>
+                                 </div>
+                                 <div class="card-body">
+                                     <div class="mb-2">
+                                         <div class="d-flex justify-content-between align-items-center py-3 flex-wrap gap-3">
+                                             <div class="flex-grow-1" style="min-width: 250px;">
+                                                 <p class="mb-0 fw-semibold">
+                                                     <i class="bi bi-envelope-check text-primary me-2"></i>
+                                                     Enable e-mail reports
+                                                 </p>
+                                                 <small class="text-muted">
+                                                     You will receive email reports on your account e-mail address.
+                                                 </small>
+                                             </div>
+                                             <div class="d-flex align-items-center gap-3">
+                                                 <!-- Dropdown for Report Frequency (Weekly / Monthly) -->
+                                                 <div class="dropdown custom-notify-events-dropdown position-relative" style="min-width: 240px;">
+                                                     <button class="btn btn-outline-secondary btn-sm w-100 d-flex justify-content-between align-items-center text-start py-2 px-3 shadow-none dropdown-toggle rounded-3 border-secondary-subtle" 
+                                                             type="button" 
+                                                             id="userReportFrequencyDropdown" 
+                                                             data-bs-toggle="dropdown" 
+                                                             data-bs-auto-close="outside" 
+                                                             aria-expanded="false"
+                                                             style="font-size: 0.85rem; background-color: #ffffff; color: #2d3748;">
+                                                         <span id="selected-user-report-text" class="text-truncate me-2 fw-medium">Select report frequency</span>
+                                                     </button>
+                                                     <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 p-2 mt-1 w-100" 
+                                                          aria-labelledby="userReportFrequencyDropdown" 
+                                                          style="background-color: #1e2430; min-width: 230px; z-index: 1050;">
+                                                         <label class="dropdown-event-item d-flex align-items-center gap-2 px-3 py-2 rounded text-white cursor-pointer mb-1" for="user_report_weekly">
+                                                             <input class="form-check-input user-report-frequency-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" value="weekly" id="user_report_weekly" checked>
+                                                             <span class="small fw-medium user-report-label-text">Weekly report</span>
+                                                         </label>
+                                                         <label class="dropdown-event-item d-flex align-items-center gap-2 px-3 py-2 rounded text-white cursor-pointer" for="user_report_monthly">
+                                                             <input class="form-check-input user-report-frequency-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" value="monthly" id="user_report_monthly">
+                                                             <span class="small fw-medium user-report-label-text">Monthly report</span>
+                                                         </label>
+                                                     </div>
+                                                 </div>
+
+                                                 <!-- Switch for E-mail Reports -->
+                                                 <div class="form-check form-switch fs-5 mb-0">
+                                                     <input class="form-check-input notification-switch" type="checkbox" role="switch" id="notif-email-report">
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
                         </div>
                     </div>
 
@@ -327,6 +451,59 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // Notify Events Dropdown update handler
+    function setupUserDropdown(dropdownId, labelId) {
+        const checkboxes = document.querySelectorAll("#" + dropdownId + " + .dropdown-menu .notify-event-checkbox");
+        const labelText = document.getElementById(labelId);
+        if (!checkboxes.length || !labelText) return;
+
+        function updateLabel() {
+            const selected = [];
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    const label = cb.closest('.form-check').querySelector('label');
+                    if (label) selected.push(label.textContent.trim());
+                }
+            });
+
+            if (selected.length === 0) {
+                labelText.textContent = "Select notify event(s)";
+            } else {
+                labelText.textContent = selected.join(", ");
+            }
+        }
+
+        checkboxes.forEach(cb => cb.addEventListener("change", updateLabel));
+        updateLabel();
+    }
+
+    function syncSwitchWithDropdown(switchId, dropdownBtnId) {
+        const switchEl = document.getElementById(switchId);
+        const dropdownBtn = document.getElementById(dropdownBtnId);
+        if (!switchEl || !dropdownBtn) return;
+
+        function toggleState() {
+            if (switchEl.checked) {
+                dropdownBtn.disabled = false;
+                dropdownBtn.classList.remove("opacity-50", "pe-none");
+            } else {
+                dropdownBtn.disabled = true;
+                dropdownBtn.classList.add("opacity-50", "pe-none");
+            }
+        }
+
+        switchEl.addEventListener("change", toggleState);
+        toggleState();
+    }
+
+    setupUserDropdown("notifyEventsDropdownUserEmail", "selected-events-text-user-email");
+    setupUserDropdown("notifyEventsDropdownUserSms", "selected-events-text-user-sms");
+    setupUserDropdown("userReportFrequencyDropdown", "selected-user-report-text");
+
+    syncSwitchWithDropdown("notif-email", "notifyEventsDropdownUserEmail");
+    syncSwitchWithDropdown("notif-sms", "notifyEventsDropdownUserSms");
+    syncSwitchWithDropdown("notif-email-report", "userReportFrequencyDropdown");
 
     // Avatar preview update helper
     const avatarInput = document.getElementById('avatar-file-input');

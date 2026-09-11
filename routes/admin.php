@@ -172,6 +172,16 @@ Route::middleware('auth')->group(function () {
                 'updateAwsSettings'
             ])->name('settings.aws');
 
+            Route::post('/settings/notifications', [
+                SettingController::class,
+                'updateNotificationSettings'
+            ])->name('settings.notifications');
+
+            Route::post('/settings/report', [
+                SettingController::class,
+                'updateReportSettings'
+            ])->name('settings.report');
+
             /*
             |--------------------------------------------------------------------------
             | Users Routes
@@ -247,6 +257,16 @@ Route::middleware('auth')->group(function () {
                 SettingController::class,
                 'index'
             ])->name('settings');
+
+            Route::post('/settings/notifications', [
+                SettingController::class,
+                'updateNotificationSettings'
+            ])->name('settings.notifications');
+
+            Route::post('/settings/report', [
+                SettingController::class,
+                'updateReportSettings'
+            ])->name('settings.report');
 
             /*
             |--------------------------------------------------------------------------

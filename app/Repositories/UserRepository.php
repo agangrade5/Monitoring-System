@@ -21,12 +21,12 @@ class UserRepository implements UserRepositoryInterface
      *
      * @return User
      */
-    public function create(array $data): User
-    {
-        unset($data['password']);
+   public function create(array $data): User
+{
+    unset($data['password']);
 
-        return User::create($data);
-    }
+    return User::create($data);
+}
 
     /**
      * Method updateUser
@@ -87,7 +87,6 @@ class UserRepository implements UserRepositoryInterface
             })
             ->latest()
             ->paginate(10);
-        return User::withoutRole('Admin')->latest()->paginate(10);
     }
 
     /**
