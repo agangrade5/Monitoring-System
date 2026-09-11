@@ -8,6 +8,12 @@
       "admin.css"
     ]
   },
+  "resources/js/backend/account-settings.js": {
+    "file": "js/backend/account-settings.js",
+    "name": "account-settings",
+    "src": "resources/js/backend/account-settings.js",
+    "isEntry": true
+  },
   "resources/js/backend/activity-logs.js": {
     "file": "js/backend/activity-logs.js",
     "name": "activity-logs",

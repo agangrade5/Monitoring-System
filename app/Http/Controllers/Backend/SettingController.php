@@ -61,18 +61,21 @@ class SettingController extends Controller
      */
     public function updateNotificationSettings(Request $request): JsonResponse
     {
-        $payload = [
-            'email' => [
-                'enabled' => (bool) $request->input('email_enabled', false),
-                'down_event' => (bool) $request->input('email_down_event', false),
-                'up_event' => (bool) $request->input('email_up_event', false),
-                'ssl_domain_expiry' => (bool) $request->input('email_ssl_domain_expiry', false),
+         $channels = config('constants.notifications.channels');
+         $keys = config('constants.notifications.keys');
+         $payload = [
+            $channels['email'] => [
+                $keys['enabled'] => (bool) $request->input('email_enabled', false),
+                $keys['down_event'] => (bool) $request->input('email_down_event', false),
+                $keys['up_event'] => (bool) $request->input('email_up_event', false),
+                $keys['ssl_domain_expiry'] => (bool) $request->input('email_ssl_domain_expiry', false),
             ],
-            'sms' => [
-                'enabled' => (bool) $request->input('sms_enabled', false),
-                'down_event' => (bool) $request->input('sms_down_event', false),
-                'up_event' => (bool) $request->input('sms_up_event', false),
-                'ssl_domain_expiry' => (bool) $request->input('sms_ssl_domain_expiry', false),
+
+            $channels['sms'] => [
+                $keys['enabled'] => (bool) $request->input('sms_enabled', false),
+                $keys['down_event'] => (bool) $request->input('sms_down_event', false),
+                $keys['up_event'] => (bool) $request->input('sms_up_event', false),
+                $keys['ssl_domain_expiry'] => (bool) $request->input('sms_ssl_domain_expiry', false),
             ],
         ];
 
@@ -104,11 +107,12 @@ class SettingController extends Controller
      */
     public function updateReportSettings(Request $request): JsonResponse
     {
+        $reportEmail = config('constants.reports.report_email');
         $payload = [
-            'report_email' => [
-                'enabled' => (bool) $request->input('report_email_enabled', false),
-                'Weekly' => (bool) $request->input('report_weekly', false),
-                'Monthly' => (bool) $request->input('report_monthly', false),
+              'report_email' => [
+                        $reportEmail['enabled'] => (bool) $request->input('report_email_enabled', false),
+                        $reportEmail['weekly'] => (bool) $request->input('report_weekly', false),
+                        $reportEmail['monthly'] => (bool) $request->input('report_monthly', false),
             ],
         ];
 

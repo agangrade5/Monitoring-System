@@ -94,5 +94,33 @@ return [
                 ],
         ],
 
-      
+        /**
+         * Notification configuration
+         */
+      'notifications' => [
+
+        'channels' => [
+            'email' => 'email',
+            'sms' => 'sms',
+        ],
+
+        'keys' => [
+            'enabled' => 'enabled',
+            'down_event' => 'down_event',
+            'up_event' => 'up_event',
+            'ssl_domain_expiry' => 'ssl_domain_expiry',
+        ],
+
+    ],
+    /**
+     * Report configuration
+     * */
+    
+     'reports' => [
+        'report_email' => [
+            'enabled' => 'enabled',
+            'weekly' => 'weekly',
+            'monthly' => 'monthly',
+        ],
+    ],
 ];

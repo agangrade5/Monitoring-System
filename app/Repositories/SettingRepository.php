@@ -4,8 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Setting;
 use App\Repositories\Contracts\SettingRepositoryInterface;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\{Crypt, Auth};
 use Illuminate\Contracts\Encryption\DecryptException;
 
 class SettingRepository implements SettingRepositoryInterface
@@ -82,26 +81,31 @@ class SettingRepository implements SettingRepositoryInterface
         }
 
         // Process User-Specific Settings (Notifications & Reports)
+        $notificationKeys = config('constants.notifications.keys');
+        $notificationChannels = config('constants.notifications.channels');
+        $reportKeys = config('constants.reports.report_email');
         $userDefaults = [
             'notifications' => [
-                'email' => [
-                    'enabled' => false,
-                    'down_event' => false,
-                    'up_event' => false,
-                    'ssl_domain_expiry' => false,
+                $notificationChannels['email'] => [
+                    $notificationKeys['enabled'] => false,
+                    $notificationKeys['down_event'] => false,
+                    $notificationKeys['up_event'] => false,
+                    $notificationKeys['ssl_domain_expiry'] => false,
                 ],
-                'sms' => [
-                    'enabled' => false,
-                    'down_event' => false,
-                    'up_event' => false,
-                    'ssl_domain_expiry' => false,
+
+                $notificationChannels['sms'] => [
+                    $notificationKeys['enabled'] => false,
+                    $notificationKeys['down_event'] => false,
+                    $notificationKeys['up_event'] => false,
+                    $notificationKeys['ssl_domain_expiry'] => false,
                 ],
             ],
+
             'report' => [
                 'report_email' => [
-                    'enabled' => false,
-                    'Weekly' => false,
-                    'Monthly' => false,
+                    $reportKeys['enabled'] => false,
+                    $reportKeys['weekly'] => false,
+                    $reportKeys['monthly'] => false,
                 ],
             ],
         ];

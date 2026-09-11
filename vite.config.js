@@ -56,6 +56,7 @@ export default defineConfig({
                 'resources/js/backend/user-login.js',
                 'resources/js/backend/verify-otp.js',
                 'resources/js/backend/notification-settings.js',
+                'resources/js/backend/account-settings.js',
             ],
             buildDirectory: 'assets',
             refresh: true,
