@@ -531,12 +531,11 @@ class LoginController extends Controller
 
             session()->forget('login_otp');
 
-            return back()
+            return redirect()
+                ->route('login')
                 ->withErrors([
-                    'otp' => 'Your account is inactive. Please contact the administrator.',
-                ])
-                ->withInput();
-
+                    'login' => 'Your account is inactive. Please contact the administrator.',
+                ]);
         }
 
         /*

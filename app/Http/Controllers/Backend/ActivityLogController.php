@@ -62,6 +62,7 @@ class ActivityLogController extends Controller
     public function show(
         int $id
     ): JsonResponse {
+
         $activity = $this->activityLogRepository->findById($id);
 
         $user = auth()->user();
