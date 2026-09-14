@@ -108,10 +108,11 @@
 </div>
 @include('backend.admin.settings.crop-profile-image-modal')
 
+
+@endsection
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/otp-settings.js')) !!}
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/twilio-settings.js')) !!}
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/email-settings.js')) !!}
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/aws-settings.js')) !!}
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/notification-settings.js')) !!}
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/account-settings.js')) !!}
-@endsection
