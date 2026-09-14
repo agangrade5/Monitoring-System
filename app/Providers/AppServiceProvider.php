@@ -24,7 +24,20 @@ class AppServiceProvider extends ServiceProvider
     ): void
     {
         Paginator::useBootstrapFive();
-        // Load mail configuration from settings table
-        $mailConfigService->apply();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Apply mail configuration from settings
+        |--------------------------------------------------------------------------
+        |
+        | Do not query the settings table while running Artisan commands.
+        | During commands like migrate:fresh, migrations may not have
+        | created the settings table yet.
+        |
+        */
+        if (! app()->runningInConsole()) {
+            $mailConfigService->apply();
+        }
     }
 }
+ 
