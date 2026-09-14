@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 use App\Models\Monitor;
+use App\Models\MonitorLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -119,6 +120,16 @@ class CheckDomainExpiryJob implements ShouldQueue
 
             if ($domainStatus === 'expired') {
                 $monitor->update(['status' => 'down', 'last_down_at' => now()]);
+
+                MonitorLog::create([
+                    'monitor_id' => $monitor->id,
+                    'status' => 'down',
+                    'reason' => 'Domain registration is expired',
+                    'http_status_code' => null,
+                    'response_time' => null,
+                    'error_message' => 'Domain registration is expired',
+                    'checked_at' => now(),
+                ]);
             }
 
         } catch (Throwable $e) {

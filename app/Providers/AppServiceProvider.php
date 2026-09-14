@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         | created the settings table yet.
         |
         */
+        
         if (! app()->runningInConsole()) {
             $mailConfigService->apply();
         }

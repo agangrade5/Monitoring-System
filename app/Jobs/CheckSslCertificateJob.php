@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Monitor;
+use App\Models\MonitorLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -155,6 +156,16 @@ class CheckSslCertificateJob implements ShouldQueue
 
         if (in_array($status, ['expired', 'invalid'])) {
             $monitor->update(['status' => 'down', 'last_down_at' => now()]);
+
+            MonitorLog::create([
+                'monitor_id' => $monitor->id,
+                'status' => 'down',
+                'reason' => 'SSL certificate is expired or invalid',
+                'http_status_code' => null,
+                'response_time' => null,
+                'error_message' => "SSL status: {$status}",
+                'checked_at' => now(),
+            ]);
         }
     }
 }

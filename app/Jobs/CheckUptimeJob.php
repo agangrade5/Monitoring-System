@@ -37,11 +37,16 @@ class CheckUptimeJob implements ShouldQueue
 
         $checkedAt = now();
         $startTime = microtime(true);
+        $requestHeaders = [
+            'User-Agent' => 'UptimeMonitor/1.0',
+            'Accept' => '*/*',
+            'Connection' => 'close',
+        ];
 
         try {
             $caBundle = $this->getCaBundlePath();
 
-            $http = Http::timeout(5);
+            $http = Http::timeout(5)->withHeaders($requestHeaders);
             if ($caBundle) {
                 $http = $http->withOptions(['verify' => $caBundle]);
             } else {
@@ -53,7 +58,7 @@ class CheckUptimeJob implements ShouldQueue
             } catch (Throwable $e) {
                 // If local PHP cURL SSL authority check fails (cURL Error 60), retry withoutVerifying to test HTTP reachability
                 if ($caBundle && str_contains(strtolower($e->getMessage()), 'curl error 60')) {
-                    $response = Http::timeout(5)->withoutVerifying()->get($monitor->url);
+                    $response = Http::timeout(5)->withHeaders($requestHeaders)->withoutVerifying()->get($monitor->url);
                 } else {
                     throw $e;
                 }
@@ -81,12 +86,12 @@ class CheckUptimeJob implements ShouldQueue
             }
 
             $isHealthy = $isHttpSuccess && !$sslExpired && !$domainExpired;
+            $responseBodyData = $this->formatResponseBody($response);
 
             if ($isHealthy) {
-                // Website is UP and healthy (Do NOT create monitor_logs entry for UP status)
+                // Website is UP and healthy (Do NOT insert into monitor_logs when UP)
                 $monitor->update([
                     'status' => 'up',
-                    'response_time' => $responseTimeMs,
                     'last_checked_at' => $checkedAt,
                     'last_up_at' => $checkedAt,
                 ]);
@@ -101,7 +106,6 @@ class CheckUptimeJob implements ShouldQueue
 
                 $monitor->update([
                     'status' => 'down',
-                    'response_time' => $responseTimeMs,
                     'last_checked_at' => $checkedAt,
                     'last_down_at' => $checkedAt,
                 ]);
@@ -113,6 +117,8 @@ class CheckUptimeJob implements ShouldQueue
                     'http_status_code' => $httpStatusCode,
                     'response_time' => $responseTimeMs,
                     'error_message' => $reason,
+                    'request_headers' => $requestHeaders,
+                    'response_body' => $responseBodyData,
                     'checked_at' => $checkedAt,
                 ]);
             }
@@ -127,7 +133,6 @@ class CheckUptimeJob implements ShouldQueue
 
             $monitor->update([
                 'status' => 'down',
-                'response_time' => $responseTimeMs,
                 'last_checked_at' => $checkedAt,
                 'last_down_at' => $checkedAt,
             ]);
@@ -139,9 +144,41 @@ class CheckUptimeJob implements ShouldQueue
                 'http_status_code' => null,
                 'response_time' => $responseTimeMs,
                 'error_message' => $e->getMessage(),
+                'request_headers' => $requestHeaders,
+                'response_body' => [
+                    'error' => $e->getMessage(),
+                    'trace' => mb_substr($e->getTraceAsString(), 0, 500),
+                ],
                 'checked_at' => $checkedAt,
             ]);
         }
+    }
+
+    /**
+     * Format response body for JSON storage.
+     */
+    private function formatResponseBody($response): array
+    {
+        $contentType = $response->header('Content-Type') ?? '';
+        $rawBody = $response->body();
+
+        if (str_contains(strtolower($contentType), 'application/json')) {
+            $json = $response->json();
+            if ($json !== null) {
+                return [
+                    'type' => 'json',
+                    'content_type' => $contentType,
+                    'data' => $json,
+                ];
+            }
+        }
+
+        return [
+            'type' => 'raw',
+            'content_type' => $contentType,
+            'size_bytes' => strlen($rawBody),
+            'preview' => mb_substr($rawBody, 0, 1000),
+        ];
     }
 
     /**
