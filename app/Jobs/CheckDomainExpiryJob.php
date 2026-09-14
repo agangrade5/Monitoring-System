@@ -68,12 +68,21 @@ class CheckDomainExpiryJob implements ShouldQueue
             $domain = $host;
         }
 
+        $startTime = microtime(true);
+        $requestHeaders = [
+            'Accept' => 'application/json',
+            'User-Agent' => 'UptimeMonitor/1.0',
+        ];
+
         try {
 
             $response = Http::timeout(5)
-                ->acceptJson()
+                ->withHeaders($requestHeaders)
                 ->withoutVerifying()
                 ->get("https://rdap.org/domain/{$domain}");
+
+            $responseTimeMs = max(1, (int) round((microtime(true) - $startTime) * 1000));
+            $httpStatusCode = $response->status();
 
             if (!$response->successful()) {
                 $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
@@ -85,7 +94,7 @@ class CheckDomainExpiryJob implements ShouldQueue
                 return;
             }
 
-            $data = $response->json();
+            $data = $response->json() ?? [];
 
             $expiryDate = $this->getExpiryDate($data);
             $registrar = $this->getRegistrar($data);
@@ -117,17 +126,24 @@ class CheckDomainExpiryJob implements ShouldQueue
                 'domain_status' => $domainStatus,
                 'domain_checked_at' => now(),
             ]);
-
             if ($domainStatus === 'expired') {
                 $monitor->update(['status' => 'down', 'last_down_at' => now()]);
 
                 MonitorLog::create([
                     'monitor_id' => $monitor->id,
                     'status' => 'down',
-                    'reason' => 'Domain registration is expired',
-                    'http_status_code' => null,
-                    'response_time' => null,
-                    'error_message' => 'Domain registration is expired',
+                    'reason' => "Domain registration expired on {$expiry->format('Y-m-d')}",
+                    'http_status_code' => $httpStatusCode,
+                    'response_time' => $responseTimeMs,
+                    'error_message' => "Domain {$domain} is expired with registrar: " . ($registrar ?? 'Unknown'),
+                    'request_headers' => array_merge($requestHeaders, ['target_url' => "https://rdap.org/domain/{$domain}"]),
+                    'response_body' => [
+                        'domain' => $domain,
+                        'expiry_date' => $expiryDate,
+                        'days_remaining' => $daysRemaining,
+                        'registrar' => $registrar,
+                        'status' => $data['status'] ?? [],
+                    ],
                     'checked_at' => now(),
                 ]);
             }
