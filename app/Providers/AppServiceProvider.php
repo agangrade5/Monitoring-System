@@ -5,8 +5,6 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use App\Services\MailConfigService;
-use Illuminate\Support\Facades\Schema;
-
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,12 +24,20 @@ class AppServiceProvider extends ServiceProvider
     ): void
     {
         Paginator::useBootstrapFive();
-       // Settings table may not exist during migrations.
-        if (!Schema::hasTable('settings')) {
-            return;
-        }
 
-        // Load mail configuration from settings table
-        $mailConfigService->apply();
+        /*
+        |--------------------------------------------------------------------------
+        | Apply mail configuration from settings
+        |--------------------------------------------------------------------------
+        |
+        | Do not query the settings table while running Artisan commands.
+        | During commands like migrate:fresh, migrations may not have
+        | created the settings table yet.
+        |
+        */
+        if (! app()->runningInConsole()) {
+            $mailConfigService->apply();
+        }
     }
 }
+ 
