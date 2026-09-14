@@ -106,7 +106,7 @@ class CheckSslCertificateJob implements ShouldQueue
                 'http_status_code' => null,
                 'response_time' => $responseTimeMs,
                 'error_message' => $errstr ?: 'Unable to connect to port 443 with SSL',
-                'request_headers' => ['host' => $host, 'port' => 443],
+                'request_body' => ['host' => $host, 'port' => 443],
                 'response_body' => ['error_code' => $errno, 'error_message' => $errstr],
                 'checked_at' => now(),
             ]);
@@ -135,7 +135,7 @@ class CheckSslCertificateJob implements ShouldQueue
                 'http_status_code' => null,
                 'response_time' => $responseTimeMs,
                 'error_message' => 'No peer certificate returned by server',
-                'request_headers' => ['host' => $host, 'port' => 443],
+                'request_body' => ['host' => $host, 'port' => 443],
                 'response_body' => ['error' => 'No peer certificate returned by server'],
                 'checked_at' => now(),
             ]);
@@ -162,7 +162,7 @@ class CheckSslCertificateJob implements ShouldQueue
                 'http_status_code' => null,
                 'response_time' => $responseTimeMs,
                 'error_message' => 'X.509 certificate parse failure',
-                'request_headers' => ['host' => $host, 'port' => 443],
+                'request_body' => ['host' => $host, 'port' => 443],
                 'response_body' => ['error' => 'X.509 certificate parse failure'],
                 'checked_at' => now(),
             ]);
@@ -204,7 +204,7 @@ class CheckSslCertificateJob implements ShouldQueue
                 'http_status_code' => null,
                 'response_time' => $responseTimeMs,
                 'error_message' => "SSL certificate expired on " . ($expiresAt ? $expiresAt->format('Y-m-d') : 'Unknown') . " (Days remaining: {$daysRemaining})" . (!$isCaValid && $curlError ? " | cURL Error: {$curlError}" : ''),
-                'request_headers' => ['host' => $host, 'port' => 443],
+                'request_body' => ['host' => $host, 'port' => 443],
                 'response_body' => [
                     'ssl_status' => $status,
                     'issuer' => $issuer,

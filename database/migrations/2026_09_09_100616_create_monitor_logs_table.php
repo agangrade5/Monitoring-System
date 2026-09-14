@@ -21,7 +21,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('http_status_code')->nullable();
             $table->unsignedInteger('response_time')->nullable();
             $table->text('error_message')->nullable();
-            $table->json('request_headers')->nullable();
+            $table->json('request_body')->nullable();
             $table->json('response_body')->nullable();
             $table->timestamp('checked_at');
             $table->timestamps();

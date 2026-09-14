@@ -14,14 +14,14 @@ class MonitorLog extends Model
         'http_status_code',
         'response_time',
         'error_message',
-        'request_headers',
+        'request_body',
         'response_body',
         'checked_at',
     ];
 
     protected $casts = [
         'checked_at' => 'datetime',
-        'request_headers' => 'array',
+        'request_body' => 'array',
         'response_body' => 'array',
     ];
 

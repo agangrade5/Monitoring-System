@@ -117,7 +117,11 @@ class CheckUptimeJob implements ShouldQueue
                     'http_status_code' => $httpStatusCode,
                     'response_time' => $responseTimeMs,
                     'error_message' => $reason,
-                    'request_headers' => $requestHeaders,
+                    'request_body' => [
+                        'method' => 'GET',
+                        'url' => $monitor->url,
+                        'headers' => $requestHeaders,
+                    ],
                     'response_body' => $responseBodyData,
                     'checked_at' => $checkedAt,
                 ]);
@@ -144,7 +148,11 @@ class CheckUptimeJob implements ShouldQueue
                 'http_status_code' => null,
                 'response_time' => $responseTimeMs,
                 'error_message' => $e->getMessage(),
-                'request_headers' => $requestHeaders,
+                'request_body' => [
+                    'method' => 'GET',
+                    'url' => $monitor->url,
+                    'headers' => $requestHeaders,
+                ],
                 'response_body' => [
                     'error' => $e->getMessage(),
                     'trace' => mb_substr($e->getTraceAsString(), 0, 500),

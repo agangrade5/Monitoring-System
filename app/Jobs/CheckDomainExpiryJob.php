@@ -136,7 +136,7 @@ class CheckDomainExpiryJob implements ShouldQueue
                     'http_status_code' => $httpStatusCode,
                     'response_time' => $responseTimeMs,
                     'error_message' => "Domain {$domain} is expired with registrar: " . ($registrar ?? 'Unknown'),
-                    'request_headers' => array_merge($requestHeaders, ['target_url' => "https://rdap.org/domain/{$domain}"]),
+                    'request_body' => array_merge($requestHeaders, ['target_url' => "https://rdap.org/domain/{$domain}"]),
                     'response_body' => [
                         'domain' => $domain,
                         'expiry_date' => $expiryDate,
