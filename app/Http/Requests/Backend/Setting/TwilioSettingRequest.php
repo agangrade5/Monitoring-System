@@ -22,9 +22,9 @@ class TwilioSettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'twilio_account_sid' => ['required_if:enable_twilio,1', 'nullable', 'string', 'max:255'],
-            'twilio_auth_token' => ['required_if:enable_twilio,1', 'nullable', 'string', 'max:255'],
-            'twilio_from_number' => ['required_if:enable_twilio,1', 'nullable', 'string', 'max:50'],
+            'twilio_account_sid' => ['required', 'string', 'max:255'],
+            'twilio_auth_token' => ['required', 'string', 'max:255'],
+            'twilio_from_number' => ['required', 'string', 'max:50'],
         ];
     }
 

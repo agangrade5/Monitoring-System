@@ -4,55 +4,59 @@ namespace App\Repositories\Contracts;
 
 interface SettingRepositoryInterface
 {
-
     /**
      * Get all system settings formatted in array keyed by type.
      * 
+     * @param ?int $userId
      * @return array
      */
-    public function getAllSettingsFormatted(): array;
+    public function getAllSettingsFormatted(?int $userId = null): array;
 
     /**
      * Get setting record by type.
      * 
      * @param string $type
+     * @param ?int $userId
      * @return mixed
      */
-    public function getSettingByType(string $type);
+    public function getSettingByType(string $type, ?int $userId = null);
 
     /**
      * Get setting array value by type with fallback defaults.
      * 
      * @param string $type
      * @param array $defaults
+     * @param ?int $userId
      * @return array
      */
-    public function getSettingArray(string $type, array $defaults = []): array;
+    public function getSettingArray(string $type, array $defaults = [], ?int $userId = null): array;
 
     /**
-     * Save/Update setting by type.
+     * Save/Update setting by type and user_id.
+     * If setting does not exist for this user_id and type, it inserts; if it exists, it updates.
      * 
      * @param string $type
      * @param array $data
+     * @param ?int $userId
      * @return mixed
      */
-    public function saveSetting(string $type, array $data);
+    public function saveSetting(string $type, array $data, ?int $userId = null);
 
     /**
      * Method updateNotification
      * 
      * @param string $setting
      * @param bool $value
-     * 
+     * @param ?int $userId
      */
-    public function updateNotification(string $setting, bool $value);
+    public function updateNotification(string $setting, bool $value, ?int $userId = null);
 
     /**
      * Method updateSettings
      * 
      * @param array $data
+     * @param ?int $userId
      * @return mixed
      */
-    public function updateSettings(array $data);
+    public function updateSettings(array $data, ?int $userId = null);
 }
-

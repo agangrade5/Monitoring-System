@@ -1106,3 +1106,25 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
 .country-option:hover {
     background-color: #f8f9fa;
 }
+
+.dropdown-event-item {
+    transition: background-color 0.15s ease-in-out;
+    user-select: none;
+}
+.dropdown-event-item:hover {
+    background-color: #2b3548;
+}
+.custom-notify-events-dropdown .dropdown-toggle::after {
+    margin-left: auto;
+    vertical-align: middle;
+}
+.custom-notify-events-dropdown .form-check-input {
+    width: 1.1em;
+    height: 1.1em;
+    border-color: #4a5568;
+    background-color: #2d3748;
+}
+.custom-notify-events-dropdown .form-check-input:checked {
+    background-color: #3182ce;
+    border-color: #3182ce;
+}

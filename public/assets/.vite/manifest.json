@@ -8,6 +8,12 @@
       "admin.css"
     ]
   },
+  "resources/js/backend/account-settings.js": {
+    "file": "js/backend/account-settings.js",
+    "name": "account-settings",
+    "src": "resources/js/backend/account-settings.js",
+    "isEntry": true
+  },
   "resources/js/backend/activity-logs.js": {
     "file": "js/backend/activity-logs.js",
     "name": "activity-logs",
@@ -54,6 +60,12 @@
     "file": "js/backend/monitor.js",
     "name": "monitor",
     "src": "resources/js/backend/monitor.js",
+    "isEntry": true
+  },
+  "resources/js/backend/notification-settings.js": {
+    "file": "js/backend/notification-settings.js",
+    "name": "notification-settings",
+    "src": "resources/js/backend/notification-settings.js",
     "isEntry": true
   },
   "resources/js/backend/otp-settings.js": {

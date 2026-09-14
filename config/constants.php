@@ -48,6 +48,7 @@ return [
             'is_default' => true, // true=Fixed OTP or false=Dynamic OTP
             'default' => '999999',
         ],
+       
     ],
 
         /**
@@ -93,5 +94,34 @@ return [
                 ],
         ],
 
-      
+    
+
+     /**
+      * User settings configuration
+      */
+
+    'user_defaults' => [
+        'notifications' => [
+            'email' => [
+                'enabled' => false,
+                'down_event' => false,
+                'up_event' => false,
+                'ssl_domain_expiry' => false,
+            ],
+            'sms' => [
+                'enabled' => false,
+                'down_event' => false,
+                'up_event' => false,
+                'ssl_domain_expiry' => false,
+            ],
+        ],
+
+        'report' => [
+            'report_email' => [
+                'enabled' => false,
+                'weekly' => false,
+                'monthly' => false,
+            ],
+        ],
+    ],
 ];

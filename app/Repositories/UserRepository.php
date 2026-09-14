@@ -21,12 +21,12 @@ class UserRepository implements UserRepositoryInterface
      *
      * @return User
      */
-    public function create(array $data): User
-    {
-        unset($data['password']);
+   public function create(array $data): User
+{
+    unset($data['password']);
 
-        return User::create($data);
-    }
+    return User::create($data);
+}
 
     /**
      * Method updateUser

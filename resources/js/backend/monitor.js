@@ -32,11 +32,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = this.querySelector('.trigger-btn');
             const iconIdle = this.querySelector('.icon-idle');
             const iconSpin = this.querySelector('.icon-spin');
+            const row = this.closest('tr');
+            const preparingBadge = row ? row.querySelector('.monitor-preparing-badge') : null;
+            const checkingBadges = row ? row.querySelectorAll('.status-checking-badge') : [];
+            const statusContents = row ? row.querySelectorAll('.status-content') : [];
 
             // Hide icon, show spinner, disable button
             if (iconIdle) iconIdle.classList.add('d-none');
             if (iconSpin) iconSpin.classList.remove('d-none');
             if (btn) btn.disabled = true;
+
+            // Show "HTTP Preparing..." badge and column checking badges in the row
+            if (preparingBadge) {
+                preparingBadge.classList.remove('d-none');
+            }
+            checkingBadges.forEach(badge => badge.classList.remove('d-none'));
+            statusContents.forEach(content => content.classList.add('d-none'));
 
             fetch(this.action, {
                 method: 'POST',
@@ -65,6 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (iconIdle) iconIdle.classList.remove('d-none');
                     if (iconSpin) iconSpin.classList.add('d-none');
                     if (btn) btn.disabled = false;
+                    if (preparingBadge) preparingBadge.classList.add('d-none');
+                    checkingBadges.forEach(badge => badge.classList.add('d-none'));
+                    statusContents.forEach(content => content.classList.remove('d-none'));
                 }
             })
             .catch(() => {
@@ -74,6 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (iconIdle) iconIdle.classList.remove('d-none');
                 if (iconSpin) iconSpin.classList.add('d-none');
                 if (btn) btn.disabled = false;
+                if (preparingBadge) preparingBadge.classList.add('d-none');
+                checkingBadges.forEach(badge => badge.classList.add('d-none'));
+                statusContents.forEach(content => content.classList.remove('d-none'));
             });
         });
     });
