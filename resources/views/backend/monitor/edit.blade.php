@@ -1,7 +1,9 @@
 @extends('layouts.backend.app')
 @section('title', 'Edit Monitor Website & Monitor')
 @section('content')
-
+@php
+    $isAdmin = auth()->user()->hasRole('admin');
+ @endphp
 <!--begin::App Content Header-->
 <div class="app-content-header py-3">
     <div class="container-fluid">
@@ -13,7 +15,7 @@
             <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb float-sm-end mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('monitor') }}">Monitor Websites & Domains</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('monitor.index') }}">Monitor Websites & Domains</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Edit Monitor</li>
                     </ol>
                 </nav>
@@ -27,9 +29,9 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <form action="{{ route('monitor.update', $monitor->id) }}" method="POST">
+                <form action="{{ $isAdmin ? route('admin.monitor.update', $monitor->id) : route('monitor.update', $monitor->id) }}" method="POST">
                     @csrf
-                    
+
                     {{-- 1. Website & Server Information --}}
                     <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-header border-bottom py-3">
@@ -179,9 +181,9 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="d-flex justify-content-end gap-3 mb-5">
-                        <a href="{{ route('monitor') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <a href="{{ $isAdmin ? route('admin.monitor.index') : route('monitor.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
                         <button type="submit" class="btn btn-warning text-white px-5 fw-semibold shadow-sm">Save Changes</button>
                     </div>
                 </form>

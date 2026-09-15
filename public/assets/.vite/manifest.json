@@ -50,6 +50,12 @@
     "src": "resources/js/backend/email-settings.js",
     "isEntry": true
   },
+  "resources/js/backend/google2fa-settings.js": {
+    "file": "js/backend/google2fa-settings.js",
+    "name": "google2fa-settings",
+    "src": "resources/js/backend/google2fa-settings.js",
+    "isEntry": true
+  },
   "resources/js/backend/image-cropper.js": {
     "file": "js/backend/image-cropper.js",
     "name": "image-cropper",

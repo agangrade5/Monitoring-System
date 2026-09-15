@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Backend\Auth\{
     LoginController,
+    TwoFactorController,
     RegisterController,
     ForgotPasswordController
 };
@@ -13,6 +14,208 @@ use App\Http\Controllers\Backend\{
     MonitorController
 };
 use Illuminate\Support\Facades\Route;
+
+
+/*
+|--------------------------------------------------------------------------
+| Shared Route Closures (Reusable for Admin and User)
+|--------------------------------------------------------------------------
+| These route closures are defined only once and reused for both
+| Admin and User route groups.
+|
+| When used inside the Admin group, the URL will be:
+| /admin/monitor
+| because the parent group already has the 'admin' prefix.
+|
+| When used inside the User group, the URL will be:
+| /monitor
+| because the User group does not have a URL prefix.
+|--------------------------------------------------------------------------
+*/
+$monitorRoutes = function () {
+    Route::prefix('monitor')
+        ->name('monitor.')
+        ->group(function () {
+
+            Route::get('/', [
+                MonitorController::class,
+                'index',
+            ])->name('index');
+
+            Route::get('/create', [
+                MonitorController::class,
+                'create',
+            ])->name('create');
+
+            Route::post('/store', [
+                MonitorController::class,
+                'store',
+            ])->name('store');
+
+            Route::get('/{id}', [
+                MonitorController::class,
+                'show',
+            ])->name('show');
+
+            Route::get('/{id}/edit', [
+                MonitorController::class,
+                'edit',
+            ])->name('edit');
+
+            Route::post('/{id}/update', [
+                MonitorController::class,
+                'update',
+            ])->name('update');
+
+            Route::delete('/{id}', [
+                MonitorController::class,
+                'destroy',
+            ])->name('destroy');
+
+            Route::patch('/{id}/toggle', [
+                MonitorController::class,
+                'toggleActive',
+            ])->name('toggle');
+
+            Route::post('/{id}/check', [
+                MonitorController::class,
+                'triggerCheck',
+            ])->name('check');
+
+            Route::post('/{id}/test-notification', [
+                MonitorController::class,
+                'sendTestNotification',
+            ])->name('testNotification');
+
+        });
+};
+
+/*
+|--------------------------------------------------------------------------
+| Shared Route Closures (Reusable for Admin and User)
+|--------------------------------------------------------------------------
+| These route closures are defined only once and reused for both
+| Admin and User route groups.
+|
+| When used inside the Admin group, the URL will be:
+| /admin/settings
+| because the parent group already has the 'admin' prefix.
+|
+| When used inside the User group, the URL will be:
+| /settings
+| because the User group does not have a URL prefix.
+|--------------------------------------------------------------------------
+*/
+$settingsRoutes = function (bool $isAdmin = false) {
+    Route::prefix('settings')
+        ->name('settings.')
+        ->group(function () use ($isAdmin) {
+
+            // Common routes - Admin + User dono
+            Route::get('/', [
+                SettingController::class,
+                'index'
+            ])->name('index');
+
+            Route::post('/notifications', [
+                SettingController::class,
+                'updateNotificationSettings'
+            ])->name('notifications');
+
+            Route::post('/report', [
+                SettingController::class,
+                'updateReportSettings'
+            ])->name('report');
+
+            // Admin-only routes
+            if ($isAdmin) {
+                Route::post('/otp', [
+                    SettingController::class,
+                    'updateOtpSettings'
+                ])->name('otp');
+
+                Route::post('/twilio', [
+                    SettingController::class,
+                    'updateTwilioSettings'
+                ])->name('twilio');
+
+                Route::post('/email', [
+                    SettingController::class,
+                    'updateEmailSettings'
+                ])->name('email');
+
+                Route::post('/aws', [
+                    SettingController::class,
+                    'updateAwsSettings'
+                ])->name('aws');
+
+                // 2FA Routes
+                Route::prefix('two-fa')->name('twoFa.')->group(function () {
+                    Route::get('/setup', [
+                        SettingController::class,
+                        'twoFaSetup'
+                    ])->name('setup');
+
+                    Route::post('/enable', [
+                        SettingController::class,
+                        'twoFaEnable'
+                    ])->name('enable');
+
+                    Route::post('/disable', [
+                        SettingController::class,
+                        'twoFaDisable'
+                    ])->name('disable');
+                });
+            }
+
+        });
+};
+
+/*
+|--------------------------------------------------------------------------
+| Shared Route Closures (Reusable for Admin and User)
+|--------------------------------------------------------------------------
+| These route closures are defined only once and reused for both
+| Admin and User route groups.
+|
+| When used inside the Admin group, the URL will be:
+| /admin/activity-logs
+| because the parent group already has the 'admin' prefix.
+|
+| When used inside the User group, the URL will be:
+| /activity-logs
+| because the User group does not have a URL prefix.
+|--------------------------------------------------------------------------
+*/
+$activityLogRoutes = function (string $indexPermission) {
+    Route::prefix('activity-logs')
+        ->name('activity-logs.')
+        ->group(function () use ($indexPermission) {
+
+            Route::middleware("permission:{$indexPermission}")
+                ->get('/', [
+                    ActivityLogController::class,
+                    'index',
+                ])
+                ->name('index');
+
+            Route::middleware('permission:activity-logs.view')
+                ->get('/{id}', [
+                    ActivityLogController::class,
+                    'show',
+                ])
+                ->name('show');
+
+            Route::middleware([
+                'permission:activity-logs.delete',
+                'role:admin',
+            ])->delete('/{id}', [
+                ActivityLogController::class,
+                'destroy',
+            ])->name('destroy');
+
+        });
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +241,20 @@ Route::prefix('admin')
                 LoginController::class,
                 'login',
             ])->name('login.submit');
+
+            /*
+            |--------------------------------------------------------------------------
+            | 2FA Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::get('twoFa-show', [
+                TwoFactorController::class,
+                'twoFaShow'
+            ])->name('twoFa.show');
+            Route::post('twoFa-verify', [
+                TwoFactorController::class,
+                'twoFaVerify'
+            ])->name('twoFa.verify');
 
             /*
             |--------------------------------------------------------------------------
@@ -87,33 +304,35 @@ Route::prefix('admin')
 */
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
-        return redirect()->route('login');
+        return redirect()->route('login.index');
     });
 
-    Route::get('/login', [
-        LoginController::class,
-        'userLogin',
-    ])->name('login');
+    Route::prefix('login')->name('login.')->group(function () {
+        Route::get('/', [
+            LoginController::class,
+            'userLogin',
+        ])->name('index');
 
-    Route::post('/login/send-otp', [
-        LoginController::class,
-        'sendOtp',
-    ])->name('login.send-otp');
+        Route::post('/send-otp', [
+            LoginController::class,
+            'sendOtp',
+        ])->name('send-otp');
 
-    Route::get('/login/verify-otp', [
-        LoginController::class,
-        'showVerifyOtp',
-    ])->name('login.verify');
+        Route::get('/verify-otp', [
+            LoginController::class,
+            'showVerifyOtp',
+        ])->name('verify');
 
-    Route::post('/login/verify-otp', [
-        LoginController::class,
-        'verifyOtp',
-    ])->name('login.verify.submit');
+        Route::post('/verify-otp', [
+            LoginController::class,
+            'verifyOtp',
+        ])->name('verify.submit');
 
-    Route::post('/login/resend-otp', [
-        LoginController::class,
-        'resendOtp',
-    ])->name('login.resend-otp');
+        Route::post('/resend-otp', [
+            LoginController::class,
+            'resendOtp',
+        ])->name('resend-otp');
+    });
 });
 
 /*
@@ -122,7 +341,7 @@ Route::middleware('guest')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function () use ($monitorRoutes, $activityLogRoutes, $settingsRoutes) {
     /*
     |--------------------------------------------------------------------------
     | Admin Routes
@@ -131,7 +350,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin')
         ->prefix('admin')
         ->name('admin.')
-        ->group(function () {
+        ->group(function () use ($monitorRoutes, $activityLogRoutes, $settingsRoutes) {
             /*
             |--------------------------------------------------------------------------
             | Dashboard Routes
@@ -144,100 +363,67 @@ Route::middleware('auth')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Settings Routes
-            |--------------------------------------------------------------------------
-            */
-            Route::get('/settings', [
-                SettingController::class,
-                'index'
-            ])->name('settings');
-
-            Route::post('/settings/otp', [
-                SettingController::class,
-                'updateOtpSettings'
-            ])->name('settings.otp');
-
-            Route::post('/settings/twilio', [
-                SettingController::class,
-                'updateTwilioSettings'
-            ])->name('settings.twilio');
-
-            Route::post('/settings/email', [
-                SettingController::class,
-                'updateEmailSettings'
-            ])->name('settings.email');
-
-            Route::post('/settings/aws', [
-                SettingController::class,
-                'updateAwsSettings'
-            ])->name('settings.aws');
-
-            Route::post('/settings/notifications', [
-                SettingController::class,
-                'updateNotificationSettings'
-            ])->name('settings.notifications');
-
-            Route::post('/settings/report', [
-                SettingController::class,
-                'updateReportSettings'
-            ])->name('settings.report');
-
-            /*
-            |--------------------------------------------------------------------------
             | Users Routes
             |--------------------------------------------------------------------------
             */
-            Route::get('/users', [
-                UserController::class,
-                'allUsers',
-            ])->name('users.index');
+            Route::prefix('users')->name('users.')->group(function () {
 
-            Route::post('/users', [
-                UserController::class,
-                'storeUser',
-            ])->name('users.store');
+                Route::get('/', [
+                    UserController::class,
+                    'allUsers',
+                ])->name('index');
 
-            Route::get('/users/{id}/edit', [
-                UserController::class,
-                'editUser',
-            ])->name('users.edit');
+                Route::post('/', [
+                    UserController::class,
+                    'storeUser',
+                ])->name('store');
 
-            Route::post('/users/update/{id}', [
-                UserController::class,
-                'updateUser',
-            ])->name('users.update');
+                Route::get('/{id}/edit', [
+                    UserController::class,
+                    'editUser',
+                ])->name('edit');
 
-            Route::delete('/users/{id}', [
-                UserController::class,
-                'destroyUser',
-            ])->name('users.destroy');
+                Route::post('/update/{id}', [
+                    UserController::class,
+                    'updateUser',
+                ])->name('update');
+
+                Route::delete('/{id}', [
+                    UserController::class,
+                    'destroyUser',
+                ])->name('destroy');
+
+            });
 
             /*
             |--------------------------------------------------------------------------
-            | Activity Logs
+            | Settings Routes -> Common + Admin-only (otp, twilio, email, aws, two-fa)
             |--------------------------------------------------------------------------
             */
-            Route::middleware('permission:activity-logs.view-all')
-                ->get('/activity-logs', [ActivityLogController::class, 'index'])
-                ->name('activity-logs.index');
+            $settingsRoutes(true);
 
-            Route::middleware('permission:activity-logs.view')
-                ->get('/activity-logs/{id}', [ActivityLogController::class, 'show'])
-                ->name('activity-logs.show');
+            /*
+            |--------------------------------------------------------------------------
+            | Monitors Routes -> URL: /admin/monitor
+            |--------------------------------------------------------------------------
+            */
+            $monitorRoutes();
 
-            Route::middleware(['permission:activity-logs.delete', 'role:admin'])
-                ->delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy'])
-                ->name('activity-logs.destroy');
-
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Logs -> URL: /admin/activity-logs
+            |--------------------------------------------------------------------------
+            */
+            $activityLogRoutes('activity-logs.view-all');
         });
 
     /*
     |--------------------------------------------------------------------------
-    | Common Routes - Admin + User
+    | User Routes
     |--------------------------------------------------------------------------
     */
-    Route::middleware('role:user|admin')
-        ->group(function () {
+    Route::middleware('role:user')
+        ->group(function () use ($monitorRoutes, $activityLogRoutes, $settingsRoutes) {
             /*
             |--------------------------------------------------------------------------
             | Dashboard Routes
@@ -250,105 +436,24 @@ Route::middleware('auth')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Settings Routes
+            | Settings Routes -> Common only (index, notifications, report)
             |--------------------------------------------------------------------------
             */
-            Route::get('/settings', [
-                SettingController::class,
-                'index'
-            ])->name('settings');
-
-            Route::post('/settings/notifications', [
-                SettingController::class,
-                'updateNotificationSettings'
-            ])->name('settings.notifications');
-
-            Route::post('/settings/report', [
-                SettingController::class,
-                'updateReportSettings'
-            ])->name('settings.report');
+            $settingsRoutes();
 
             /*
             |--------------------------------------------------------------------------
-            | Users Routes
+            | Monitors Routes -> URL: /monitor
             |--------------------------------------------------------------------------
             */
-            Route::get('/users', function () {
-                return 'Users';
-            })->name('users');
+            $monitorRoutes();
 
             /*
             |--------------------------------------------------------------------------
-            | Monitors Routes
+            | Activity Logs -> URL: /activity-logs
             |--------------------------------------------------------------------------
             */
-            Route::get('/monitor', [
-                MonitorController::class,
-                'index'
-            ])->name('monitor');
-
-            Route::get('/monitor/create', [
-                MonitorController::class,
-                'create'
-            ])->name('monitor.create');
-
-            Route::get('/monitor/{id}', [
-                MonitorController::class,
-                'show'
-            ])->name('monitor.show');
-
-            Route::post('/monitor/store', [
-                MonitorController::class,
-                'store'
-            ])->name('monitor.store');
-
-            Route::get('/monitor/{id}/edit', [
-                MonitorController::class,
-                'edit'
-            ])->name('monitor.edit');
-
-            Route::post('/monitor/{id}/update', [
-                MonitorController::class,
-                'update'
-            ])->name('monitor.update');
-
-            Route::delete('/monitor/{id}', [
-                MonitorController::class,
-                'destroy'
-            ])->name('monitor.destroy');
-            Route::patch('/monitor/{id}/toggle', [
-                MonitorController::class,
-                'toggleActive'
-            ])->name('monitor.toggle');
-
-            Route::post('/monitor/{id}/check', [
-                MonitorController::class,
-                'triggerCheck'
-            ])->name('monitor.check');
-
-            Route::post('/monitor/{id}/test-notification', [
-                MonitorController::class,
-                'sendTestNotification'
-            ])->name('monitor.testNotification');
-
-            /*
-            |--------------------------------------------------------------------------
-            | Activity Logs
-            |--------------------------------------------------------------------------
-            */
-            Route::middleware('permission:activity-logs.view')
-                ->get('/activity-logs', [ActivityLogController::class, 'index'])
-                ->name('activity-logs.index');
-
-            Route::middleware('permission:activity-logs.view')
-                ->get('/activity-logs/{id}', [ActivityLogController::class, 'show'])
-                ->name('activity-logs.show');
-
-            Route::middleware([
-                'permission:activity-logs.delete',
-                'role:admin'
-            ])->delete('/activity-logs/{id}', [ActivityLogController::class,'destroy'])
-                ->name('activity-logs.destroy');
+            $activityLogRoutes('activity-logs.view');
         });
 
     /*

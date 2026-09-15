@@ -1,12 +1,15 @@
 @extends('layouts.backend.app')
 @section('title', $title)
 @section('content')
+@php
+    $isAdmin = auth()->user()->hasRole('admin');
+ @endphp
 <!--begin::App Content Header-->
 <div class="app-content-header py-3">
     <div class="container-fluid">
         {{-- Back Navigation Link --}}
         <div class="mb-2">
-            <a href="{{ route('monitor') }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-1">
+            <a href="{{ route('monitor.index') }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-1">
                 <i class="bi bi-chevron-left me-1"></i> Monitoring
             </a>
         </div>
@@ -43,7 +46,7 @@
                     <i class="bi bi-bell"></i> <span>Test Notification</span>
                 </button>
 
-               
+
 
                 {{-- Pause/Resume Toggle --}}
                 <!-- <form action="{{ route('monitor.toggle', $monitor->id) }}" method="POST" class="d-inline">
@@ -64,7 +67,7 @@
                 </a>
 
                 {{-- Delete --}}
-                
+
             </div>
         </div>
     </div>
@@ -210,7 +213,7 @@
                             <div class="fw-bold fs-5 {{ ($monitor->checkResult?->ssl_status === 'valid') ? 'text-success' : 'text-danger' }}">
                                 {{ $monitor->checkResult?->ssl_days_remaining ?? 0 }} days
                             </div>
-                            
+
                             <div class="text-muted" style="font-size: 0.75rem;">{{ ucfirst($monitor->checkResult?->ssl_status ?? 'Valid') }}</div>
                         @endif
                     </div>
@@ -533,7 +536,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h6 class="fw-bold mb-0 text-body-emphasis">PHP Engine</h6>
                             <i class="bi bi-filetype-php text-info fs-5"></i>
-                            
+
                         </div>
                     </div>
                     <div class="card-body px-4 py-3">
@@ -591,7 +594,7 @@
             </div>
 
             <div class="modal-body px-4 pt-3 pb-4">
-                <form id="formSendTestNotification" action="{{ route('monitor.testNotification', $monitor->id) }}" method="POST"  class="needs-validation" novalidate>
+                <form id="formSendTestNotification" action=" {{ $isAdmin ? route('admin.monitor.testNotification', $monitor->id) : route('monitor.testNotification', $monitor->id) }}" method="POST"  class="needs-validation" novalidate>
                     @csrf
 
                     {{-- Attached people and integrations section --}}
@@ -618,14 +621,14 @@
                     {{-- Alert contact note --}}
                     <div class="mb-4">
                         <p class="small text-muted mb-1" style="font-size: 0.825rem;">
-                            Can't see your alert contact here? 
-                            <a href="{{ route('monitor.edit', $monitor->id) }}" class="text-success text-decoration-none fw-semibold">Attach it here</a>
+                            Can't see your alert contact here?
+                            <a href="{{ $isAdmin ? route('admin.monitor.edit',$monitor->id') : route('monitor.store',$monitor->id) }}" class="text-success text-decoration-none fw-semibold">Attach it here</a>
                         </p>
-                      
+
                     </div>
 
-                   
-                   
+
+
 
                     {{-- Submit button --}}
                     <button type="submit" class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2 fw-semibold rounded-3" id="btnSubmitTestNotification">

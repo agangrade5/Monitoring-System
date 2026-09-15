@@ -2,7 +2,9 @@
 @section('title', 'Monitor Websites & Domains')
 @section('content')
 
-
+ @php
+    $isAdmin = auth()->user()->hasRole('admin');
+ @endphp
 <!--begin::App Content Header-->
 <div class="app-content-header">
     <div class="container-fluid">
@@ -31,10 +33,10 @@
             <div class="card-header border-bottom py-3 d-flex flex-wrap gap-2 align-items-center">
                 <div class="me-auto">
                     <h5 class="card-title fw-bold mb-0">Monitor Websites & Domains
-</h5> 
+</h5>
                 </div>
 
-                <form action="{{ route('monitor') }}" method="GET" class="settings-search-wrapper w-auto me-1">
+                <form action="{{ $isAdmin ? route('admin.monitor.index') : route('monitor.index') }}" method="GET" class="settings-search-wrapper w-auto me-1">
                     <i class="bi bi-search"></i>
                     <input
                         type="search"
@@ -47,8 +49,8 @@
                         style="width: 14rem;"
                     >
                 </form>
-
-                <a href="{{ route('monitor.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                       
+                    <a href="{{ $isAdmin ? route('admin.monitor.create') : route('monitor.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
                     <i class="bi bi-plus-lg"></i>Add Website
                 </a>
             </div>
@@ -73,14 +75,14 @@
                             @forelse($monitors as $monitor)
                                 <tr id="monitor-row-{{ $monitor->id }}">
 
-                                  
+
                                             <!-- Serial Number -->
                                             <td class="ps-4">
                                                 {{ $loop->iteration }}
                                             </td>
                                     {{-- 1. Website Details --}}
                                     <td class="ps-3">
-                                       
+
                                         <div class="fw-semibold text-body-emphasis fs-6">
                                             <a href="{{ route('monitor.show', $monitor->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
                                                 {{ $monitor->name }}
@@ -172,7 +174,7 @@
 
                                                  @if($sslStatus === 'valid')
                                                      <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                                         <i class="bi bi-check-circle-fill"></i> Valid 
+                                                         <i class="bi bi-check-circle-fill"></i> Valid
                                                      </span>
                                                  @elseif($sslStatus === 'warning')
                                                      <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
@@ -267,15 +269,15 @@
 
                                                  @if($domainStatus === 'active')
                                                      <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                                         <i class="bi bi-check-circle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                         <i class="bi bi-check-circle-fill"></i> {{ ucfirst($domainStatus) }}
                                                      </span>
                                                  @elseif($domainStatus === 'warning')
                                                      <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
-                                                         <i class="bi bi-exclamation-triangle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                         <i class="bi bi-exclamation-triangle-fill"></i> {{ ucfirst($domainStatus) }}
                                                      </span>
                                                  @elseif($domainStatus === 'expired')
                                                      <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
-                                                         <i class="bi bi-x-circle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                         <i class="bi bi-x-circle-fill"></i> {{ ucfirst($domainStatus) }}
                                                      </span>
                                                  @else
                                                      <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
@@ -357,14 +359,14 @@
                                          @endif
                                      </td>
 
-                                 
+
 
                                     {{-- 7. Actions --}}
                                     <td class="text-end pe-4">
                                         <div class="btn-group" role="group" aria-label="Monitor Actions">
                                             {{-- View Details --}}
                                             <a
-                                                href="{{ route('monitor.show', $monitor->id) }}"
+                                                href="{{ $isAdmin ? route('admin.monitor.show', $monitor->id) : route('monitor.show', $monitor->id) }}"
                                                 class="btn btn-sm btn-outline-secondary rounded-end-0"
                                                 title="View Health Overview"
                                             >
@@ -372,7 +374,7 @@
                                             </a>
 
                                             {{-- Trigger check --}}
-                                            <form action="{{ route('monitor.check', $monitor->id) }}" method="POST" class="d-inline-flex trigger-check-form" style="margin-left: -1px;" data-no-loader>
+                                            <form action="{{ $isAdmin ? route('admin.monitor.check', $monitor->id) : route('monitor.check', $monitor->id) }}" method="POST" class="d-inline-flex trigger-check-form" style="margin-left: -1px;" data-no-loader>
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-outline-success rounded-0 trigger-btn" title="Trigger Check">
                                                     <i class="bi bi-arrow-clockwise icon-idle"></i>
@@ -381,14 +383,16 @@
                                             </form>
 
                                             {{-- Edit --}}
-                                            <a href="{{ route('monitor.edit', $monitor->id) }}" class="btn btn-sm btn-outline-primary rounded-0" style="margin-left: -1px;" title="Edit Monitor"><i class="bi bi-pencil-square"></i> </a>
+
+                                            
+                                            <a href="{{ $isAdmin ? route('admin.monitor.edit', $monitor->id) : route('monitor.edit', $monitor->id) }}" class="btn btn-sm btn-outline-primary rounded-0" style="margin-left: -1px;" title="Edit Monitor"><i class="bi bi-pencil-square"></i> </a>
 
                                             {{-- Delete --}}
                                             <button
                                                 type="button"
                                                 class="btn btn-sm btn-outline-danger delete-record-btn rounded-start-0"
                                                 style="margin-left: -1px;"
-                                                data-url="{{ route('monitor.destroy', $monitor->id) }}"
+                                                data-url="{{ $isAdmin ? route('admin.monitor.destroy', $monitor->id) : route('monitor.destroy', $monitor->id) }}"
                                                 data-row-id="monitor-row-{{ $monitor->id }}"
                                                 data-confirm-title="Delete Website / Monitor?"
                                                 data-confirm-text="Are you sure you want to delete this website / monitor?"
@@ -409,7 +413,7 @@
                                             <i class="bi bi-display fs-1 d-block mb-2 text-muted"></i>
                                             <h5 class="text-body-emphasis">No websites or monitors found</h5>
                                             <p class="small text-muted mb-3">Add your first website to start monitoring status, SSL, and domain health.</p>
-                                            <a href="{{ route('monitor.create') }}" class="btn btn-primary btn-sm">
+                                            <a href="{{ $isAdmin ? route('admin.monitor.create') : route('monitor.create') }}" class="btn btn-primary btn-sm">
                                                 <i class="bi bi-plus-lg me-1"></i> Add Website
                                             </a>
                                         </div>

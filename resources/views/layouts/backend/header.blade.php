@@ -76,7 +76,7 @@
                     <!--begin::Menu Footer-->
                     <li class="user-footer">
                         @php
-                            $settingsRoute = auth()->user()->hasRole('admin') ? 'admin.settings' : 'settings';
+                            $settingsRoute = auth()->user()->hasRole('admin') ? 'admin.settings.index' : 'settings.index';
                         @endphp
                         <a href="{{ route($settingsRoute) }}" class="btn btn-outline-secondary">Profile</a>
                         <form

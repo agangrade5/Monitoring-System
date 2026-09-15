@@ -25,7 +25,7 @@ class MonitorController extends Controller
      * Display a listing of the resource.
      *
      * @return View
-     * 
+     *
      * This method fetches monitors from the repository
      * filtered for the current authenticated user (or all if admin)
      * and passes them to the view.
@@ -56,7 +56,7 @@ class MonitorController extends Controller
      * Display the specified monitor single detail overview.
      *
      * @param int $id
-     * 
+     *
      * @return \Illuminate\Contracts\View\View
      */
     public function show(int $id)
@@ -74,7 +74,7 @@ class MonitorController extends Controller
      * Store a newly created monitor in storage.
      *
      * @param  Request  $request
-     * 
+     *
      * @return RedirectResponse
      */
     public function store(MonitorUserRequest $request)
@@ -146,7 +146,7 @@ class MonitorController extends Controller
             : 'Website / Monitor created successfully.';
 
         return redirect()
-            ->route('monitor')
+            ->route('monitor.index')
             ->with('success', $message);
     }
 
@@ -154,7 +154,7 @@ class MonitorController extends Controller
      * Edit the specified resource.
      *
      * @param int $id
-     * 
+     *
      * @return View
      */
     public function edit(int $id)
@@ -171,7 +171,7 @@ class MonitorController extends Controller
      *
      * @param  Request  $request
      * @param int $id
-     * 
+     *
      * @return RedirectResponse
      */
     public function update(MonitorUserRequest $request, int $id)
@@ -228,7 +228,7 @@ class MonitorController extends Controller
         * Redirect to index page with success message
         */
         return redirect()
-            ->route('monitor')
+            ->route('monitor.index')
             ->with('success', 'Website / Monitor updated successfully.');
     }
 
@@ -271,7 +271,7 @@ class MonitorController extends Controller
         }
 
         return redirect()
-            ->route('monitor')
+            ->route('monitor.index')
             ->with('success', 'Monitor deleted successfully.');
     }
 
@@ -279,7 +279,7 @@ class MonitorController extends Controller
      * Toggle the active status of a monitor.
      *
      * @param int $id
-     * 
+     *
      * @return RedirectResponse
      */
     public function toggleActive(Request $request,int $id)
@@ -317,7 +317,7 @@ class MonitorController extends Controller
      * Trigger an immediate check for a specific monitor.
      *
      * @param int $id
-     * 
+     *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function triggerCheck(Request $request,int $id)
@@ -375,7 +375,7 @@ class MonitorController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * 
+     *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function sendTestNotification(Request $request, int $id)

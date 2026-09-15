@@ -6,15 +6,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Repositories\Contracts\SettingRepositoryInterface;
-use App\Models\Setting;
-use App\Http\Requests\Backend\Setting\OtpSettingRequest;
-use App\Http\Requests\Backend\Setting\TwilioSettingRequest;
-use App\Http\Requests\Backend\Setting\EmailSettingRequest;
-use App\Http\Requests\Backend\Setting\AwsSettingRequest;
+use App\Http\Requests\Backend\Setting\{
+    OtpSettingRequest,
+    TwilioSettingRequest,
+    EmailSettingRequest,
+    AwsSettingRequest,
+    EnableGoogle2faRequest
+};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\{Auth, Crypt};
 use App\Helpers\UtilityHelper;
+use App\Services\GoogleTwoFactorService;
 
 class SettingController extends Controller
 {
@@ -22,11 +24,13 @@ class SettingController extends Controller
      * Create a new controller instance.
      *
      * @param SettingRepositoryInterface $settingRepository
+     * @param GoogleTwoFactorService $googleTwoFactorService
      *
      * @return void
      */
     public function __construct(
-        protected SettingRepositoryInterface $settingRepository
+        protected SettingRepositoryInterface $settingRepository,
+        private readonly GoogleTwoFactorService $googleTwoFactorService,
     ) {
     }
 
@@ -56,7 +60,7 @@ class SettingController extends Controller
      * Update Notification settings in database settings table.
      *
      * @param Request $request
-     * 
+     *
      * @return JsonResponse
      */
     public function updateNotificationSettings(Request $request): JsonResponse
@@ -109,12 +113,12 @@ class SettingController extends Controller
      * Update Email Report settings in database settings table.
      *
      * @param Request $request
-     * 
+     *
      * @return JsonResponse
      */
     public function updateReportSettings(Request $request): JsonResponse
     {
-      
+
         $reportEmail = config('constants.user_defaults.report.report_email');
 
         $payload = [
@@ -347,6 +351,138 @@ class SettingController extends Controller
             'status' => true,
             'message' => 'AWS Cloud Settings updated successfully!',
             'data' => $payload,
+        ]);
+    }
+
+    /**
+     * Setup 2FA for the user.
+     *
+     * @return JsonResponse
+     */
+    public function twoFaSetup(): JsonResponse
+    {
+        $user = Auth::user();
+
+        $secret = $this->googleTwoFactorService->generateSecretKey();
+
+        session(['2fa_setup_secret' => $secret]);
+
+        $qrCodeSvg = $this->googleTwoFactorService->getQrCodeSvg(
+            config('app.name'),
+            $user->email,
+            $secret
+        );
+
+        return response()->json([
+            'success' => true,
+            'qr_code' => $qrCodeSvg,
+            'secret' => $secret,
+        ]);
+    }
+
+    /**
+     * Enable 2FA for the user.
+     *
+     * @param EnableGoogle2faRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function twoFaEnable(EnableGoogle2faRequest $request): JsonResponse
+    {
+        $secret = session('2fa_setup_secret');
+
+        if (!$secret) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Setup session expired, please scan the QR code again.',
+            ], 422);
+        }
+
+        $isValid = $this->googleTwoFactorService->verifyKey(
+            $secret,
+            $request->input('one_time_password')
+        );
+
+        if (!$isValid) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The code you entered is incorrect.',
+            ], 422);
+        }
+
+        $user = Auth::user();
+        $user->google2fa_secret = $secret;
+        $user->google2fa_enabled = true;
+        $user->google2fa_enabled_at = now();
+        $user->save();
+
+        session()->forget('2fa_setup_secret');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'auth',
+            'Google 2FA enabled.',
+            $user,
+                [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Google Authenticator has been enabled for your account.',
+        ]);
+    }
+
+    /**
+     * Disable 2FA for the user.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function twoFaDisable(Request $request): JsonResponse
+    {
+        $request->validate([
+            'password' => [
+                'required',
+                'current_password:web',
+            ],
+        ]);
+
+        $user = Auth::user();
+        $user->google2fa_secret = null;
+        $user->google2fa_enabled = false;
+        $user->google2fa_enabled_at = null;
+        $user->save();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'auth',
+            'Google 2FA disabled.',
+            $user,
+                [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Google Authenticator has been disabled for your account.',
         ]);
     }
 }

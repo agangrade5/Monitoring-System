@@ -1,7 +1,9 @@
 @extends('layouts.backend.app')
 @section('title', 'Add Website & Monitor')
 @section('content')
-
+@php
+    $isAdmin = auth()->user()->hasRole('admin');
+ @endphp
 <!--begin::App Content Header-->
 <div class="app-content-header py-3">
     <div class="container-fluid">
@@ -13,7 +15,7 @@
             <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb float-sm-end mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('monitor') }}">Websites & Domains</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('monitor.index') }}">Websites & Domains</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Add</li>
                     </ol>
                 </nav>
@@ -27,11 +29,13 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <form action="{{ route('monitor.store') }}" method="POST" id="create-monitor-form">
+
+            
+                <form action="{{ $isAdmin ? route('admin.monitor.store') : route('monitor.store') }}" method="POST" id="create-monitor-form">
                     @csrf
-                    
+
                     {{-- 1. Website & Server Information --}}
-                    <div class="card border-0 shadow-sm rounded-4 mb-4"> 
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
                         <div class="card-header border-bottom py-3">
                             <div class="d-flex align-items-center">
                                 <span class="btn btn-light-primary btn-sm rounded-3 me-3 p-2">
@@ -64,7 +68,7 @@
                                         <label class="form-label small fw-semibold text-secondary mb-0">
                                             Website URL(s) / Domain(s) <span class="text-danger">*</span>
                                         </label>
-                                       
+
                                     </div>
 
                                     <div id="urls-container" class="d-flex flex-column gap-2">
@@ -77,11 +81,11 @@
                                         @foreach($oldUrls as $index => $oldUrl)
                                             <div class="url-row input-group">
                                                 <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
-                                                <input type="text" 
-                                                       name="urls[]" 
-                                                       class="form-control url-input @error('urls.'.$index) is-invalid @enderror" 
-                                                       value="{{ $oldUrl }}" 
-                                                       placeholder="e.g. https://example.com" 
+                                                <input type="text"
+                                                       name="urls[]"
+                                                       class="form-control url-input @error('urls.'.$index) is-invalid @enderror"
+                                                       value="{{ $oldUrl }}"
+                                                       placeholder="e.g. https://example.com"
                                                        required>
                                                 @if($index === 0)
                                                     <button type="button" class="btn btn-primary px-3 add-url-btn" title="Add Domain">
@@ -216,9 +220,9 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="d-flex justify-content-end gap-3 mb-5">
-                        <a href="{{ route('monitor') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <a href="{{ route('monitor.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
                         <button type="submit" class="btn btn-primary px-5 fw-semibold shadow-sm">Save & Start Monitoring</button>
                     </div>
                 </form>
