@@ -80,3 +80,9 @@ Schedule::command('monitors:check-ssl')->daily()->withoutOverlapping();
 // Domain Expiry: Daily
 Schedule::command('monitors:check-domain')->daily()->withoutOverlapping();
 
+// Weekly Monitoring Digest Email Report: Every Monday at 09:00 AM
+Schedule::command('reports:send-email --frequency=weekly')->weeklyOn(1, '09:00')->withoutOverlapping();
+
+// Monthly Monitoring Digest Email Report: 1st day of every month at 09:00 AM
+Schedule::command('reports:send-email --frequency=monthly')->monthlyOn(1, '09:00')->withoutOverlapping();
+

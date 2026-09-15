@@ -53,4 +53,21 @@ class User extends Authenticatable
     {
         return $this->hasMany(Monitor::class);
     }
+
+    /**
+     * Get user-specific settings.
+     */
+    public function settings()
+    {
+        return $this->hasMany(Setting::class);
+    }
+
+    /**
+     * Get user email logs.
+     */
+    public function emailLogs()
+    {
+        return $this->hasMany(EmailLog::class);
+    }
 }
+

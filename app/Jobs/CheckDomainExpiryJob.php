@@ -10,7 +10,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Spatie\Rdap\Facades\Rdap;
 use Throwable;
 
@@ -25,10 +24,6 @@ class CheckDomainExpiryJob implements ShouldQueue
 
     public function handle(): void
     {
-        Log::info('Domain expiry check started.', [
-            'monitor_id' => $this->monitorId,
-        ]);
-
         try {
             /*
              * ---------------------------------------------------------
@@ -38,10 +33,6 @@ class CheckDomainExpiryJob implements ShouldQueue
             $monitor = Monitor::with('settings')->find($this->monitorId);
 
             if (!$monitor) {
-                Log::warning('Monitor not found.', [
-                    'monitor_id' => $this->monitorId,
-                ]);
-
                 return;
             }
 
@@ -51,11 +42,6 @@ class CheckDomainExpiryJob implements ShouldQueue
              * ---------------------------------------------------------
              */
             if (!$monitor->is_active || empty($monitor->url)) {
-                Log::info('Domain expiry check skipped.', [
-                    'monitor_id' => $monitor->id,
-                    'reason' => 'Monitor inactive or URL missing.',
-                ]);
-
                 return;
             }
 
@@ -68,10 +54,6 @@ class CheckDomainExpiryJob implements ShouldQueue
                 $monitor->settings &&
                 !$monitor->settings->check_domain
             ) {
-                Log::info('Domain expiry check disabled.', [
-                    'monitor_id' => $monitor->id,
-                ]);
-
                 return;
             }
 
@@ -147,12 +129,6 @@ class CheckDomainExpiryJob implements ShouldQueue
 
                 return;
             }
-
-            Log::info('Domain resolved.', [
-                'monitor_id' => $monitor->id,
-                'host' => $host,
-                'domain' => $domain,
-            ]);
 
             /*
              * ---------------------------------------------------------
@@ -245,15 +221,6 @@ class CheckDomainExpiryJob implements ShouldQueue
                 default => 'active',
             };
 
-            Log::info('Domain expiry calculated.', [
-                'monitor_id' => $monitor->id,
-                'domain' => $domain,
-                'expiry_date' => $expiry->toDateTimeString(),
-                'days_remaining' => $daysRemaining,
-                'status' => $domainStatus,
-                'registrar' => $registrar,
-            ]);
-
             /*
              * ---------------------------------------------------------
              * Save domain check result
@@ -285,43 +252,12 @@ class CheckDomainExpiryJob implements ShouldQueue
                     'monitor_id' => $monitor->id,
                     'status' => 'down',
                     'response_time' => null,
-                    'status_code' => null,
-                    'message' => 'Domain expired.',
+                    'http_status_code' => null,
+                    'reason' => 'Domain expired.',
                     'checked_at' => now(),
                 ]);
-
-                Log::warning(
-                    'Monitor marked DOWN because domain expired.',
-                    [
-                        'monitor_id' => $monitor->id,
-                        'domain' => $domain,
-                        'expiry_date' => $expiry->toDateTimeString(),
-                    ]
-                );
             }
-
-            /*
-             * ---------------------------------------------------------
-             * Warning / Active
-             * ---------------------------------------------------------
-             *
-             * Do NOT mark monitor UP here.
-             *
-             * Uptime job will decide the final UP/DOWN status.
-             */
-            Log::info('Domain expiry check completed.', [
-                'monitor_id' => $monitor->id,
-                'domain' => $domain,
-                'status' => $domainStatus,
-            ]);
         } catch (Throwable $e) {
-            Log::error('Domain expiry check failed.', [
-                'monitor_id' => $this->monitorId,
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
-
             /*
              * Re-throw so Laravel queue marks the job as failed.
              */
@@ -490,15 +426,6 @@ class CheckDomainExpiryJob implements ShouldQueue
         string $reason,
         ?string $registrar = null
     ): void {
-        Log::warning(
-            'Saving domain result as UNKNOWN.',
-            [
-                'monitor_id' => $monitor->id,
-                'url' => $monitor->url,
-                'reason' => $reason,
-            ]
-        );
-
         $checkResult = $monitor
             ->checkResult()
             ->firstOrCreate([]);
