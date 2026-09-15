@@ -57,10 +57,16 @@ class CheckSslCertificateJob implements ShouldQueue
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 
-        $caPath = ini_get('curl.cainfo') ?: (file_exists(storage_path('cacert.pem')) ? storage_path('cacert.pem') : null);
-        if ($caPath && file_exists($caPath)) {
+      $caPath = storage_path('certs/cacert.pem');
+
+        if (!is_file($caPath)) {
+            $caPath = ini_get('curl.cainfo') ?: null;
+        }
+
+        if ($caPath && is_file($caPath)) {
             curl_setopt($ch, CURLOPT_CAINFO, $caPath);
         }
+            
 
         curl_setopt($ch, CURLOPT_NOBODY, true);
 

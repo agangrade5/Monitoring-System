@@ -5,7 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use App\Services\MailConfigService;
-
+use Illuminate\Support\Facades\Http;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -38,6 +38,23 @@ class AppServiceProvider extends ServiceProvider
         
         if (! app()->runningInConsole()) {
             $mailConfigService->apply();
+        }
+        
+
+        /*
+        |--------------------------------------------------------------------------
+        | Global SSL certificate
+        |--------------------------------------------------------------------------
+        |
+        | Apply a global SSL certificate to all HTTP requests.
+        |
+        */
+        $caBundle = storage_path('certs/cacert.pem');
+
+        if (is_file($caBundle)) {
+            Http::globalOptions([
+                'verify' => $caBundle,
+            ]);
         }
     }
 }
