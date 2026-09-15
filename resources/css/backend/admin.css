@@ -1128,3 +1128,15 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
     background-color: #3182ce;
     border-color: #3182ce;
 }
+
+/* 2FA */
+.two-factor-title {
+    color: #cbd5e1;
+}
+.two-factor-description {
+    color: #cbd5e1;
+}
+#one_time_password::placeholder {
+    color: #cbd5e1;
+    opacity: 1;
+}

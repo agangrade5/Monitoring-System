@@ -116,7 +116,7 @@
 
             <div class="text-center mt-3 pt-3 border-top border-white-50">
                 <p class="mb-0">
-                    <a href="{{ route('login') }}">
+                    <a href="{{ route('login.index') }}">
                         Already have an account? Sign In
                     </a>
                 </p>

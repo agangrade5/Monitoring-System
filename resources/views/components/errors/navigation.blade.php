@@ -19,7 +19,7 @@
         @endif
     @else
         <a
-            href="{{ route('login') }}"
+            href="{{ route('login.index') }}"
             class="btn btn-primary"
         >
             <i class="bi bi-box-arrow-in-right me-1"></i>

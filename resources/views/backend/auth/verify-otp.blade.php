@@ -102,7 +102,7 @@
             </div>
             <div class="text-center mt-2">
                 <a
-                    href="{{ route('login') }}"
+                    href="{{ route('login.index') }}"
                     class="text-light text-decoration-none"
                 >
                     ← Back to Login

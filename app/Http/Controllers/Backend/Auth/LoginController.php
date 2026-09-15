@@ -75,7 +75,7 @@ class LoginController extends Controller
 
         $remember = $request->boolean('remember');
 
-        if (!Auth::attempt($credentials, $remember)) {
+        if (!Auth::validate($credentials)) {
             /*
             |--------------------------------------------------------------------------
             | Activity Log - login Failed
@@ -98,9 +98,48 @@ class LoginController extends Controller
                 ->withInput($request->only('email', 'remember'));
         }
 
-        $request->session()->regenerate();
 
-        $user = Auth::user();
+        /*
+        |--------------------------------------------------------------------------
+        | Check if 2FA is enabled
+        |--------------------------------------------------------------------------
+        */
+        $user = $this->userRepository->findByEmail($request->email);
+
+        if ($user->google2fa_enabled) {
+            $request->session()->put('2fa_user_id', $user->id);
+            $request->session()->put('2fa_remember', $remember);
+
+            return redirect()->route('admin.twoFa.show');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Login user
+        |--------------------------------------------------------------------------
+        */
+
+        $user = Auth::getProvider()->retrieveByCredentials($credentials);
+
+        if (!$user) {
+            return back()
+                ->withErrors([
+                    'email' => 'The provided credentials are incorrect.',
+                ])
+                ->withInput($request->only('email', 'remember'));
+        }
+
+        if (!$user->is_active) {
+            return back()
+                ->withErrors([
+                    'email' => 'Your account is inactive.',
+                ])
+                ->withInput($request->only('email', 'remember'));
+        }
+
+        Auth::login($user, $remember);
+
+        $request->session()->regenerate();
 
         /*
         |--------------------------------------------------------------------------
@@ -114,7 +153,7 @@ class LoginController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Activity Log - Loggin Success
+        | Activity Log - Login Success
         |--------------------------------------------------------------------------
         */
         UtilityHelper::customActivityLog(
@@ -406,7 +445,7 @@ class LoginController extends Controller
     {
         if (!session()->has('login_otp')) {
             return redirect()
-                ->route('login')
+                ->route('login.index')
                 ->withErrors([
                     'login' =>
                         'Please request a new OTP.',
@@ -472,7 +511,7 @@ class LoginController extends Controller
             );
 
             return redirect()
-                ->route('login')
+                ->route('login.index')
                 ->withErrors([
                     'otp' =>'OTP session expired. Please request a new OTP.',
                 ]);
@@ -532,7 +571,7 @@ class LoginController extends Controller
             session()->forget('login_otp');
 
             return redirect()
-                ->route('login')
+                ->route('login.index')
                 ->withErrors([
                     'login' => 'Your account is inactive. Please contact the administrator.',
                 ]);
@@ -747,7 +786,7 @@ class LoginController extends Controller
             session()->forget('login_otp');
 
             return redirect()
-                ->route('login')
+                ->route('login.index')
                 ->withErrors([
                     'login' =>
                         'User account not found.',
@@ -848,7 +887,7 @@ class LoginController extends Controller
             );
 
             return redirect()
-                ->route('login')
+                ->route('login.index')
                 ->withErrors([
                     'login' =>
                         'OTP session expired. Please login again.',
@@ -936,7 +975,7 @@ class LoginController extends Controller
             session()->forget('login_otp');
 
             return redirect()
-                ->route('login')
+                ->route('login.index')
                 ->withErrors([
                     'login' =>
                         'User account not found.',
