@@ -136,6 +136,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // setupDropdown("notifyEventsDropdownEmail", "selected-events-text-email", "event-label-text", function (cb, itemLabel, isChecked) {
     //     saveNotificationSettings(`Email "${itemLabel}" ${isChecked ? 'enabled' : 'disabled'} successfully.`);
     // });
+
+    // Initialize E-mail notifications
     setupSwitch("email_notification", "notifyEventsDropdownEmail", function (isChecked) {
         saveNotificationSettings(isChecked ? "Email notifications enabled successfully." : "Email notifications disabled successfully.");
     });
@@ -144,6 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // setupDropdown("notifyEventsDropdownSms", "selected-events-text-sms", "event-label-text", function (cb, itemLabel, isChecked) {
     //     saveNotificationSettings(`SMS "${itemLabel}" ${isChecked ? 'enabled' : 'disabled'} successfully.`);
     // });
+    // Initialize SMS notifications
     setupSwitch("sms_notification", "notifyEventsDropdownSms", function (isChecked) {
         saveNotificationSettings(isChecked ? "SMS notifications enabled successfully." : "SMS notifications disabled successfully.");
     });
@@ -152,6 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // setupDropdown("reportFrequencyDropdown", "selected-report-text", "report-label-text", function (cb, itemLabel, isChecked) {
     //     saveReportSettings(`${itemLabel} ${isChecked ? 'enabled' : 'disabled'} successfully.`);
     // });
+    // Initialize E-mail Reports
     setupSwitch("email_report_notification", "reportFrequencyDropdown", function (isChecked) {
         saveReportSettings(isChecked ? "Email reports enabled successfully." : "Email reports disabled successfully.");
     });
