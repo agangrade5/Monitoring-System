@@ -231,7 +231,7 @@
                                 <i class="bi bi-chevron-right text-muted quick-action-arrow"></i>
                             </a>
 
-                            <a href="{{ route('monitor.index') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
+                            <a href="{{ route('admin.monitor.index') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="quick-action-icon bg-success-subtle text-success rounded-3 d-flex align-items-center justify-content-center">
                                         <i class="bi bi-globe2 fs-5"></i>
@@ -244,7 +244,7 @@
                                 <i class="bi bi-chevron-right text-muted quick-action-arrow"></i>
                             </a>
 
-                            <a href="{{ route('monitor.create') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
+                            <a href="{{ route('admin.monitor.create') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="quick-action-icon bg-info-subtle text-info rounded-3 d-flex align-items-center justify-content-center">
                                         <i class="bi bi-plus-circle-fill fs-5"></i>

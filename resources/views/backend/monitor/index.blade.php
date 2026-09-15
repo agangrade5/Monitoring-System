@@ -2,7 +2,7 @@
 @section('title', 'Monitor Websites & Domains')
 @section('content')
 
-
+@php $isAdmin = auth()->user()->hasRole('admin'); @endphp
 <!--begin::App Content Header-->
 <div class="app-content-header">
     <div class="container-fluid">
@@ -14,7 +14,7 @@
              <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
                 <nav aria-label="breadcrumb">
                   <ol class="breadcrumb float-sm-end mb-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ $isAdmin ? route('admin.dashboard') : route('dashboard') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Monitor Websites & Domains</li>
                   </ol>
                 </nav>
@@ -30,11 +30,9 @@
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header border-bottom py-3 d-flex flex-wrap gap-2 align-items-center">
                 <div class="me-auto">
-                    <h5 class="card-title fw-bold mb-0">Monitor Websites & Domains
-</h5>
+                    <h5 class="card-title fw-bold mb-0">Monitor Websites & Domains</h5>
                 </div>
-
-                <form action="{{ route('monitor.index') }}" method="GET" class="settings-search-wrapper w-auto me-1">
+                <form action="{{ $isAdmin ? route('admin.monitor.index') : route('monitor.index') }}" method="GET" class="settings-search-wrapper w-auto me-1">
                     <i class="bi bi-search"></i>
                     <input
                         type="search"
@@ -48,7 +46,7 @@
                     >
                 </form>
 
-                <a href="{{ route('monitor.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                <a href="{{ $isAdmin ? route('admin.monitor.create') : route('monitor.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
                     <i class="bi bi-plus-lg"></i>Add Website
                 </a>
             </div>
@@ -82,7 +80,7 @@
                                     <td class="ps-3">
 
                                         <div class="fw-semibold text-body-emphasis fs-6">
-                                            <a href="{{ route('monitor.show', $monitor->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
+                                            <a href="{{ $isAdmin ? route('admin.monitor.show', $monitor->id) : route('monitor.show', $monitor->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
                                                 {{ $monitor->name }}
                                             </a>
                                         </div>
@@ -364,7 +362,7 @@
                                         <div class="btn-group" role="group" aria-label="Monitor Actions">
                                             {{-- View Details --}}
                                             <a
-                                                href="{{ route('monitor.show', $monitor->id) }}"
+                                                href="{{ $isAdmin ? route('admin.monitor.show', $monitor->id) : route('monitor.show', $monitor->id) }}"
                                                 class="btn btn-sm btn-outline-secondary rounded-end-0"
                                                 title="View Health Overview"
                                             >
@@ -372,7 +370,7 @@
                                             </a>
 
                                             {{-- Trigger check --}}
-                                            <form action="{{ route('monitor.check', $monitor->id) }}" method="POST" class="d-inline-flex trigger-check-form" style="margin-left: -1px;" data-no-loader>
+                                            <form action="{{ $isAdmin ? route('admin.monitor.check', $monitor->id) : route('monitor.check', $monitor->id) }}" method="POST" class="d-inline-flex trigger-check-form" style="margin-left: -1px;" data-no-loader>
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-outline-success rounded-0 trigger-btn" title="Trigger Check">
                                                     <i class="bi bi-arrow-clockwise icon-idle"></i>
@@ -388,7 +386,7 @@
                                                 type="button"
                                                 class="btn btn-sm btn-outline-danger delete-record-btn rounded-start-0"
                                                 style="margin-left: -1px;"
-                                                data-url="{{ route('monitor.destroy', $monitor->id) }}"
+                                                data-url="{{ $isAdmin ? route('admin.monitor.destroy', $monitor->id) : route('monitor.destroy', $monitor->id) }}"
                                                 data-row-id="monitor-row-{{ $monitor->id }}"
                                                 data-confirm-title="Delete Website / Monitor?"
                                                 data-confirm-text="Are you sure you want to delete this website / monitor?"
@@ -409,7 +407,7 @@
                                             <i class="bi bi-display fs-1 d-block mb-2 text-muted"></i>
                                             <h5 class="text-body-emphasis">No websites or monitors found</h5>
                                             <p class="small text-muted mb-3">Add your first website to start monitoring status, SSL, and domain health.</p>
-                                            <a href="{{ route('monitor.create') }}" class="btn btn-primary btn-sm">
+                                            <a href="{{ $isAdmin ? route('admin.monitor.create') : route('monitor.create') }}" class="btn btn-primary btn-sm">
                                                 <i class="bi bi-plus-lg me-1"></i> Add Website
                                             </a>
                                         </div>
