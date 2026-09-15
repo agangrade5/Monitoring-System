@@ -2,6 +2,7 @@
 @section('title', 'Add Website & Monitor')
 @section('content')
 
+@php $isAdmin = auth()->user()->hasRole('admin'); @endphp
 <!--begin::App Content Header-->
 <div class="app-content-header py-3">
     <div class="container-fluid">
@@ -13,7 +14,7 @@
             <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb float-sm-end mb-0">
-                        <li class="breadcrumb-item"><a href="{{ route('monitor.index') }}">Websites & Domains</a></li>
+                        <li class="breadcrumb-item"><a href="{{ $isAdmin ? route('admin.monitor.index') : route('monitor.index') }}">Websites & Domains</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Add</li>
                     </ol>
                 </nav>
@@ -27,7 +28,7 @@
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <form action="{{ route('monitor.store') }}" method="POST" id="create-monitor-form">
+                <form action="{{ $isAdmin ? route('admin.monitor.store') : route('monitor.store') }}" method="POST" id="create-monitor-form">
                     @csrf
 
                     {{-- 1. Website & Server Information --}}
@@ -218,7 +219,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-3 mb-5">
-                        <a href="{{ route('monitor.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <a href="{{ $adminUrl ? route('admin.monitor.index') : route('monitor.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
                         <button type="submit" class="btn btn-primary px-5 fw-semibold shadow-sm">Save & Start Monitoring</button>
                     </div>
                 </form>
