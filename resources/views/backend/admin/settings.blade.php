@@ -42,15 +42,15 @@
                                 <a href="#change-password" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                     <i class="bi bi-shield-lock me-2"></i>Change Password
                                 </a>
+                                <a href="#google2fa" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
+                                    <i class="bi bi-shield-lock me-2"></i>Two-Factor Auth
+                                </a>
                                 <a href="#email-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                     <i class="bi bi-envelope-paper me-2"></i>Mail Settings
                                 </a>
                                 <a href="#otp-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                     <i class="bi bi-shield-check me-2"></i>OTP Settings
                                 </a>
-                             
-                                
-                              
                                 <a href="#twilio-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                     <i class="bi bi-chat-text me-2"></i>Twilio Settings
                                 </a>
@@ -79,6 +79,10 @@
                     <div class="tab-pane fade" id="change-password" role="tabpanel">
                         @include('backend.admin.settings.change-password')
                     </div>
+                    <!-- Two-Factor Auth Tab -->
+                    <div class="tab-pane fade" id="google2fa" role="tabpanel">
+                        @include('backend.admin.settings.google2fa')
+                    </div>
                     <!-- Email Setting Tab -->
                     <div class="tab-pane fade" id="email-setting" role="tabpanel">
                         @include('backend.admin.settings.email')
@@ -87,7 +91,6 @@
                     <div class="tab-pane fade" id="otp-setting" role="tabpanel">
                         @include('backend.admin.settings.otp')
                     </div>
-
                     <!-- Notification Setting Tab -->
                     <div class="tab-pane fade" id="notifications" role="tabpanel">
                         @include('backend.admin.settings.notifications')
@@ -106,8 +109,10 @@
         </div>
     </div>
 </div>
-@include('backend.admin.settings.crop-profile-image-modal')
-
+{{-- Crop Profile Image Modal --}}
+@include('backend.admin.settings.modal.crop-profile-image')
+{{-- Google 2FA Setup Modal --}}
+@include('backend.admin.settings.modal.google2fa-setup')
 
 @endsection
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/otp-settings.js')) !!}
@@ -116,3 +121,4 @@
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/aws-settings.js')) !!}
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/notification-settings.js')) !!}
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/account-settings.js')) !!}
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/google2fa-settings.js')) !!}

@@ -57,6 +57,7 @@ export default defineConfig({
                 'resources/js/backend/verify-otp.js',
                 'resources/js/backend/notification-settings.js',
                 'resources/js/backend/account-settings.js',
+                'resources/js/backend/google2fa-settings.js',
             ],
             buildDirectory: 'assets',
             refresh: true,

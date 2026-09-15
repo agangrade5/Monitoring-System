@@ -38,7 +38,7 @@
                            
                         </div>
 
-                        <form action="{{ route('admin.users') }}" method="GET" class="settings-search-wrapper w-auto me-1">
+                        <form action="{{ route('admin.users.index') }}" method="GET" class="settings-search-wrapper w-auto me-1">
                             <div class="settings-search-wrapper w-auto">
                                 <i class="bi bi-search"></i>
                                 <input

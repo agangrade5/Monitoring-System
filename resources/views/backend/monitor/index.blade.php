@@ -31,10 +31,10 @@
             <div class="card-header border-bottom py-3 d-flex flex-wrap gap-2 align-items-center">
                 <div class="me-auto">
                     <h5 class="card-title fw-bold mb-0">Monitor Websites & Domains
-</h5> 
+</h5>
                 </div>
 
-                <form action="{{ route('monitor') }}" method="GET" class="settings-search-wrapper w-auto me-1">
+                <form action="{{ route('monitor.index') }}" method="GET" class="settings-search-wrapper w-auto me-1">
                     <i class="bi bi-search"></i>
                     <input
                         type="search"
@@ -73,14 +73,14 @@
                             @forelse($monitors as $monitor)
                                 <tr id="monitor-row-{{ $monitor->id }}">
 
-                                  
+
                                             <!-- Serial Number -->
                                             <td class="ps-4">
                                                 {{ $loop->iteration }}
                                             </td>
                                     {{-- 1. Website Details --}}
                                     <td class="ps-3">
-                                       
+
                                         <div class="fw-semibold text-body-emphasis fs-6">
                                             <a href="{{ route('monitor.show', $monitor->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
                                                 {{ $monitor->name }}
@@ -172,7 +172,7 @@
 
                                                  @if($sslStatus === 'valid')
                                                      <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                                         <i class="bi bi-check-circle-fill"></i> Valid 
+                                                         <i class="bi bi-check-circle-fill"></i> Valid
                                                      </span>
                                                  @elseif($sslStatus === 'warning')
                                                      <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
@@ -267,15 +267,15 @@
 
                                                  @if($domainStatus === 'active')
                                                      <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                                         <i class="bi bi-check-circle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                         <i class="bi bi-check-circle-fill"></i> {{ ucfirst($domainStatus) }}
                                                      </span>
                                                  @elseif($domainStatus === 'warning')
                                                      <span class="badge rounded-pill bg-warning text-white border border-warning d-inline-flex align-items-center gap-1">
-                                                         <i class="bi bi-exclamation-triangle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                         <i class="bi bi-exclamation-triangle-fill"></i> {{ ucfirst($domainStatus) }}
                                                      </span>
                                                  @elseif($domainStatus === 'expired')
                                                      <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
-                                                         <i class="bi bi-x-circle-fill"></i> {{ ucfirst($domainStatus) }} 
+                                                         <i class="bi bi-x-circle-fill"></i> {{ ucfirst($domainStatus) }}
                                                      </span>
                                                  @else
                                                      <span class="badge rounded-pill bg-body-secondary text-secondary border d-inline-flex align-items-center gap-1">
@@ -357,7 +357,7 @@
                                          @endif
                                      </td>
 
-                                 
+
 
                                     {{-- 7. Actions --}}
                                     <td class="text-end pe-4">

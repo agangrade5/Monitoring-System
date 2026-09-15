@@ -220,7 +220,7 @@ class ForgotPasswordController extends Controller
             Auth::logout();
 
             return redirect()
-                ->route('admin.login')
+                ->route('admin.login.index')
                 ->with(
                     'success',
                     'Your password has been reset successfully. You can now login.'

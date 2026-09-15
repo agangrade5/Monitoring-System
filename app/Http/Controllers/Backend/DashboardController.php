@@ -3,31 +3,26 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\DashboardRepositoryInterface;
-use App\Repositories\Contracts\ActivityLogRepositoryInterface;
+use App\Repositories\Contracts\{DashboardRepositoryInterface, ActivityLogRepositoryInterface};
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+
     /**
      * Create a new controller instance.
      *
      * @param DashboardRepositoryInterface $dashboardRepository
-     * /**
-     * Admin Dashboard View
      * @param ActivityLogRepositoryInterface $activityRepository
      *
      * @return void
      */
-     
     public function __construct(
         protected DashboardRepositoryInterface $dashboardRepository,
         protected ActivityLogRepositoryInterface $activityRepository
     ) {}
-        
-        
 
     /**
      * method admin

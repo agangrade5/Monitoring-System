@@ -22,6 +22,9 @@ return new class extends Migration
             $table->string('timezone', 100)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
+            $table->text('google2fa_secret')->nullable();
+            $table->boolean('google2fa_enabled')->default(false);
+            $table->timestamp('google2fa_enabled_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
