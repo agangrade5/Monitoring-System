@@ -219,7 +219,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-3 mb-5">
-                        <a href="{{ $adminUrl ? route('admin.monitor.index') : route('monitor.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <a href="{{ $isAdmin ? route('admin.monitor.index') : route('monitor.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
                         <button type="submit" class="btn btn-primary px-5 fw-semibold shadow-sm">Save & Start Monitoring</button>
                     </div>
                 </form>

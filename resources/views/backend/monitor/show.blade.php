@@ -8,7 +8,7 @@
     <div class="container-fluid">
         {{-- Back Navigation Link --}}
         <div class="mb-2">
-            <a href="{{ $adminUrl ? route('admin.monitor.index') : route('monitor.index') }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-1">
+            <a href="{{ $isAdmin ? route('admin.monitor.index') : route('monitor.index') }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-1">
                 <i class="bi bi-chevron-left me-1"></i> Monitoring
             </a>
         </div>
