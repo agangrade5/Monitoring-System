@@ -92,3 +92,6 @@
         </form>
     </div>
 </div>
+@push('scripts')
+    {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/email-settings.js')) !!}
+@endpush

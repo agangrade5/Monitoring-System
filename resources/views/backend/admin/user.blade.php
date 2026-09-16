@@ -35,7 +35,7 @@
                     <div class="card-header border-bottom py-3 d-flex flex-wrap gap-2 align-items-center">
                         <div class="me-auto">
                             <h5 class="card-title fw-bold mb-0">Active User Directory</h5>
-                           
+
                         </div>
 
                         <form action="{{ route('admin.users.index') }}" method="GET" class="settings-search-wrapper w-auto me-1">
@@ -74,7 +74,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse($users as $user)
-                                  
+
                                         <tr>
                                             <!-- User Info with Avatar -->
                                             <td class="ps-4">
@@ -84,7 +84,7 @@
                                                     </div>
                                                     <div>
                                                         <span class="fw-bold text-secondary-emphasis d-block">{{ $user['name'] }}</span>
-                                                     
+
                                                     </div>
                                                 </div>
                                             </td>
@@ -115,9 +115,9 @@
                                             <td class="text-end pe-4">
                                              <div class="d-inline-flex align-items-center gap-1">
                                                         {{-- Edit Button --}}
-                                                    <button 
-                                                        type="button" 
-                                                        class="btn btn-outline-primary btn-sm trigger-btn edit-user-btn text-white bg-primary" 
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline-primary btn-sm trigger-btn edit-user-btn text-white bg-primary"
                                                         data-id="{{ $user['id'] }}"
                                                         data-name="{{ $user['name'] }}"
                                                         data-email="{{ $user['email'] }}"
@@ -304,7 +304,7 @@
                             @endif
                         </div>
                     </div>
-                     
+
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="user_status">Status</label>
                         <div class="input-group">
@@ -341,7 +341,7 @@
                 @csrf
                 <input type="hidden" name="form_type" value="edit">
                 <input type="hidden" name="edit_user_id" id="edit_user_id" value="{{ old('edit_user_id') }}">
-            
+
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label fw-semibold text-secondary small" for="edit_user_name">Full Name</label>
@@ -389,7 +389,7 @@
                             @endif
                         </div>
                     </div>
-                   
+
                 </div>
                 <div class="modal-footer border-top-0 p-3 bg-light-subtle">
                     <button type="button" class="btn btn-outline-secondary px-3" data-bs-dismiss="modal">Cancel</button>
@@ -399,9 +399,8 @@
         </div>
     </div>
 </div>
+@endsection
 
 @push('scripts')
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/user.js')) !!}
 @endpush
-
-@endsection

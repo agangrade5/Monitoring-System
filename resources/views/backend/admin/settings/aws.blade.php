@@ -55,3 +55,6 @@
         </form>
     </div>
 </div>
+@push('scripts')
+    {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/aws-settings.js')) !!}
+@endpush

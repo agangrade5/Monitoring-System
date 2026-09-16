@@ -50,7 +50,7 @@
 
 
             <input type="hidden" class="form-control font-mono fw-bold" id="otp_length" name="otp_length"  value="6">
-               
+
             <!-- <div class="col-md-6">
                 <label class="form-label fw-semibold text-secondary small" for="otp_length">OTP Digits Length (otp_length)</label>
                 <div class="input-group">
@@ -65,7 +65,7 @@
             </div> -->
 
             {{-- 3. Is Default Radio Buttons --}}
-            
+
 
             {{-- 4. Default Static OTP Code --}}
             <div class="col-md-6">
@@ -85,4 +85,6 @@
         </form>
     </div>
 </div>
-
+@push('scripts')
+    {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/otp-settings.js')) !!}
+@endpush
