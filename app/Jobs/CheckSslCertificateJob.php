@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Monitor;
-use App\Models\MonitorLog;
+use App\Repositories\Contracts\MonitorLogRepositoryInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -28,8 +28,10 @@ class CheckSslCertificateJob implements ShouldQueue
      * @throws \Exception
      * 
      */
-    public function handle(): void
+    public function handle(?MonitorLogRepositoryInterface $monitorLogRepository = null): void
     {
+        $monitorLogRepository = $monitorLogRepository ?? app(MonitorLogRepositoryInterface::class);
+
         $monitor = Monitor::with('settings')->find($this->monitorId);
         if (!$monitor || !$monitor->is_active) {
             return;
@@ -105,7 +107,7 @@ class CheckSslCertificateJob implements ShouldQueue
 
             $monitor->update(['status' => 'down', 'last_down_at' => now()]);
 
-            MonitorLog::create([
+            $monitorLogRepository->create([
                 'monitor_id' => $monitor->id,
                 'status' => 'down',
                 'reason' => 'SSL socket connection failed',
@@ -134,7 +136,7 @@ class CheckSslCertificateJob implements ShouldQueue
 
             $monitor->update(['status' => 'down', 'last_down_at' => now()]);
 
-            MonitorLog::create([
+            $monitorLogRepository->create([
                 'monitor_id' => $monitor->id,
                 'status' => 'down',
                 'reason' => 'SSL peer certificate not found in stream',
@@ -161,7 +163,7 @@ class CheckSslCertificateJob implements ShouldQueue
 
             $monitor->update(['status' => 'down', 'last_down_at' => now()]);
 
-            MonitorLog::create([
+            $monitorLogRepository->create([
                 'monitor_id' => $monitor->id,
                 'status' => 'down',
                 'reason' => 'Unable to parse SSL certificate',
@@ -203,7 +205,7 @@ class CheckSslCertificateJob implements ShouldQueue
         if (in_array($status, ['expired', 'invalid'])) {
             $monitor->update(['status' => 'down', 'last_down_at' => now()]);
 
-            MonitorLog::create([
+            $monitorLogRepository->create([
                 'monitor_id' => $monitor->id,
                 'status' => 'down',
                 'reason' => "SSL certificate is {$status} (Issuer: " . ($issuer ?? 'Unknown') . ")",

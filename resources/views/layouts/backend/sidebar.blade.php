@@ -47,14 +47,15 @@
                     </a>
                 </li>
                   <li class="nav-item">
-                     <a href="{{ route('admin.monitor.index') }}" class="nav-link {{ request()->routeIs('monitor', 'monitor.create', 'monitor.edit','monitor.show') ? 'active' : '' }}">
+                        <a href="{{ route('admin.monitor.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.monitor.*') ? 'active' : '' }}">
 
-                        <i class="nav-icon bi bi-activity"></i>
-                        <p>Monitoring</p>
-                    </a>
-                </li>
+                            <i class="nav-icon bi bi-activity"></i>
+                            <p>Monitoring</p>
+                        </a>
+                    </li>
                 <li class="nav-item">
-                    <a href="{{ route('admin.settings.index') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
+                    <a href="{{ route('admin.settings.index') }}" class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-gear"></i>
                         <p>Settings</p>
                     </a>
@@ -78,14 +79,14 @@
                 </li>
 
                  <li class="nav-item">
-                     <a href="{{ route('monitor.index') }}" class="nav-link {{ request()->routeIs('monitor') ? 'active' : '' }}">
+                     <a href="{{ route('monitor.index') }}" class="nav-link {{ request()->routeIs('monitor.*') ? 'active' : '' }}">
 
                         <i class="nav-icon bi bi-activity"></i>
                         <p>Monitoring</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('settings.index') }}" class="nav-link {{ request()->routeIs('settings') ? 'active' : '' }}">
+                    <a href="{{ route('settings.index') }}" class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                         <i class="nav-icon bi bi-gear"></i>
                         <p>Settings</p>
                     </a>

@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Monitor;
-use App\Models\MonitorLog;
+use App\Repositories\Contracts\MonitorLogRepositoryInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -23,8 +23,10 @@ class CheckUptimeJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(?MonitorLogRepositoryInterface $monitorLogRepository = null): void
     {
+        $monitorLogRepository = $monitorLogRepository ?? app(MonitorLogRepositoryInterface::class);
+
         $monitor = Monitor::with([
             'settings',
             'checkResult',
@@ -201,7 +203,7 @@ class CheckUptimeJob implements ShouldQueue
                 'last_down_at' => $checkedAt,
             ]);
 
-            MonitorLog::create([
+            $monitorLogRepository->create([
                 'monitor_id' => $monitor->id,
                 'status' => 'down',
                 'reason' => $reason,
@@ -237,7 +239,7 @@ class CheckUptimeJob implements ShouldQueue
                 'last_down_at' => $checkedAt,
             ]);
 
-            MonitorLog::create([
+            $monitorLogRepository->create([
                 'monitor_id' => $monitor->id,
                 'status' => 'down',
                 'reason' => $reason,

@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Monitor;
-use App\Models\MonitorLog;
+use App\Repositories\Contracts\MonitorLogRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,8 +22,10 @@ class CheckDomainExpiryJob implements ShouldQueue
     ) {
     }
 
-    public function handle(): void
+    public function handle(?MonitorLogRepositoryInterface $monitorLogRepository = null): void
     {
+        $monitorLogRepository = $monitorLogRepository ?? app(MonitorLogRepositoryInterface::class);
+
         try {
             /*
              * ---------------------------------------------------------
@@ -248,7 +250,7 @@ class CheckDomainExpiryJob implements ShouldQueue
                     'status' => 'down',
                 ]);
 
-                MonitorLog::create([
+                $monitorLogRepository->create([
                     'monitor_id' => $monitor->id,
                     'status' => 'down',
                     'response_time' => null,

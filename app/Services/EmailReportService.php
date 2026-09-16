@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Monitor;
-use App\Models\EmailLog;
 use App\Repositories\Contracts\SettingRepositoryInterface;
+use App\Repositories\Contracts\EmailLogRepositoryInterface;
 use App\Notifications\MonitoringReportNotification;
 use App\Helpers\UtilityHelper;
 use Illuminate\Support\Collection;
@@ -20,8 +20,10 @@ class EmailReportService
     public function __construct(
         protected SettingRepositoryInterface $settingRepository,
         protected ReportExportService $reportExportService,
-        protected MailConfigService $mailConfigService
+        protected MailConfigService $mailConfigService,
+        protected ?EmailLogRepositoryInterface $emailLogRepository = null
     ) {
+        $this->emailLogRepository = $emailLogRepository ?? app(EmailLogRepositoryInterface::class);
     }
 
     /**
@@ -131,7 +133,7 @@ class EmailReportService
             $subject = "[{$frequencyLabel} Report] Website Health & Monitoring Digest - " . config('app.name', 'Monitoring System');
 
             // Record in Email Logs
-            EmailLog::create([
+            $this->emailLogRepository->create([
                 'monitor_id' => null,
                 'user_id' => $user->id,
                 'recipient_email' => $user->email,
@@ -164,7 +166,7 @@ class EmailReportService
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            EmailLog::create([
+            $this->emailLogRepository->create([
                 'monitor_id' => null,
                 'user_id' => $user->id,
                 'recipient_email' => $user->email,

@@ -94,6 +94,7 @@ class MonitorController extends Controller
 
         $baseName = $validated['name'];
         $createdCount = 0;
+        $createdIds = [];
 
         foreach ($urls as $url) {
             $host = parse_url($url, PHP_URL_HOST) ?: $url;
@@ -116,6 +117,7 @@ class MonitorController extends Controller
 
             $monitor = $this->monitorRepository->create($monitorData);
             $createdCount++;
+            $createdIds[] = $monitor->id;
 
             /*
             |--------------------------------------------------------------------------
@@ -131,30 +133,22 @@ class MonitorController extends Controller
                     'user_agent' => $request->userAgent(),
                 ]
             );
-
-            /*
-            * Run all background monitor health checks via Service layer
-            */
-            $this->monitorService->runAllChecks($monitor->id);
         }
 
         /*
-        * Redirect to index page with success message
+        * Redirect to index page with success message and trigger background checks on UI
         */
         $message = ($createdCount > 1)
             ? "{$createdCount} Websites / Monitors created successfully."
             : 'Website / Monitor created successfully.';
 
-         $isAdmin = auth()->user()->hasRole('admin');
+        $isAdmin = auth()->user()->hasRole('admin');
+        $redirectRoute = $isAdmin ? 'admin.monitor.index' : 'monitor.index';
 
-        if ($isAdmin) {
-            return redirect()
-                   ->route('admin.monitor.index')
-                    ->with('success', $message);
-        }
         return redirect()
-            ->route('monitor.index')
-            ->with('success', $message);
+            ->route($redirectRoute)
+            ->with('success', $message)
+            ->with('auto_check_monitor_ids', $createdIds);
     }
 
     /**
@@ -224,25 +218,16 @@ class MonitorController extends Controller
             ]
         );
 
-
-        // Run checks after update
         /*
-        * Run all background monitor health checks via Service layer
-        */
-        $this->monitorService->runAllChecks($id);
-
-        /*
-        * Redirect to index page with success message
+        * Redirect to index page with success message and trigger background checks on UI
         */
         $isAdmin = auth()->user()->hasRole('admin');
-         if ($isAdmin) {
-            return redirect()
-                   ->route('admin.monitor.index')
-                    ->with('success', 'Website / Monitor updated successfully.');
-        }
+        $redirectRoute = $isAdmin ? 'admin.monitor.index' : 'monitor.index';
+
         return redirect()
-            ->route('monitor.index')
-            ->with('success', 'Monitor updated successfully.');
+            ->route($redirectRoute)
+            ->with('success', 'Website / Monitor updated successfully.')
+            ->with('auto_check_monitor_ids', [$id]);
     }
 
     /**

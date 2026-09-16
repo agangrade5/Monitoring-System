@@ -7,7 +7,9 @@ use App\Repositories\Contracts\{
     UserRepositoryInterface,
     SettingRepositoryInterface,
     MonitorRepositoryInterface,
-    DashboardRepositoryInterface
+    DashboardRepositoryInterface,
+    MonitorLogRepositoryInterface,
+    EmailLogRepositoryInterface
 };
 
 use App\Repositories\{
@@ -15,7 +17,9 @@ use App\Repositories\{
     UserRepository,
     SettingRepository,
     MonitorRepository,
-    DashboardRepository
+    DashboardRepository,
+    MonitorLogRepository,
+    EmailLogRepository
 };
 
 use Illuminate\Support\ServiceProvider;
@@ -57,6 +61,18 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             ActivityLogRepositoryInterface::class,
             ActivityLogRepository::class
+        );
+
+        // Monitor Log Repository Binding
+        $this->app->bind(
+            MonitorLogRepositoryInterface::class,
+            MonitorLogRepository::class
+        );
+
+        // Email Log Repository Binding
+        $this->app->bind(
+            EmailLogRepositoryInterface::class,
+            EmailLogRepository::class
         );
     }
 
