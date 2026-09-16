@@ -637,8 +637,8 @@
     </div>
 </div>
 
-
 @endsection
+
 @push('scripts')
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/Showmonitor.js')) !!}
+    {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/Showmonitor.js')) !!}
 @endpush

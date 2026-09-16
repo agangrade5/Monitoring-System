@@ -332,7 +332,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     | Secret Key
                     |--------------------------------------------------------------------------
                     |
-                    | IMPORTANT:
                     | secretText is an INPUT element,
                     | therefore use .value instead of
                     | .textContent.
@@ -485,7 +484,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     | Invalid OTP / API Error
                     |--------------------------------------------------------------------------
                     |
-                    | IMPORTANT:
                     | Modal stays OPEN.
                     |
                     */
@@ -784,12 +782,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (disableBtn) {
                     disableBtn.disabled = true;
                     disableBtn.innerHTML = `
+                        ${originalText}
                         <span
                             class="spinner-border spinner-border-sm me-1"
                             role="status"
                             aria-hidden="true"
                         ></span>
-                        Disabling...
+
                     `;
                 }
 
@@ -819,7 +818,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     | Error
                     |--------------------------------------------------------------------------
                     |
-                    | IMPORTANT:
                     | Keep 2FA enabled if password is wrong.
                     |
                     */

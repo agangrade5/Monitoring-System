@@ -9,7 +9,7 @@
     <div class="card-body">
         <form method="POST" action="{{ route('admin.settings.twilio') }}" id="twilio-settings-form" class="row g-4">
             @csrf
-           
+
 
             <div class="col-md-6">
                 <label class="form-label fw-semibold text-secondary small" for="twilio_account_sid">Twilio Account SID</label>
@@ -43,3 +43,6 @@
         </form>
     </div>
 </div>
+@push('scripts')
+    {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/twilio-settings.js')) !!}
+@endpush

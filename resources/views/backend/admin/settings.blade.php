@@ -1,7 +1,5 @@
 @extends('layouts.backend.app')
-
 @section('title', $title)
-
 @section('content')
 
 <!--begin::App Content Header-->
@@ -115,12 +113,3 @@
 @include('backend.admin.settings.modal.google2fa-setup')
 
 @endsection
-@push('scripts')
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/otp-settings.js')) !!}
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/twilio-settings.js')) !!}
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/email-settings.js')) !!}
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/aws-settings.js')) !!}
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/notification-settings.js')) !!}
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/account-settings.js')) !!}
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/google2fa-settings.js')) !!}
-@endpush

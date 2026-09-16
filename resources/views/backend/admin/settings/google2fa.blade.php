@@ -51,7 +51,7 @@
                             </div>
                         </div>
                         {{-- Disable Form --}}
-                        <form id="tfa-disable-form" novalidate>
+                        <form id="tfa-disable-form" novalidate data-no-loader>
                             @csrf
                             <div class="row align-items-end g-3">
                                 <div class="col-md-7 col-lg-6">
@@ -131,3 +131,6 @@
         </div>
     </div>
 </div>
+@push('scripts')
+    {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/google2fa-settings.js')) !!}
+@endpush

@@ -88,4 +88,6 @@
         </form>
     </div>
 </div>
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/change-password.js')) !!}
+@push('scripts')
+    {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/change-password.js')) !!}
+@endpush
