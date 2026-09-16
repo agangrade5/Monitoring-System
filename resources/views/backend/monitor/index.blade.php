@@ -502,7 +502,8 @@
 
     </div>
 </div>
-
-{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/monitor.js') . '?v=' . time()) !!}
-
 @endsection
+@push('scripts')
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/monitor.js') . '?v=' . time()) !!}
+@endpush
+
