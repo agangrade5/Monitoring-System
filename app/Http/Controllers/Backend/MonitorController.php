@@ -145,6 +145,13 @@ class MonitorController extends Controller
             ? "{$createdCount} Websites / Monitors created successfully."
             : 'Website / Monitor created successfully.';
 
+         $isAdmin = auth()->user()->hasRole('admin');
+
+        if ($isAdmin) {
+            return redirect()
+                   ->route('admin.monitor.index')
+                    ->with('success', $message);
+        }
         return redirect()
             ->route('monitor.index')
             ->with('success', $message);
@@ -227,9 +234,15 @@ class MonitorController extends Controller
         /*
         * Redirect to index page with success message
         */
+        $isAdmin = auth()->user()->hasRole('admin');
+         if ($isAdmin) {
+            return redirect()
+                   ->route('admin.monitor.index')
+                    ->with('success', 'Website / Monitor updated successfully.');
+        }
         return redirect()
             ->route('monitor.index')
-            ->with('success', 'Website / Monitor updated successfully.');
+            ->with('success', 'Monitor updated successfully.');
     }
 
     /**

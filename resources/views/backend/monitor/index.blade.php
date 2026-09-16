@@ -2,9 +2,7 @@
 @section('title', 'Monitor Websites & Domains')
 @section('content')
 
- @php
-    $isAdmin = auth()->user()->hasRole('admin');
- @endphp
+@php $isAdmin = auth()->user()->hasRole('admin'); @endphp
 <!--begin::App Content Header-->
 <div class="app-content-header">
     <div class="container-fluid">
@@ -16,7 +14,7 @@
              <div class="dashboard-date-badge px-3 py-2 rounded-3 border d-flex align-items-center gap-2">
                 <nav aria-label="breadcrumb">
                   <ol class="breadcrumb float-sm-end mb-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ $isAdmin ? route('admin.dashboard') : route('dashboard') }}">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Monitor Websites & Domains</li>
                   </ol>
                 </nav>
@@ -32,10 +30,8 @@
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header border-bottom py-3 d-flex flex-wrap gap-2 align-items-center">
                 <div class="me-auto">
-                    <h5 class="card-title fw-bold mb-0">Monitor Websites & Domains
-</h5>
+                    <h5 class="card-title fw-bold mb-0">Monitor Websites & Domains</h5>
                 </div>
-
                 <form action="{{ $isAdmin ? route('admin.monitor.index') : route('monitor.index') }}" method="GET" class="settings-search-wrapper w-auto me-1">
                     <i class="bi bi-search"></i>
                     <input
@@ -49,8 +45,8 @@
                         style="width: 14rem;"
                     >
                 </form>
-                       
-                    <a href="{{ $isAdmin ? route('admin.monitor.create') : route('monitor.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+
+                <a href="{{ $isAdmin ? route('admin.monitor.create') : route('monitor.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
                     <i class="bi bi-plus-lg"></i>Add Website
                 </a>
             </div>
@@ -84,7 +80,7 @@
                                     <td class="ps-3">
 
                                         <div class="fw-semibold text-body-emphasis fs-6">
-                                            <a href="{{ route('monitor.show', $monitor->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
+                                            <a href="{{ $isAdmin ? route('admin.monitor.show', $monitor->id) : route('monitor.show', $monitor->id) }}" class="text-body-emphasis text-decoration-none hover-primary">
                                                 {{ $monitor->name }}
                                             </a>
                                         </div>

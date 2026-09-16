@@ -162,11 +162,11 @@
                                  aria-labelledby="reportFrequencyDropdown" 
                                  style="background-color: #1e2430; min-width: 230px; z-index: 1050;">
                                 <label class="dropdown-event-item d-flex align-items-center gap-2 px-3 py-2 rounded text-white cursor-pointer mb-1" for="report_weekly">
-                                    <input class="form-check-input report-frequency-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" name="report_weekly" value="1" id="report_weekly" {{ ($reportData['report_email']['Weekly'] ?? false) ? 'checked' : '' }}>
+                                    <input class="form-check-input report-frequency-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" name="report_weekly" value="1" id="report_weekly" {{ ($reportData['report_email']['weekly'] ?? ($reportData['report_email']['Weekly'] ?? false)) ? 'checked' : '' }}>
                                     <span class="small fw-medium report-label-text">Weekly report</span>
                                 </label>
                                 <label class="dropdown-event-item d-flex align-items-center gap-2 px-3 py-2 rounded text-white cursor-pointer" for="report_monthly">
-                                    <input class="form-check-input report-frequency-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" name="report_monthly" value="1" id="report_monthly" {{ ($reportData['report_email']['Monthly'] ?? false) ? 'checked' : '' }}>
+                                    <input class="form-check-input report-frequency-checkbox flex-shrink-0 m-0 cursor-pointer" type="checkbox" name="report_monthly" value="1" id="report_monthly" {{ ($reportData['report_email']['monthly'] ?? ($reportData['report_email']['Monthly'] ?? false)) ? 'checked' : '' }}>
                                     <span class="small fw-medium report-label-text">Monthly report</span>
                                 </label>
                             </div>

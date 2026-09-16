@@ -1,15 +1,14 @@
 @extends('layouts.backend.app')
 @section('title', $title)
 @section('content')
-@php
-    $isAdmin = auth()->user()->hasRole('admin');
- @endphp
+
+@php $isAdmin = auth()->user()->hasRole('admin'); @endphp
 <!--begin::App Content Header-->
 <div class="app-content-header py-3">
     <div class="container-fluid">
         {{-- Back Navigation Link --}}
         <div class="mb-2">
-            <a href="{{ route('monitor.index') }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-1">
+            <a href="{{ $isAdmin ? route('admin.monitor.index') : route('monitor.index') }}" class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-1">
                 <i class="bi bi-chevron-left me-1"></i> Monitoring
             </a>
         </div>
@@ -49,7 +48,7 @@
 
 
                 {{-- Pause/Resume Toggle --}}
-                <!-- <form action="{{ route('monitor.toggle', $monitor->id) }}" method="POST" class="d-inline">
+                <!-- <form action="{{ $isAdmin ? route('admin.monitor.toggle', $monitor->id) : route('monitor.toggle', $monitor->id) }}" method="POST" class="d-inline">
                     @csrf
                     @method('PATCH')
                     <button type="submit" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" title="{{ $monitor->is_active ? 'Pause Monitor' : 'Resume Monitor' }}">
@@ -62,7 +61,7 @@
                 </form> -->
 
                 {{-- Edit --}}
-                <a href="{{ route('monitor.edit', $monitor->id) }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" title="Edit Monitor">
+                <a href="{{ $isAdmin ? route('admin.monitor.edit', $monitor->id) : route('monitor.edit', $monitor->id) }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" title="Edit Monitor">
                     <i class="bi bi-pencil"></i> <span>Edit</span>
                 </a>
 
@@ -594,7 +593,7 @@
             </div>
 
             <div class="modal-body px-4 pt-3 pb-4">
-                <form id="formSendTestNotification" action=" {{ $isAdmin ? route('admin.monitor.testNotification', $monitor->id) : route('monitor.testNotification', $monitor->id) }}" method="POST"  class="needs-validation" novalidate>
+                <form id="formSendTestNotification" action="{{ $isAdmin ? route('admin.monitor.testNotification', $monitor->id) : route('monitor.testNotification', $monitor->id) }}" method="POST"  class="needs-validation" novalidate>
                     @csrf
 
                     {{-- Attached people and integrations section --}}
@@ -622,13 +621,9 @@
                     <div class="mb-4">
                         <p class="small text-muted mb-1" style="font-size: 0.825rem;">
                             Can't see your alert contact here?
-                            <a href="{{ $isAdmin ? route('admin.monitor.edit',$monitor->id') : route('monitor.store',$monitor->id) }}" class="text-success text-decoration-none fw-semibold">Attach it here</a>
+                            <a href="{{ $isAdmin ? route('admin.monitor.edit', $monitor->id) : route('monitor.edit', $monitor->id) }}" class="text-success text-decoration-none fw-semibold">Attach it here</a>
                         </p>
-
                     </div>
-
-
-
 
                     {{-- Submit button --}}
                     <button type="submit" class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2 fw-semibold rounded-3" id="btnSubmitTestNotification">
