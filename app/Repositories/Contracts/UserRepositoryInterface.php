@@ -47,10 +47,11 @@ interface UserRepositoryInterface
      * Method to retrieve all users
      *
      * @param string|null $search
+     * @param int $perPage
      *
      * @return LengthAwarePaginator
      */
-     public function getAllUsers(?string $search = null): LengthAwarePaginator;
+     public function getAllUsers(?string $search = null, int $perPage = 10): LengthAwarePaginator;
 
     /**
      * Finds a user by ID.

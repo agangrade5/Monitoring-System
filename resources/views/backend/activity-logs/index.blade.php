@@ -214,85 +214,9 @@
                         <!-- /.table-responsive -->
                     </div>
                     <!--end::Card Body-->
-
                     <!-- Pagination -->
-                    @if($logs->hasPages())
-                        <div class="card-footer clearfix">
-                            {{-- Showing Records --}}
-                            <div class="float-start pt-1 fs-7 text-body-secondary">
-                                Showing
-                                {{ $logs->firstItem() ?? 0 }}
-                                to
-                                {{ $logs->lastItem() ?? 0 }}
-                                of
-                                {{ $logs->total() }}
-                                activity logs
-                            </div>
-
-                            {{-- Pagination --}}
-                            <ul class="pagination pagination-sm m-0 float-end">
-
-                                {{-- Previous --}}
-                                @if($logs->onFirstPage())
-                                    <li class="page-item disabled">
-                                        <span class="page-link" aria-label="Previous">
-                                            &laquo;
-                                        </span>
-                                    </li>
-                                @else
-                                    <li class="page-item">
-                                        <a
-                                            class="page-link"
-                                            href="{{ $logs->previousPageUrl() }}"
-                                            aria-label="Previous"
-                                        >
-                                            &laquo;
-                                        </a>
-                                    </li>
-                                @endif
-
-                                {{-- Page Numbers --}}
-                                @foreach($logs->getUrlRange(1, $logs->lastPage()) as $page => $url)
-                                    @if($page == $logs->currentPage())
-                                        <li class="page-item active">
-                                            <span class="page-link">
-                                                {{ $page }}
-                                            </span>
-                                        </li>
-                                    @else
-                                        <li class="page-item">
-                                            <a
-                                                class="page-link"
-                                                href="{{ $url }}"
-                                            >
-                                                {{ $page }}
-                                            </a>
-                                        </li>
-                                    @endif
-                                @endforeach
-
-                                {{-- Next --}}
-                                @if($logs->hasMorePages())
-                                    <li class="page-item">
-                                        <a
-                                            class="page-link"
-                                            href="{{ $logs->nextPageUrl() }}"
-                                            aria-label="Next"
-                                        >
-                                            &raquo;
-                                        </a>
-                                    </li>
-                                @else
-                                    <li class="page-item disabled">
-                                        <span class="page-link" aria-label="Next">
-                                            &raquo;
-                                        </span>
-                                    </li>
-                                @endif
-                            </ul>
-                        </div>
-                    @endif
-                    <!--end::Card Footer-->
+                    <x-pagination :paginator="$logs" label="activity logs" />
+                    <!--end::Pagination-->
                 </div>
                 <!--end::Card-->
             </div>

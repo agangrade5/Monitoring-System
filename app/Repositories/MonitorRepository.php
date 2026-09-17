@@ -20,11 +20,11 @@ class MonitorRepository implements MonitorRepositoryInterface
      *
      * @param string|null $search
      * @param int|null $userId
-     * @param int|null $perPage
-     * 
+     * @param int $perPage
+     *
      * @return LengthAwarePaginator
      */
-    public function getAll(?string $search = null, ?int $userId = null, ?int $perPage = null): LengthAwarePaginator
+    public function getAll(?string $search = null, ?int $userId = null, int $perPage = 10): LengthAwarePaginator
     {
         $limit = $perPage ?? (int) config('constants.pagination_limit.defaultPagination', 10);
 
@@ -40,7 +40,8 @@ class MonitorRepository implements MonitorRepositoryInterface
                 });
             })
             ->latest()
-            ->paginate($limit);
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     /**
