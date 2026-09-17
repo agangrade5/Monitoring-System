@@ -75,7 +75,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse($users as $user)
-                                    
+
                                         <tr id="user-row-{{ $user['id'] }}">
                                             <!-- Serial Number -->
                                             <td class="ps-4">
@@ -178,41 +178,9 @@
                             </table>
                         </div>
                     </div>
-
-                    <!-- Card Footer -->
-                    <div class="card-footer border-0 bg-transparent py-3">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <div class="small text-muted fw-medium">
-                                @if(count($users) > 0)
-                                    Showing 1 to {{ count($users) }} of {{ count($users) }} users
-                                @else
-                                    Showing 0 to 0 of 0 users
-                                @endif
-                            </div>
-                            <div>
-                                <ul class="pagination pagination-sm m-0">
-                                    <!-- Previous -->
-                                    <li class="page-item {{ $users->onFirstPage() ? 'disabled' : '' }}">
-                                        <a class="page-link" href="{{ $users->previousPageUrl() ?? '#' }}" aria-label="Previous">
-                                            <i class="bi bi-chevron-left"></i>
-                                        </a>
-                                    </li>
-                                    <!-- Page Numbers -->
-                                    @for ($page = 1; $page <= $users->lastPage(); $page++)
-                                        <li class="page-item {{ $users->currentPage() == $page ? 'active' : '' }}">
-                                            <a class="page-link" href="{{ $users->url($page) }}">{{ $page }}</a>
-                                        </li>
-                                    @endfor
-                                    <!-- Next -->
-                                    <li class="page-item {{ $users->hasMorePages() ? '' : 'disabled' }}">
-                                        <a class="page-link" href="{{ $users->nextPageUrl() ?? '#' }}" aria-label="Next">
-                                            <i class="bi bi-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Pagination -->
+                    <x-pagination :paginator="$users" label="users" />
+                    <!--end::Pagination-->
                 </div>
             </div>
         </div>

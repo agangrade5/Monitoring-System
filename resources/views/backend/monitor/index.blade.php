@@ -383,7 +383,7 @@
 
                                             {{-- Edit --}}
 
-                                            
+
                                             <a href="{{ $isAdmin ? route('admin.monitor.edit', $monitor->id) : route('monitor.edit', $monitor->id) }}" class="btn btn-sm btn-outline-primary rounded-0" style="margin-left: -1px;" title="Edit Monitor"><i class="bi bi-pencil-square"></i> </a>
 
                                             {{-- Delete --}}
@@ -423,86 +423,10 @@
                     </table>
                 </div>
             </div>
-
             <!-- Pagination -->
-            @if($monitors->total() > 0)
-                <div class="card-footer clearfix">
-                    {{-- Showing Records --}}
-                    <div class="float-start pt-1 fs-7 text-body-secondary">
-                        Showing
-                        {{ $monitors->firstItem() ?? 0 }}
-                        to
-                        {{ $monitors->lastItem() ?? 0 }}
-                        of
-                        {{ $monitors->total() }}
-                        monitors
-                    </div>
-
-                    {{-- Pagination --}}
-                    <ul class="pagination pagination-sm m-0 float-end">
-
-                        {{-- Previous --}}
-                        @if($monitors->onFirstPage())
-                            <li class="page-item disabled">
-                                <span class="page-link" aria-label="Previous">
-                                    &laquo;
-                                </span>
-                            </li>
-                        @else
-                            <li class="page-item">
-                                <a
-                                    class="page-link"
-                                    href="{{ $monitors->appends(request()->query())->previousPageUrl() }}"
-                                    aria-label="Previous"
-                                >
-                                    &laquo;
-                                </a>
-                            </li>
-                        @endif
-
-                        {{-- Page Numbers --}}
-                        @foreach($monitors->getUrlRange(1, $monitors->lastPage()) as $page => $url)
-                            @if($page == $monitors->currentPage())
-                                <li class="page-item active">
-                                    <span class="page-link">
-                                        {{ $page }}
-                                    </span>
-                                </li>
-                            @else
-                                <li class="page-item">
-                                    <a
-                                        class="page-link"
-                                        href="{{ $monitors->appends(request()->query())->url($page) }}"
-                                    >
-                                        {{ $page }}
-                                    </a>
-                                </li>
-                            @endif
-                        @endforeach
-
-                        {{-- Next --}}
-                        @if($monitors->hasMorePages())
-                            <li class="page-item">
-                                <a
-                                    class="page-link"
-                                    href="{{ $monitors->appends(request()->query())->nextPageUrl() }}"
-                                    aria-label="Next"
-                                >
-                                    &raquo;
-                                </a>
-                            </li>
-                        @else
-                            <li class="page-item disabled">
-                                <span class="page-link" aria-label="Next">
-                                    &raquo;
-                                </span>
-                            </li>
-                        @endif
-                    </ul>
-                </div>
-            @endif
+            <x-pagination :paginator="$monitors" label="monitors" />
+            <!--end::Pagination-->
         </div>
-
     </div>
 </div>
 @endsection

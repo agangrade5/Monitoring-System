@@ -32,9 +32,9 @@ class UserController extends Controller
     public function allUsers(): View
     {
         $search = request('search');
+        $perPage = config('constants.pagination_limit.defaultPagination');
 
-        $users = $this->userRepository->getAllUsers($search);
-        
+        $users = $this->userRepository->getAllUsers($search, $perPage);
 
         return view('backend.admin.users.index', [
             'title' => 'User',

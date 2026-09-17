@@ -74,10 +74,11 @@ class UserRepository implements UserRepositoryInterface
      * Method to retrieve all users with pagination and optional search.
      *
      * @param string|null $search
+     * @param int $perPage
      *
      * @return LengthAwarePaginator
      */
-    public function getAllUsers(?string $search = null): LengthAwarePaginator
+    public function getAllUsers(?string $search = null, int $perPage = 10): LengthAwarePaginator
     {
         return User::withoutRole('Admin')
             ->when($search, function ($query, $search) {
@@ -87,7 +88,8 @@ class UserRepository implements UserRepositoryInterface
                 });
             })
             ->latest()
-            ->paginate(config('constants.pagination_limit.defaultPagination'));
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     /**

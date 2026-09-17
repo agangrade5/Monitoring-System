@@ -34,7 +34,8 @@ class MonitorController extends Controller
     {
         $user = auth()->user();
         $userId = ($user && !$user->hasRole('admin')) ? $user->id : null;
-        $monitors = $this->monitorRepository->getAll(request('search'), $userId);
+        $perPage = config('constants.pagination_limit.defaultPagination');
+        $monitors = $this->monitorRepository->getAll(request('search'), $userId, $perPage);
         $title = 'Monitor Websites & Domains';
         return view(
             'backend.monitor.index',
