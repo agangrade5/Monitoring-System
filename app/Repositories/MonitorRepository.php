@@ -20,10 +20,11 @@ class MonitorRepository implements MonitorRepositoryInterface
      *
      * @param string|null $search
      * @param int|null $userId
-     * 
+     * @param int $perPage
+     *
      * @return LengthAwarePaginator
      */
-    public function getAll(?string $search = null, ?int $userId = null): LengthAwarePaginator
+    public function getAll(?string $search = null, ?int $userId = null, int $perPage = 10): LengthAwarePaginator
     {
         return $this->model
             ->with(['user', 'settings', 'checkResult'])
@@ -37,7 +38,8 @@ class MonitorRepository implements MonitorRepositoryInterface
                 });
             })
             ->latest()
-            ->paginate(10);
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     /**
