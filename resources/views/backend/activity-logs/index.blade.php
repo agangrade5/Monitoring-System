@@ -150,7 +150,7 @@
                                         <td>
                                             <div
                                                 class="small text-truncate"
-                                                style="max-width: 350px"
+                                                style="max-width: 500px"
                                                 title="{{ $log->description }}"
                                             >
                                                 {{ $log->description }}

@@ -126,7 +126,7 @@ class MonitorController extends Controller
             */
             UtilityHelper::customActivityLog(
                 'monitor',
-                'New monitor created successfully.',
+                "New {$monitor->name} monitor created successfully.",
                 $monitor,
                 [
                     'ip' => $request->ip(),
@@ -209,7 +209,7 @@ class MonitorController extends Controller
         */
        UtilityHelper::customActivityLog(
             'monitor',
-            'Monitor updated successfully.',
+            "Monitor {$monitor->name} updated successfully.",
             $monitor,
             [
                 'id' => $id,
@@ -250,7 +250,7 @@ class MonitorController extends Controller
         */
        UtilityHelper::customActivityLog(
             'monitor',
-            'Monitor deleted successfully.',
+            "Monitor {$monitor->name} deleted successfully.",
             $monitor,
             [
                 'id' => $id,
@@ -290,6 +290,7 @@ class MonitorController extends Controller
         $this->monitorRepository->update($id, [
             'is_active' => $newStatus
         ]);
+        $statusLabel = $newStatus ? 'activated' : 'deactivated';
 
       /*
         |--------------------------------------------------------------------------
@@ -298,7 +299,7 @@ class MonitorController extends Controller
         */
        UtilityHelper::customActivityLog(
             'monitor',
-            'Monitor status updated successfully.',
+            "Monitor {$monitor->name} {$statusLabel} successfully.",
             $monitor,
             [
                 'id' => $id,
@@ -324,21 +325,25 @@ class MonitorController extends Controller
         abort_if(!$monitor, 404);
         $this->checkMonitorOwnership($monitor);
 
+        $isAutoCheck = $request->boolean('auto_check') || $request->has('is_auto');
+
         /*
         |--------------------------------------------------------------------------
-        | Activity Log
+        | Activity Log (only on manual user click, not auto-check after add/update)
         |--------------------------------------------------------------------------
         */
-       UtilityHelper::customActivityLog(
-            'monitor',
-            'Monitor check triggered successfully.',
-            $monitor,
-            [
-                'id' => $id,
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]
-        );
+        if (!$isAutoCheck) {
+            UtilityHelper::customActivityLog(
+                'monitor',
+                "Monitor check triggered successfully for {$monitor->name}.",
+                $monitor,
+                [
+                    'id' => $id,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+        }
         try {
             $this->monitorService->runAllChecks($id);
             $message = "Website checks triggered and updated successfully for {$monitor->name}.";

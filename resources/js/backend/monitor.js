@@ -101,6 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
         autoCheckRows.forEach((row, index) => {
             const form = row.querySelector('.trigger-check-form');
             if (form) {
+                if (!form.querySelector('input[name="auto_check"]')) {
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'auto_check';
+                    hidden.value = '1';
+                    form.appendChild(hidden);
+                }
                 setTimeout(() => {
                     form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
                 }, index * 300);
@@ -112,6 +119,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (row) {
                 const form = row.querySelector('.trigger-check-form');
                 if (form) {
+                    if (!form.querySelector('input[name="auto_check"]')) {
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'auto_check';
+                        hidden.value = '1';
+                        form.appendChild(hidden);
+                    }
                     setTimeout(() => {
                         form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
                     }, index * 300);

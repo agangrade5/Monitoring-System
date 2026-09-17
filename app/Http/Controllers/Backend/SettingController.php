@@ -65,14 +65,26 @@ class SettingController extends Controller
      */
     public function updateNotificationSettings(Request $request): JsonResponse
     {
-
+        $userId = Auth::id();
         $notificationDefaults = config('constants.user_defaults.notifications');
+
+        // Fetch existing notification settings before update to detect master switch toggle changes
+        $existing = $this->settingRepository->getSettingArray('notifications', [], $userId);
+        $prevEmailEnabled = isset($existing['email']['enabled'])
+            ? (bool) $existing['email']['enabled']
+            : (bool) ($notificationDefaults['email']['enabled'] ?? false);
+        $prevSmsEnabled = isset($existing['sms']['enabled'])
+            ? (bool) $existing['sms']['enabled']
+            : (bool) ($notificationDefaults['sms']['enabled'] ?? false);
+
+        $newEmailEnabled = $request->boolean('email_enabled');
+        $newSmsEnabled = $request->boolean('sms_enabled');
 
         $payload = [
             'email' => array_combine(
                 array_keys($notificationDefaults['email']),
                 [
-                    $request->boolean('email_enabled'),
+                    $newEmailEnabled,
                     $request->boolean('email_down_event'),
                     $request->boolean('email_up_event'),
                     $request->boolean('email_ssl_domain_expiry'),
@@ -82,7 +94,7 @@ class SettingController extends Controller
             'sms' => array_combine(
                 array_keys($notificationDefaults['sms']),
                 [
-                    $request->boolean('sms_enabled'),
+                    $newSmsEnabled,
                     $request->boolean('sms_down_event'),
                     $request->boolean('sms_up_event'),
                     $request->boolean('sms_ssl_domain_expiry'),
@@ -90,17 +102,45 @@ class SettingController extends Controller
             ),
         ];
 
-        $setting = $this->settingRepository->saveSetting('notifications', $payload, Auth::id());
+        $setting = $this->settingRepository->saveSetting('notifications', $payload, $userId);
 
-        UtilityHelper::customActivityLog(
-            'setting',
-            'Updated Alert Notification Settings successfully.',
-            $setting,
-            [
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]
-        );
+        // Activity log ONLY when Email Master Toggle state changed
+        if ($prevEmailEnabled !== $newEmailEnabled) {
+            $desc = $newEmailEnabled
+                ? 'Email notifications enabled.'
+                : 'Email notifications disabled.';
+
+            UtilityHelper::customActivityLog(
+                'setting',
+                $desc,
+                $setting,
+                [
+                    'channel' => 'email',
+                    'enabled' => $newEmailEnabled,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+        }
+
+        // Activity log ONLY when SMS Master Toggle state changed
+        if ($prevSmsEnabled !== $newSmsEnabled) {
+            $desc = $newSmsEnabled
+                ? 'SMS notifications enabled.'
+                : 'SMS notifications disabled.';
+
+            UtilityHelper::customActivityLog(
+                'setting',
+                $desc,
+                $setting,
+                [
+                    'channel' => 'sms',
+                    'enabled' => $newSmsEnabled,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+        }
 
         return response()->json([
             'status' => true,
@@ -118,27 +158,45 @@ class SettingController extends Controller
      */
     public function updateReportSettings(Request $request): JsonResponse
     {
+        $userId = Auth::id();
+        $reportDefaults = config('constants.user_defaults.report.report_email');
 
-        $reportEmail = config('constants.user_defaults.report.report_email');
+        // Fetch existing report settings before update to detect master switch toggle changes
+        $existing = $this->settingRepository->getSettingArray('report', [], $userId);
+        $prevReportEnabled = isset($existing['report_email']['enabled'])
+            ? (bool) $existing['report_email']['enabled']
+            : (bool) ($reportDefaults['enabled'] ?? false);
+
+        $newReportEnabled = $request->boolean('report_email_enabled');
 
         $payload = [
             'report_email' => [
-                'enabled' => $request->boolean('report_email_enabled'),
+                'enabled' => $newReportEnabled,
                 'weekly' => $request->boolean('report_weekly'),
                 'monthly' => $request->boolean('report_monthly'),
             ],
         ];
-        $setting = $this->settingRepository->saveSetting('report', $payload, Auth::id());
 
-        UtilityHelper::customActivityLog(
-            'setting',
-            'Updated Email Report Settings successfully.',
-            $setting,
-            [
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]
-        );
+        $setting = $this->settingRepository->saveSetting('report', $payload, $userId);
+
+        // Activity log ONLY when Email Report Master Toggle state changed
+        if ($prevReportEnabled !== $newReportEnabled) {
+            $desc = $newReportEnabled
+                ? 'Email reporting enabled.'
+                : 'Email reporting disabled.';
+
+            UtilityHelper::customActivityLog(
+                'setting',
+                $desc,
+                $setting,
+                [
+                    'channel' => 'report_email',
+                    'enabled' => $newReportEnabled,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+        }
 
         return response()->json([
             'status' => true,
