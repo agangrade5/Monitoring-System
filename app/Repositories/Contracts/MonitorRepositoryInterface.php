@@ -8,13 +8,14 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface MonitorRepositoryInterface
 {
     /**
-     * Retrieves all monitors from the database.
+     * Retrieves all monitors from the database with pagination.
      * 
      * @param string|null $search
      * @param int|null $userId
+     * @param int|null $perPage
      * @return LengthAwarePaginator<Monitor> A paginator containing all monitors.
      */
-    public function getAll(?string $search = null, ?int $userId = null): LengthAwarePaginator;
+    public function getAll(?string $search = null, ?int $userId = null, ?int $perPage = null): LengthAwarePaginator;
 
     /**
      * Retrieves a monitor by its ID.

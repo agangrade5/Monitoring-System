@@ -31,7 +31,7 @@ interface EmailLogRepositoryInterface
         bool $isAdmin = false,
         ?string $search = null,
         ?string $status = null,
-        int $perPage = 10
+        ?int $perPage = null
     ): LengthAwarePaginator;
 
     /**

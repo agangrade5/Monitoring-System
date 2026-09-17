@@ -35,8 +35,10 @@ class EmailLogRepository implements EmailLogRepositoryInterface
         bool $isAdmin = false,
         ?string $search = null,
         ?string $status = null,
-        int $perPage = 10
+        ?int $perPage = null
     ): LengthAwarePaginator {
+        $perPage = $perPage ?? (int) config('constants.pagination_limit.defaultPagination', 10);
+
         $query = EmailLog::query()
             ->with(['user', 'monitor'])
             ->latest('sent_at');
