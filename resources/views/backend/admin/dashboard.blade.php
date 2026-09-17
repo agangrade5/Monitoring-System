@@ -230,7 +230,6 @@
                                 </div>
                                 <i class="bi bi-chevron-right text-muted quick-action-arrow"></i>
                             </a>
-
                             <a href="{{ route('admin.monitor.index') }}" class="quick-action-link p-3 rounded-3 d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="quick-action-icon bg-success-subtle text-success rounded-3 d-flex align-items-center justify-content-center">

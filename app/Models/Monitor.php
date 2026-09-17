@@ -97,14 +97,14 @@ class Monitor extends Model
      */
     public function __get($key)
     {
+        // Prioritize settings relation for check options
+        if (in_array($key, ['check_uptime', 'check_ssl', 'check_php', 'check_domain', 'check_security_headers'])) {
+            return (bool) ($this->settings->{$key} ?? false);
+        }
+
         $value = parent::__get($key);
         if ($value !== null) {
             return $value;
-        }
-
-        // Fallback to settings
-        if (in_array($key, ['check_uptime', 'check_ssl', 'check_php', 'check_domain', 'check_security_headers'])) {
-            return $this->settings->{$key} ?? true;
         }
 
         // Fallback to checkResult

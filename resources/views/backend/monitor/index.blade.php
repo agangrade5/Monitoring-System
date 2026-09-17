@@ -68,8 +68,11 @@
                         </thead>
 
                         <tbody>
+                            @php
+                                $autoCheckIds = (array) session('auto_check_monitor_ids', []);
+                            @endphp
                             @forelse($monitors as $monitor)
-                                <tr id="monitor-row-{{ $monitor->id }}">
+                                <tr id="monitor-row-{{ $monitor->id }}" data-auto-check="{{ in_array($monitor->id, $autoCheckIds) ? 'true' : 'false' }}">
 
 
                                             <!-- Serial Number -->
@@ -379,7 +382,9 @@
                                             </form>
 
                                             {{-- Edit --}}
-                                            <a href="{{ route('monitor.edit', $monitor->id) }}" class="btn btn-sm btn-outline-primary rounded-0" style="margin-left: -1px;" title="Edit Monitor"><i class="bi bi-pencil-square"></i> </a>
+
+                                            
+                                            <a href="{{ $isAdmin ? route('admin.monitor.edit', $monitor->id) : route('monitor.edit', $monitor->id) }}" class="btn btn-sm btn-outline-primary rounded-0" style="margin-left: -1px;" title="Edit Monitor"><i class="bi bi-pencil-square"></i> </a>
 
                                             {{-- Delete --}}
                                             <button
@@ -503,5 +508,10 @@
 @endsection
 
 @push('scripts')
+    @if(session('auto_check_monitor_ids'))
+        <script>
+            window.autoCheckMonitorIds = @json((array) session('auto_check_monitor_ids'));
+        </script>
+    @endif
     {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/monitor.js') . '?v=' . time()) !!}
 @endpush

@@ -94,4 +94,29 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
+
+    // Auto-trigger check for newly created or updated monitors
+    const autoCheckRows = document.querySelectorAll('tr[data-auto-check="true"]');
+    if (autoCheckRows.length > 0) {
+        autoCheckRows.forEach((row, index) => {
+            const form = row.querySelector('.trigger-check-form');
+            if (form) {
+                setTimeout(() => {
+                    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                }, index * 300);
+            }
+        });
+    } else if (window.autoCheckMonitorIds && Array.isArray(window.autoCheckMonitorIds)) {
+        window.autoCheckMonitorIds.forEach((id, index) => {
+            const row = document.getElementById(`monitor-row-${id}`);
+            if (row) {
+                const form = row.querySelector('.trigger-check-form');
+                if (form) {
+                    setTimeout(() => {
+                        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                    }, index * 300);
+                }
+            }
+        });
+    }
 });

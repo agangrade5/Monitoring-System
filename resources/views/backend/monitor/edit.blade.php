@@ -91,7 +91,7 @@
                                 <div class="col-md-6 col-lg-4">
                                     <label for="check_uptime" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
                                         <div class="form-check mb-0">
-                                            <input class="form-check-input" type="checkbox" name="check_uptime" id="check_uptime" value="1" {{ old('check_uptime', $monitor->check_uptime ?? true) ? 'checked' : '' }}>
+                                            <input class="form-check-input" type="checkbox" name="check_uptime" id="check_uptime" value="1" {{ old('check_uptime', $monitor->settings?->check_uptime) ? 'checked' : '' }}>
                                             <span class="form-check-label fw-bold ms-2">
                                                 <i class="bi bi-activity text-success me-1"></i> Uptime Status
                                             </span>
@@ -103,7 +103,7 @@
                                 <div class="col-md-6 col-lg-4">
                                     <label for="check_ssl" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
                                         <div class="form-check mb-0">
-                                            <input class="form-check-input" type="checkbox" name="check_ssl" id="check_ssl" value="1" {{ old('check_ssl', $monitor->check_ssl ?? true) ? 'checked' : '' }}>
+                                            <input class="form-check-input" type="checkbox" name="check_ssl" id="check_ssl" value="1" {{ old('check_ssl', $monitor->settings?->check_ssl) ? 'checked' : '' }}>
                                             <span class="form-check-label fw-bold ms-2">
                                                 <i class="bi bi-shield-check text-primary me-1"></i> SSL Status
                                             </span>
@@ -115,7 +115,7 @@
                                 <div class="col-md-6 col-lg-4">
                                     <label for="check_php" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
                                         <div class="form-check mb-0">
-                                            <input class="form-check-input" type="checkbox" name="check_php" id="check_php" value="1" {{ old('check_php', $monitor->check_php ?? true) ? 'checked' : '' }}>
+                                            <input class="form-check-input" type="checkbox" name="check_php" id="check_php" value="1" {{ old('check_php', $monitor->settings?->check_php) ? 'checked' : '' }}>
                                             <span class="form-check-label fw-bold ms-2">
                                                 <i class="bi bi-filetype-php text-info me-1"></i> PHP Version
                                             </span>
@@ -127,7 +127,7 @@
                                 <div class="col-md-6 col-lg-4">
                                     <label for="check_domain" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
                                         <div class="form-check mb-0">
-                                            <input class="form-check-input" type="checkbox" name="check_domain" id="check_domain" value="1" {{ old('check_domain', $monitor->check_domain ?? true) ? 'checked' : '' }}>
+                                            <input class="form-check-input" type="checkbox" name="check_domain" id="check_domain" value="1" {{ old('check_domain', $monitor->settings?->check_domain) ? 'checked' : '' }}>
                                             <span class="form-check-label fw-bold ms-2">
                                                 <i class="bi bi-globe me-1 text-warning"></i> Domain Expiry
                                             </span>
@@ -139,7 +139,7 @@
                                 <div class="col-md-6 col-lg-4">
                                     <label for="check_security_headers" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
                                         <div class="form-check mb-0">
-                                            <input class="form-check-input" type="checkbox" name="check_security_headers" id="check_security_headers" value="1" {{ old('check_security_headers', $monitor->check_security_headers ?? true) ? 'checked' : '' }}>
+                                            <input class="form-check-input" type="checkbox" name="check_security_headers" id="check_security_headers" value="1" {{ old('check_security_headers', $monitor->settings?->check_security_headers) ? 'checked' : '' }}>
                                             <span class="form-check-label fw-bold ms-2">
                                                 <i class="bi bi-shield-lock text-danger me-1"></i> Security Headers
                                             </span>

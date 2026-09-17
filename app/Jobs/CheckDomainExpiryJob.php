@@ -1,152 +1,419 @@
 <?php
 
 namespace App\Jobs;
+
 use App\Models\Monitor;
+use App\Repositories\Contracts\MonitorLogRepositoryInterface;
+use Carbon\Carbon;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Spatie\Rdap\Facades\Rdap;
 use Throwable;
 
 class CheckDomainExpiryJob implements ShouldQueue
 {
-    use Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     *  Create a new job instance.
-     * 
-     *  @return void
-     * 
-     * @throws \Exception
-     */
     public function __construct(
         public int $monitorId
-    ) {}
-    /**
-     * Execute the job.
-     * 
-     * @return void
-     * 
-     * @throws \Exception
-     */
-    public function handle(): void
+    ) {
+    }
+
+    public function handle(?MonitorLogRepositoryInterface $monitorLogRepository = null): void
     {
-        $monitor = Monitor::with('settings')->find($this->monitorId);
-
-        if (!$monitor || !$monitor->is_active || !$monitor->url) {
-            return;
-        }
-
-        if ($monitor->settings && !$monitor->settings->check_domain) {
-            return;
-        }
-
-        $host = parse_url($monitor->url, PHP_URL_HOST);
-
-        if (!$host) {
-            return;
-        }
-
-        $host = strtolower($host);
-
-        // Remove www.
-        $host = preg_replace('/^www\./i', '', $host);
-
-        /*
-        * Subdomain -> Main domain
-        *
-        * app.example.com     -> example.com
-        * api.example.com     -> example.com
-        * www.example.com     -> example.com
-        * example.com         -> example.com
-        */
-        $parts = explode('.', $host);
-
-        if (count($parts) >= 2) {
-            $domain = implode('.', array_slice($parts, -2));
-        } else {
-            $domain = $host;
-        }
+        $monitorLogRepository = $monitorLogRepository ?? app(MonitorLogRepositoryInterface::class);
 
         try {
+            /*
+             * ---------------------------------------------------------
+             * Get monitor
+             * ---------------------------------------------------------
+             */
+            $monitor = Monitor::with('settings')->find($this->monitorId);
 
-            $response = Http::timeout(5)
-                ->acceptJson()
-                ->withoutVerifying()
-                ->get("https://rdap.org/domain/{$domain}");
+            if (!$monitor) {
+                return;
+            }
 
-            if (!$response->successful()) {
-                $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
-                    'domain_status' => 'unknown',
-                    'domain_checked_at' => now(),
-                    'domain_expires_at' => null,
-                ]);
+            /*
+             * ---------------------------------------------------------
+             * Monitor active check
+             * ---------------------------------------------------------
+             */
+            if (!$monitor->is_active || empty($monitor->url)) {
+                return;
+            }
+
+            /*
+             * ---------------------------------------------------------
+             * Domain check enabled?
+             * ---------------------------------------------------------
+             */
+            if (
+                $monitor->settings &&
+                !$monitor->settings->check_domain
+            ) {
+                return;
+            }
+
+            /*
+             * ---------------------------------------------------------
+             * Extract hostname
+             * ---------------------------------------------------------
+             */
+            $host = parse_url(
+                $monitor->url,
+                PHP_URL_HOST
+            );
+
+            /*
+             * If URL does not contain scheme
+             *
+             * Example:
+             * example.com
+             */
+            if (!$host) {
+                $host = parse_url(
+                    'https://' . ltrim($monitor->url, '/'),
+                    PHP_URL_HOST
+                );
+            }
+
+            if (!$host) {
+                $this->saveUnknownResult(
+                    $monitor,
+                    'Unable to extract hostname from URL.'
+                );
 
                 return;
             }
 
-            $data = $response->json();
+            $host = strtolower(
+                trim($host, '.')
+            );
 
-            $expiryDate = $this->getExpiryDate($data);
-            $registrar = $this->getRegistrar($data);
+            /*
+             * Remove www.
+             *
+             * www.example.com
+             *       ↓
+             * example.com
+             */
+            $host = preg_replace(
+                '/^www\./i',
+                '',
+                $host
+            );
 
-            if (!$expiryDate) {
-                $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
-                    'domain_status' => 'unknown',
-                    'domain_checked_at' => now(),
-                    'domain_expires_at' => null,
-                    'domain_registrar' => $registrar,
-                ]);
+            /*
+             * ---------------------------------------------------------
+             * Get registrable/main domain
+             * ---------------------------------------------------------
+             *
+             * app.example.com
+             *       ↓
+             * example.com
+             *
+             * app.example.co.in
+             *       ↓
+             * example.co.in
+             */
+            $domain = $this->getRegistrableDomain($host);
+
+            if (!$domain) {
+                $this->saveUnknownResult(
+                    $monitor,
+                    'Unable to determine registrable domain.'
+                );
 
                 return;
             }
 
-            $expiry = \Carbon\Carbon::parse($expiryDate);
-            $daysRemaining = (int) ceil(now()->diffInDays($expiry, false));
+            /*
+             * ---------------------------------------------------------
+             * RDAP query
+             * ---------------------------------------------------------
+             *
+             * Spatie automatically determines the appropriate
+             * RDAP server for the domain TLD.
+             */
+            try {
+                $domainResponse = Rdap::domain($domain);
+            } catch (Throwable $e) {
+                $this->saveUnknownResult(
+                    $monitor,
+                    "RDAP request failed for {$domain}: {$e->getMessage()}"
+                );
 
+                return;
+            }
+
+            /*
+             * ---------------------------------------------------------
+             * Domain not found / unsupported
+             * ---------------------------------------------------------
+             */
+            if (!$domainResponse) {
+                $this->saveUnknownResult(
+                    $monitor,
+                    "RDAP returned no data for {$domain}."
+                );
+
+                return;
+            }
+
+            /*
+             * ---------------------------------------------------------
+             * Get expiry date
+             * ---------------------------------------------------------
+             */
+            $expiry = $domainResponse->expirationDate();
+
+            if (!$expiry) {
+                $this->saveUnknownResult(
+                    $monitor,
+                    'Expiration date not available from RDAP.'
+                );
+
+                return;
+            }
+
+            /*
+             * Make sure Carbon instance
+             */
+            $expiry = $expiry instanceof Carbon
+                ? $expiry
+                : Carbon::parse($expiry);
+
+            /*
+             * ---------------------------------------------------------
+             * Get registrar
+             * ---------------------------------------------------------
+             *
+             * Spatie DomainResponse exposes the complete RDAP
+             * response through all().
+             */
+            $registrar = $this->getRegistrar(
+                $domainResponse->all()
+            );
+
+            /*
+             * ---------------------------------------------------------
+             * Calculate remaining days
+             * ---------------------------------------------------------
+             */
+            $daysRemaining = (int) ceil(
+                now()->diffInDays(
+                    $expiry,
+                    false
+                )
+            );
+
+            /*
+             * ---------------------------------------------------------
+             * Determine domain status
+             * ---------------------------------------------------------
+             */
             $domainStatus = match (true) {
                 $daysRemaining < 0 => 'expired',
                 $daysRemaining <= 30 => 'warning',
                 default => 'active',
             };
 
-            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
+            /*
+             * ---------------------------------------------------------
+             * Save domain check result
+             * ---------------------------------------------------------
+             */
+            $checkResult = $monitor
+                ->checkResult()
+                ->firstOrCreate([]);
+
+            $checkResult->update([
                 'domain_expires_at' => $expiry,
-                'domain_days_remaining' => max(0, $daysRemaining),
+                'domain_days_remaining' => $daysRemaining,
                 'domain_registrar' => $registrar,
                 'domain_status' => $domainStatus,
                 'domain_checked_at' => now(),
             ]);
 
+            /*
+             * ---------------------------------------------------------
+             * Expired domain = DOWN
+             * ---------------------------------------------------------
+             */
             if ($domainStatus === 'expired') {
-                $monitor->update(['status' => 'down', 'last_down_at' => now()]);
-            }
+                $monitor->update([
+                    'status' => 'down',
+                ]);
 
+                $monitorLogRepository->create([
+                    'monitor_id' => $monitor->id,
+                    'status' => 'down',
+                    'response_time' => null,
+                    'http_status_code' => null,
+                    'reason' => 'Domain expired.',
+                    'checked_at' => now(),
+                ]);
+            }
         } catch (Throwable $e) {
-
-            report($e);
-
-            $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
-                'domain_status' => 'unknown',
-                'domain_checked_at' => now(),
-            ]);
+            /*
+             * Re-throw so Laravel queue marks the job as failed.
+             */
+            throw $e;
         }
     }
-    /**
-     * Get the expiry date from the RDAP response.
-     * 
-     * @param array $data
-     * 
-     * @return string|null
-     * 
-     * @throws \Exception
-     * 
-     */
-    private function getExpiryDate(array $data): ?string
-    {
-        foreach ($data['events'] ?? [] as $event) {
 
-            if (($event['eventAction'] ?? null) === 'expiration') {
-                return $event['eventDate'] ?? null;
+    /**
+     * Get registrable/root domain.
+     *
+     * Examples:
+     *
+     * app.example.com
+     *      ↓
+     * example.com
+     *
+     * app.example.co.in
+     *      ↓
+     * example.co.in
+     */
+    private function getRegistrableDomain(
+        string $host
+    ): ?string {
+        $host = strtolower(
+            trim($host, '.')
+        );
+
+        $parts = explode('.', $host);
+
+        if (count($parts) < 2) {
+            return null;
+        }
+
+        /*
+         * Common second-level TLDs.
+         */
+        $secondLevelTlds = [
+            'co.uk',
+            'org.uk',
+            'me.uk',
+            'ac.uk',
+            'gov.uk',
+
+            'co.in',
+            'com.in',
+            'net.in',
+            'org.in',
+            'firm.in',
+            'gen.in',
+            'ind.in',
+
+            'com.au',
+            'co.au',
+            'net.au',
+            'org.au',
+
+            'co.nz',
+            'net.nz',
+            'org.nz',
+
+            'co.jp',
+            'ne.jp',
+            'or.jp',
+
+            'com.br',
+            'net.br',
+            'org.br',
+
+            'co.za',
+            'org.za',
+            'net.za',
+        ];
+
+        $lastTwo = implode(
+            '.',
+            array_slice($parts, -2)
+        );
+
+        /*
+         * Example:
+         *
+         * example.co.in
+         *       ↓
+         * example.co.in
+         */
+        if (in_array(
+            $lastTwo,
+            $secondLevelTlds,
+            true
+        )) {
+            if (count($parts) < 3) {
+                return null;
+            }
+
+            return implode(
+                '.',
+                array_slice($parts, -3)
+            );
+        }
+
+        /*
+         * Example:
+         *
+         * example.com
+         *       ↓
+         * example.com
+         */
+        return $lastTwo;
+    }
+
+    /**
+     * Extract registrar from RDAP response.
+     */
+    private function getRegistrar(
+        array $rdap
+    ): ?string {
+        foreach (
+            $rdap['entities'] ?? [] as $entity
+        ) {
+            $roles = array_map(
+                'strtolower',
+                $entity['roles'] ?? []
+            );
+
+            if (!in_array(
+                'registrar',
+                $roles,
+                true
+            )) {
+                continue;
+            }
+
+            /*
+             * vCard format
+             */
+            foreach (
+                $entity['vcardArray'][1] ?? [] as $vcard
+            ) {
+                if (
+                    isset($vcard[0]) &&
+                    strtolower($vcard[0]) === 'fn' &&
+                    isset($vcard[3])
+                ) {
+                    return is_array($vcard[3])
+                        ? ($vcard[3][0] ?? null)
+                        : $vcard[3];
+                }
+            }
+
+            /*
+             * Fallback
+             */
+            if (!empty($entity['fn'])) {
+                return $entity['fn'];
             }
         }
 
@@ -154,29 +421,23 @@ class CheckDomainExpiryJob implements ShouldQueue
     }
 
     /**
-     * Get the registrar name from the RDAP response.
-     * 
-     * @param array $data
-     * 
-     * @return string|null
+     * Save UNKNOWN result.
      */
-    private function getRegistrar(array $data): ?string
-    {
-        foreach ($data['entities'] ?? [] as $entity) {
-            if (in_array('registrar', $entity['roles'] ?? [])) {
-                if (isset($entity['vcardArray'][1]) && is_array($entity['vcardArray'][1])) {
-                    foreach ($entity['vcardArray'][1] as $vc) {
-                        if (is_array($vc) && isset($vc[0]) && $vc[0] === 'fn' && isset($vc[3])) {
-                            return $vc[3];
-                        }
-                    }
-                }
-                if (!empty($entity['fn'])) {
-                    return $entity['fn'];
-                }
-            }
-        }
+    private function saveUnknownResult(
+        Monitor $monitor,
+        string $reason,
+        ?string $registrar = null
+    ): void {
+        $checkResult = $monitor
+            ->checkResult()
+            ->firstOrCreate([]);
 
-        return null;
+        $checkResult->update([
+            'domain_expires_at' => null,
+            'domain_days_remaining' => null,
+            'domain_registrar' => $registrar,
+            'domain_status' => 'unknown',
+            'domain_checked_at' => now(),
+        ]);
     }
 }

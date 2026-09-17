@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Monitor;
+use App\Repositories\Contracts\MonitorLogRepositoryInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -27,8 +28,10 @@ class CheckSslCertificateJob implements ShouldQueue
      * @throws \Exception
      * 
      */
-    public function handle(): void
+    public function handle(?MonitorLogRepositoryInterface $monitorLogRepository = null): void
     {
+        $monitorLogRepository = $monitorLogRepository ?? app(MonitorLogRepositoryInterface::class);
+
         $monitor = Monitor::with('settings')->find($this->monitorId);
         if (!$monitor || !$monitor->is_active) {
             return;
@@ -42,6 +45,7 @@ class CheckSslCertificateJob implements ShouldQueue
             return;
         }
 
+        $startTime = microtime(true);
         $host = parse_url($monitor->url, PHP_URL_HOST);
 
         if (!$host) {
@@ -55,15 +59,22 @@ class CheckSslCertificateJob implements ShouldQueue
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 
-        $caPath = ini_get('curl.cainfo') ?: (file_exists(storage_path('cacert.pem')) ? storage_path('cacert.pem') : null);
-        if ($caPath && file_exists($caPath)) {
+      $caPath = storage_path('certs/cacert.pem');
+
+        if (!is_file($caPath)) {
+            $caPath = ini_get('curl.cainfo') ?: null;
+        }
+
+        if ($caPath && is_file($caPath)) {
             curl_setopt($ch, CURLOPT_CAINFO, $caPath);
         }
+            
 
         curl_setopt($ch, CURLOPT_NOBODY, true);
 
         curl_exec($ch);
         $curlErrno = curl_errno($ch);
+        $curlError = curl_error($ch);
         curl_close($ch);
 
         $isCaValid = ($curlErrno === 0);
@@ -86,6 +97,8 @@ class CheckSslCertificateJob implements ShouldQueue
             $context
         );
 
+        $responseTimeMs = max(1, (int) round((microtime(true) - $startTime) * 1000));
+
         if (!$socket) {
             $monitor->checkResult()->updateOrCreate(['monitor_id' => $monitor->id], [
                 'ssl_enabled' => true,
@@ -93,6 +106,18 @@ class CheckSslCertificateJob implements ShouldQueue
             ]);
 
             $monitor->update(['status' => 'down', 'last_down_at' => now()]);
+
+            $monitorLogRepository->create([
+                'monitor_id' => $monitor->id,
+                'status' => 'down',
+                'reason' => 'SSL socket connection failed',
+                'http_status_code' => null,
+                'response_time' => $responseTimeMs,
+                'error_message' => $errstr ?: 'Unable to connect to port 443 with SSL',
+                'request_body' => ['host' => $host, 'port' => 443],
+                'response_body' => ['error_code' => $errno, 'error_message' => $errstr],
+                'checked_at' => now(),
+            ]);
 
             return;
         }
@@ -111,6 +136,18 @@ class CheckSslCertificateJob implements ShouldQueue
 
             $monitor->update(['status' => 'down', 'last_down_at' => now()]);
 
+            $monitorLogRepository->create([
+                'monitor_id' => $monitor->id,
+                'status' => 'down',
+                'reason' => 'SSL peer certificate not found in stream',
+                'http_status_code' => null,
+                'response_time' => $responseTimeMs,
+                'error_message' => 'No peer certificate returned by server',
+                'request_body' => ['host' => $host, 'port' => 443],
+                'response_body' => ['error' => 'No peer certificate returned by server'],
+                'checked_at' => now(),
+            ]);
+
             return;
         }
 
@@ -125,6 +162,18 @@ class CheckSslCertificateJob implements ShouldQueue
             ]);
 
             $monitor->update(['status' => 'down', 'last_down_at' => now()]);
+
+            $monitorLogRepository->create([
+                'monitor_id' => $monitor->id,
+                'status' => 'down',
+                'reason' => 'Unable to parse SSL certificate',
+                'http_status_code' => null,
+                'response_time' => $responseTimeMs,
+                'error_message' => 'X.509 certificate parse failure',
+                'request_body' => ['host' => $host, 'port' => 443],
+                'response_body' => ['error' => 'X.509 certificate parse failure'],
+                'checked_at' => now(),
+            ]);
 
             return;
         }
@@ -155,6 +204,25 @@ class CheckSslCertificateJob implements ShouldQueue
 
         if (in_array($status, ['expired', 'invalid'])) {
             $monitor->update(['status' => 'down', 'last_down_at' => now()]);
+
+            $monitorLogRepository->create([
+                'monitor_id' => $monitor->id,
+                'status' => 'down',
+                'reason' => "SSL certificate is {$status} (Issuer: " . ($issuer ?? 'Unknown') . ")",
+                'http_status_code' => null,
+                'response_time' => $responseTimeMs,
+                'error_message' => "SSL certificate expired on " . ($expiresAt ? $expiresAt->format('Y-m-d') : 'Unknown') . " (Days remaining: {$daysRemaining})" . (!$isCaValid && $curlError ? " | cURL Error: {$curlError}" : ''),
+                'request_body' => ['host' => $host, 'port' => 443],
+                'response_body' => [
+                    'ssl_status' => $status,
+                    'issuer' => $issuer,
+                    'expires_at' => $expiresAt?->format('Y-m-d H:i:s'),
+                    'days_remaining' => $daysRemaining,
+                    'is_ca_valid' => $isCaValid,
+                    'curl_error' => $curlError ?: null,
+                ],
+                'checked_at' => now(),
+            ]);
         }
     }
 }

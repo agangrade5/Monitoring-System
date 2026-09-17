@@ -2,13 +2,19 @@
 
 namespace App\Repositories;
 
-use App\Models\{User,MonitorLog,Monitor};
+use App\Models\{User,Monitor};
 use App\Repositories\Contracts\DashboardRepositoryInterface;
+use App\Repositories\Contracts\MonitorLogRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Activitylog\Models\Activity;
 
 class DashboardRepository implements DashboardRepositoryInterface
 {
+    public function __construct(
+        protected ?MonitorLogRepositoryInterface $monitorLogRepository = null
+    ) {
+        $this->monitorLogRepository = $monitorLogRepository ?? app(MonitorLogRepositoryInterface::class);
+    }
     /**
      * Get all dashboard metrics and data for admin.
      *
@@ -46,11 +52,7 @@ class DashboardRepository implements DashboardRepositoryInterface
         })->count();
 
        // 1. Recent outage logs for this user (only DOWN incidents, strictly capped at 10 items max)
-        $data['downMonitors'] = MonitorLog::with('monitor')
-            ->where('status', 'down')
-            ->latest()
-            ->take(10)
-            ->get();
+        $data['downMonitors'] = $this->monitorLogRepository->getRecentDownLogs(null, 10);
 
         // 2. Recent Active Monitors
         $data['recentActiveMonitors'] = $monitors
@@ -99,14 +101,7 @@ class DashboardRepository implements DashboardRepositoryInterface
         })->count();
 
         // 1. Recent outage logs for this user (only DOWN incidents, strictly capped at 10 items max)
-        $data['downMonitors'] = MonitorLog::with('monitor')
-            ->where('status', 'down')
-            ->whereHas('monitor', function ($q) use ($userId) {
-                $q->where('user_id', $userId);
-            })
-            ->latest()
-            ->take(10)
-            ->get();
+        $data['downMonitors'] = $this->monitorLogRepository->getRecentDownLogs($userId, 10);
 
         $data['title'] = 'User Dashboard';
         return $data;

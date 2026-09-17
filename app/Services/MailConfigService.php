@@ -44,15 +44,24 @@ class MailConfigService
             }
         }
 
+        $mailer = !empty($mailDetails['mail_mailer']) ? $mailDetails['mail_mailer'] : 'smtp';
+        $fromAddress = !empty($mailDetails['mail_from_address']) ? $mailDetails['mail_from_address'] : ($mailDetails['mail_username'] ?? 'noreply@example.com');
+        $fromName = !empty($mailDetails['mail_from_name']) ? $mailDetails['mail_from_name'] : config('app.name', 'Monitoring System');
+
         config([
-            'mail.default' => $mailDetails['mail_mailer'] ?? 'smtp',
-            'mail.mailers.smtp.host' => $mailDetails['mail_host'] ?? null,
-            'mail.mailers.smtp.port' => (int) ($mailDetails['mail_port'] ?? 587),
-            'mail.mailers.smtp.encryption' => $mailDetails['mail_encryption'] ?? 'tls',
+            'mail.default' => $mailer,
+            'mail.mailers.smtp.transport' => 'smtp',
+            'mail.mailers.smtp.host' => $mailDetails['mail_host'] ?? '127.0.0.1',
+            'mail.mailers.smtp.port' => (int) (!empty($mailDetails['mail_port']) ? $mailDetails['mail_port'] : 587),
+            'mail.mailers.smtp.encryption' => !empty($mailDetails['mail_encryption']) ? $mailDetails['mail_encryption'] : 'tls',
             'mail.mailers.smtp.username' => $mailDetails['mail_username'] ?? null,
             'mail.mailers.smtp.password' => $mailPassword,
-            'mail.from.address' => $mailDetails['mail_from_address'] ?? null,
-            'mail.from.name' => $mailDetails['mail_from_name'] ?? config('app.name'),
+            'mail.from.address' => $fromAddress,
+            'mail.from.name' => $fromName,
         ]);
+
+        // Purge cached mailer so it picks up the updated configuration
+        app()->forgetInstance('mailer');
+        app()->forgetInstance('mail.manager');
     }
 }
