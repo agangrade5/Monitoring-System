@@ -445,7 +445,7 @@ class LoginController extends Controller
     {
         if (!session()->has('login_otp')) {
             return redirect()
-                ->route('login.index')
+                ->route('login')
                 ->withErrors([
                     'login' =>
                         'Please request a new OTP.',
@@ -511,7 +511,7 @@ class LoginController extends Controller
             );
 
             return redirect()
-                ->route('login.index')
+                ->route('login')
                 ->withErrors([
                     'otp' =>'OTP session expired. Please request a new OTP.',
                 ]);
@@ -571,7 +571,7 @@ class LoginController extends Controller
             session()->forget('login_otp');
 
             return redirect()
-                ->route('login.index')
+                ->route('login')
                 ->withErrors([
                     'login' => 'Your account is inactive. Please contact the administrator.',
                 ]);
@@ -786,7 +786,7 @@ class LoginController extends Controller
             session()->forget('login_otp');
 
             return redirect()
-                ->route('login.index')
+                ->route('login')
                 ->withErrors([
                     'login' =>
                         'User account not found.',
@@ -887,7 +887,7 @@ class LoginController extends Controller
             );
 
             return redirect()
-                ->route('login.index')
+                ->route('login')
                 ->withErrors([
                     'login' =>
                         'OTP session expired. Please login again.',
@@ -975,7 +975,7 @@ class LoginController extends Controller
             session()->forget('login_otp');
 
             return redirect()
-                ->route('login.index')
+                ->route('login')
                 ->withErrors([
                     'login' =>
                         'User account not found.',
@@ -1062,7 +1062,7 @@ class LoginController extends Controller
         // Check role before logout
         $isAdmin = $user->hasRole('admin');
         return redirect()
-            ->route($isAdmin ? 'admin.login' : 'login.index')
+            ->route($isAdmin ? 'admin.login' : 'login')
             ->with(
                 'success',
                 'You have been logged out successfully.'

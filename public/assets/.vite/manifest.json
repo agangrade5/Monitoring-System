@@ -50,6 +50,12 @@
     "src": "resources/js/backend/email-settings.js",
     "isEntry": true
   },
+  "resources/js/backend/general-settings.js": {
+    "file": "js/backend/general-settings.js",
+    "name": "general-settings",
+    "src": "resources/js/backend/general-settings.js",
+    "isEntry": true
+  },
   "resources/js/backend/google2fa-settings.js": {
     "file": "js/backend/google2fa-settings.js",
     "name": "google2fa-settings",

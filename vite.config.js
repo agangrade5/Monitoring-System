@@ -58,6 +58,7 @@ export default defineConfig({
                 'resources/js/backend/notification-settings.js',
                 'resources/js/backend/account-settings.js',
                 'resources/js/backend/google2fa-settings.js',
+                'resources/js/backend/general-settings.js',
             ],
             buildDirectory: 'assets',
             refresh: true,

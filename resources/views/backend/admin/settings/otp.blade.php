@@ -1,6 +1,6 @@
-<div class="card settings-card">
+<div class="card settings-card mb-4">
     <div class="card-header d-flex align-items-center">
-        <i class="bi bi-shield-check fs-4 me-2 text-primary"></i>
+        <i class="bi bi-shield-fill-check fs-4 me-2 text-primary"></i>
         <div>
             <h5 class="mb-0 fw-bold">OTP Settings</h5>
             <small class="text-muted">Configure One-Time Password (OTP) verification rules, length, expiration time, and default testing values.</small>

@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Backend;
 use App\Helpers\UtilityHelper;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Contracts\{UserRepositoryInterface, SettingRepositoryInterface};
 use Illuminate\View\View;
 use App\Http\Requests\Backend\User\ProfileUpdateRequest;
 use App\Http\Requests\Backend\Auth\ChangePasswordRequest;
@@ -16,11 +16,13 @@ class UserController extends Controller
      * Create a new controller instance.
      *
      * @param UserRepositoryInterface $userRepository
+     * @param SettingRepositoryInterface $settingRepository
      *
      * @return void
      */
     public function __construct(
-        protected UserRepositoryInterface $userRepository
+        private readonly UserRepositoryInterface $userRepository,
+        private readonly SettingRepositoryInterface $settingRepository,
     ) {
     }
 
@@ -32,7 +34,11 @@ class UserController extends Controller
     public function allUsers(): View
     {
         $search = request('search');
-        $perPage = config('constants.pagination_limit.defaultPagination');
+        $generalSettings = $this->settingRepository->getSettingArray(
+            'general',
+            config('constants.settings.general', [])
+        );
+        $perPage = $generalSettings['pagination_limit'];
 
         $users = $this->userRepository->getAllUsers($search, $perPage);
 

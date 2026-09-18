@@ -13,8 +13,9 @@ use App\Http\Requests\Backend\Setting\{
     AwsSettingRequest,
     EnableGoogle2faRequest
 };
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Auth, Crypt};
+use Illuminate\Support\Facades\{Auth, Crypt, Artisan, Log, Cache};
+use Illuminate\Support\Str;
+use Illuminate\Http\{RedirectResponse, JsonResponse};
 use App\Helpers\UtilityHelper;
 use App\Services\GoogleTwoFactorService;
 
@@ -53,6 +54,7 @@ class SettingController extends Controller
             'awsData' => $settings['aws'],
             'notificationData' => $settings['notifications'],
             'reportData' => $settings['report'],
+            'generalData' => $settings['general'],
         ]);
     }
 
@@ -104,43 +106,20 @@ class SettingController extends Controller
 
         $setting = $this->settingRepository->saveSetting('notifications', $payload, $userId);
 
-        // Activity log ONLY when Email Master Toggle state changed
-        if ($prevEmailEnabled !== $newEmailEnabled) {
-            $desc = $newEmailEnabled
-                ? 'Email notifications enabled.'
-                : 'Email notifications disabled.';
-
-            UtilityHelper::customActivityLog(
-                'setting',
-                $desc,
-                $setting,
-                [
-                    'channel' => 'email',
-                    'enabled' => $newEmailEnabled,
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]
-            );
-        }
-
-        // Activity log ONLY when SMS Master Toggle state changed
-        if ($prevSmsEnabled !== $newSmsEnabled) {
-            $desc = $newSmsEnabled
-                ? 'SMS notifications enabled.'
-                : 'SMS notifications disabled.';
-
-            UtilityHelper::customActivityLog(
-                'setting',
-                $desc,
-                $setting,
-                [
-                    'channel' => 'sms',
-                    'enabled' => $newSmsEnabled,
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]
-            );
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'setting',
+            'Updated Alert Notification Settings successfully.',
+            $setting,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
 
         return response()->json([
             'status' => true,
@@ -158,16 +137,7 @@ class SettingController extends Controller
      */
     public function updateReportSettings(Request $request): JsonResponse
     {
-        $userId = Auth::id();
-        $reportDefaults = config('constants.user_defaults.report.report_email');
-
-        // Fetch existing report settings before update to detect master switch toggle changes
-        $existing = $this->settingRepository->getSettingArray('report', [], $userId);
-        $prevReportEnabled = isset($existing['report_email']['enabled'])
-            ? (bool) $existing['report_email']['enabled']
-            : (bool) ($reportDefaults['enabled'] ?? false);
-
-        $newReportEnabled = $request->boolean('report_email_enabled');
+        $reportEmail = config('constants.user_defaults.report.report_email');
 
         $payload = [
             'report_email' => [
@@ -177,26 +147,20 @@ class SettingController extends Controller
             ],
         ];
 
-        $setting = $this->settingRepository->saveSetting('report', $payload, $userId);
-
-        // Activity log ONLY when Email Report Master Toggle state changed
-        if ($prevReportEnabled !== $newReportEnabled) {
-            $desc = $newReportEnabled
-                ? 'Email reporting enabled.'
-                : 'Email reporting disabled.';
-
-            UtilityHelper::customActivityLog(
-                'setting',
-                $desc,
-                $setting,
-                [
-                    'channel' => 'report_email',
-                    'enabled' => $newReportEnabled,
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]
-            );
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'setting',
+            'Updated Email Report Settings successfully.',
+            $setting,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
 
         return response()->json([
             'status' => true,
@@ -224,24 +188,24 @@ class SettingController extends Controller
             'default' => (string) ( $validated['otp_default'] ?? $existingOtp['default'] ?? '' ),
         ];
 
-            $setting =   $this->settingRepository->saveSetting('otp', $payload);
-             /*
-            |--------------------------------------------------------------------------
-            | Activity Log
-            |--------------------------------------------------------------------------
-            */
-            UtilityHelper::customActivityLog(
-                'setting',
-                'Updated OTP Settings successfully.',
-                $setting,
-                [
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]
-            );
-
         $setting =   $this->settingRepository->saveSetting('otp', $payload);
-            /*
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'setting',
+            'Updated OTP Settings successfully.',
+            $setting,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
+
+        $setting = $this->settingRepository->saveSetting('otp', $payload);
+        /*
         |--------------------------------------------------------------------------
         | Activity Log
         |--------------------------------------------------------------------------
@@ -289,20 +253,20 @@ class SettingController extends Controller
         ];
 
         $setting = $this->settingRepository->saveSetting('twilio', $payload);
-          /*
-            |--------------------------------------------------------------------------
-            | Activity Log
-            |--------------------------------------------------------------------------
-            */
-            UtilityHelper::customActivityLog(
-                'setting',
-                'Updated Twilio SMS Settings successfully.',
-                $setting,
-                [
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]
-            );
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'setting',
+            'Updated Twilio SMS Settings successfully.',
+            $setting,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
 
         return response()->json([
             'status' => true,
@@ -342,20 +306,20 @@ class SettingController extends Controller
         ];
 
         $setting = $this->settingRepository->saveSetting('mail', $payload);
-             /*
-            |--------------------------------------------------------------------------
-            | Activity Log
-            |--------------------------------------------------------------------------
-            */
-            UtilityHelper::customActivityLog(
-                'setting',
-                'Updated Email (SMTP) Settings successfully.',
-                $setting,
-                [
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]
-            );
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'setting',
+            'Updated Email (SMTP) Settings successfully.',
+            $setting,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
 
         return response()->json([
             'status' => true,
@@ -391,20 +355,21 @@ class SettingController extends Controller
         ];
 
         $setting = $this->settingRepository->saveSetting('aws', $payload);
-            /*
-            |--------------------------------------------------------------------------
-            | Activity Log
-            |--------------------------------------------------------------------------
-            */
-            UtilityHelper::customActivityLog(
-                'setting',
-                'Updated AWS Cloud Settings successfully.',
-                $setting,
-                [
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]
-            );
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'setting',
+            'Updated AWS Cloud Settings successfully.',
+            $setting,
+            [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]
+        );
+
         return response()->json([
             'status' => true,
             'message' => 'AWS Cloud Settings updated successfully!',
@@ -429,6 +394,23 @@ class SettingController extends Controller
             config('app.name'),
             $user->email,
             $secret
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+        UtilityHelper::customActivityLog(
+            'setting',
+            'Setup 2FA for user: ' . $user->name,
+            $user,
+            [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]
         );
 
         return response()->json([
@@ -542,5 +524,334 @@ class SettingController extends Controller
             'success' => true,
             'message' => 'Google Authenticator has been disabled for your account.',
         ]);
+    }
+
+    /**
+     * Update general settings (pagination limit / password reset expiry) via AJAX.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function updateGeneralSettings(Request $request): JsonResponse
+    {
+        $paginationOptions = implode(',', config('constants.general_options.pagination_limit', []));
+        $expiryOptions = implode(',', array_keys(config('constants.general_options.password_reset_expiry', [])));
+
+        $validated = $request->validate([
+            'pagination_limit' => "sometimes|required|integer|in:{$paginationOptions}",
+            'password_reset_expiry' => "sometimes|required|integer|in:{$expiryOptions}",
+        ]);
+
+        if (empty($validated)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No valid setting provided.',
+            ], 422);
+        }
+
+        try {
+            $setting = $this->settingRepository->saveSetting(
+                'general',
+                array_merge(
+                    $this->settingRepository->getSettingArray('general', config('constants.settings.general', [])),
+                    $validated
+                )
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'setting',
+                'Updated setting successfully.',
+                $setting,
+                [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Setting updated successfully.',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to update setting.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Toggle maintenance mode via AJAX.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function toggleMaintenanceMode(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'maintenance_mode' => 'required|in:0,1',
+        ]);
+
+        try {
+            if ($validated['maintenance_mode'] === '1') {
+                // Generate a fresh secret every time site goes down
+                $secret = Str::random(32);
+
+                Artisan::call('down', [
+                    '--secret' => $secret,
+                ]);
+
+                $bypassUrl = url('/' . $secret);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Activity Log
+                |--------------------------------------------------------------------------
+                */
+                UtilityHelper::customActivityLog(
+                    'setting',
+                    'Maintenance mode enabled.',
+                    null,
+                    [
+                        'ip' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                    ]
+                );
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Maintenance mode enabled.',
+                    'bypass_url' => $bypassUrl,
+                ]);
+            }
+
+            Artisan::call('up');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'setting',
+                'Maintenance mode disabled.',
+                null,
+                [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Maintenance mode disabled. Site is live now.',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to toggle maintenance mode.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Clear all application caches.
+     *
+     * @return JsonResponse
+     */
+    public function optimizeClear(): JsonResponse
+    {
+        try {
+            Artisan::call('optimize:clear');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'setting',
+                'Application cache cleared successfully.',
+                null,
+                [
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]
+            );
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Application cache cleared successfully.',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to clear cache.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Cache the config files.
+     *
+     * @return JsonResponse
+     */
+    public function configCache(): JsonResponse
+    {
+        try {
+            Artisan::call('config:cache');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'setting',
+                'Config cached successfully.',
+                null,
+                [
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]
+            );
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Config cached successfully.',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to cache config.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Run pending migrations.
+     *
+     * @return JsonResponse
+     */
+    public function runMigrate(): JsonResponse
+    {
+        try {
+            Artisan::call('migrate', ['--force' => true]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'setting',
+                'Migrations executed successfully.',
+                null,
+                [
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]
+            );
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Migrations executed successfully.',
+                'output' => Artisan::output(),
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Migration failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Run migrate:fresh with seeders (drops all tables, re-migrates, and seeds).
+     * Forces logout since all data including sessions/users gets wiped.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function runMigrateFreshSeed(Request $request): JsonResponse
+    {
+        // Extra safety: block on production unless explicitly allowed
+        if (app()->environment('production') && !config('app.allow_migrate_fresh_in_production', false)) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'setting',
+                'Migrate fresh is disabled in production.',
+                null,
+                [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+            return response()->json([
+                'status' => false,
+                'message' => 'Migrate fresh is disabled in production.',
+            ], 403);
+        }
+
+        try {
+            Artisan::call('migrate:fresh', [
+                '--seed' => true,
+                '--force' => true,
+            ]);
+
+            $output = Artisan::output();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Force Logout
+            |--------------------------------------------------------------------------
+            | migrate:fresh wipes users + sessions tables, so the current
+            | authenticated session is no longer valid. Explicitly log out
+            | to clear guard state and invalidate the session/cookie cleanly.
+            */
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Activity Log
+            |--------------------------------------------------------------------------
+            */
+            UtilityHelper::customActivityLog(
+                'setting',
+                'Database refreshed and seeded successfully. Redirecting to login...',
+                null,
+                [
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Database refreshed and seeded successfully. Redirecting to login...',
+                'redirect' => route('admin.login'),
+                'output' => $output,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Migrate fresh with seed failed: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

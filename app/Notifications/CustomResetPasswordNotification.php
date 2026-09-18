@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Carbon\CarbonInterval;
 
 class CustomResetPasswordNotification extends Notification
 {
@@ -45,11 +46,15 @@ class CustomResetPasswordNotification extends Notification
             ], false)
         );
 
+        $expireMinutes = (int) config('auth.passwords.users.expire', 60);
+        $expireText = CarbonInterval::minutes($expireMinutes)->cascade()->forHumans();
+
         return (new MailMessage)
             ->subject('Reset Your Password - ' . config('app.name'))
             ->view('emails.auth.password-reset', [
                 'user' => $notifiable,
                 'url' => $url,
+                'expireText' => $expireText,
             ]);
     }
 

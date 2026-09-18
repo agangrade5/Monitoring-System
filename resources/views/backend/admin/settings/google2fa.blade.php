@@ -1,11 +1,11 @@
-<div class="card settings-card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            <i class="bi bi-shield-lock me-1"></i>
-            Two-Factor Authentication
-        </h5>
+<div class="card settings-card mb-4">
+    <div class="card-header d-flex align-items-center">
+        <i class="bi bi-shield-lock-fill fs-4 me-2 text-primary"></i>
+        <div>
+            <h5 class="mb-0 fw-bold">Two-Factor Authentication</h5>
+            <small class="text-muted">Add an extra layer of protection to your account</small>
+        </div>
     </div>
-
     <div class="card-body">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             {{-- Google 2FA Disable --}}
