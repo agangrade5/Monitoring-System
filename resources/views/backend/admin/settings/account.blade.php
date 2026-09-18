@@ -42,7 +42,7 @@
         <!-- Profile Form -->
         <form
             method="POST"
-            action="{{ route('profile.update') }}"
+            action="{{ $isAdmin ? route('admin.settings.profile.update') : route('settings.profile.update') }}"
             id="account-settings-form"
             enctype="multipart/form-data"
             class="row g-4"

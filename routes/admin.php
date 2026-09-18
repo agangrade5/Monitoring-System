@@ -117,11 +117,19 @@ $settingsRoutes = function (bool $isAdmin = false) {
                 'index'
             ])->name('index');
 
+            // Profile Routes
+            Route::post('/profile', [
+                UserController::class,
+                'updateProfile',
+            ])->name('profile.update');
+
+            // Notification Routes
             Route::post('/notifications', [
                 SettingController::class,
                 'updateNotificationSettings'
             ])->name('notifications');
 
+            // Report Routes
             Route::post('/report', [
                 SettingController::class,
                 'updateReportSettings'
@@ -129,21 +137,31 @@ $settingsRoutes = function (bool $isAdmin = false) {
 
             // Admin-only routes
             if ($isAdmin) {
+                // Change Password Routes
+                Route::post('/change-password', [
+                    UserController::class,
+                    'changePassword',
+                ])->name('change-password');
+
+                // OTP Routes
                 Route::post('/otp', [
                     SettingController::class,
                     'updateOtpSettings'
                 ])->name('otp');
 
+                // SMS Routes
                 Route::post('/twilio', [
                     SettingController::class,
                     'updateTwilioSettings'
                 ])->name('twilio');
 
+                // Email Routes
                 Route::post('/email', [
                     SettingController::class,
                     'updateEmailSettings'
                 ])->name('email');
 
+                // AWS Routes
                 Route::post('/aws', [
                     SettingController::class,
                     'updateAwsSettings'
@@ -335,34 +353,34 @@ Route::prefix('admin')
 */
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
-        return redirect()->route('login.index');
+        return redirect()->route('login');
     });
 
-    Route::prefix('login')->name('login.')->group(function () {
+    Route::prefix('login')->group(function () {
         Route::get('/', [
             LoginController::class,
             'userLogin',
-        ])->name('index');
+        ])->name('login');
 
         Route::post('/send-otp', [
             LoginController::class,
             'sendOtp',
-        ])->name('send-otp');
+        ])->name('login.send-otp');
 
         Route::get('/verify-otp', [
             LoginController::class,
             'showVerifyOtp',
-        ])->name('verify');
+        ])->name('login.verify');
 
         Route::post('/verify-otp', [
             LoginController::class,
             'verifyOtp',
-        ])->name('verify.submit');
+        ])->name('login.verify.submit');
 
         Route::post('/resend-otp', [
             LoginController::class,
             'resendOtp',
-        ])->name('resend-otp');
+        ])->name('login.resend-otp');
     });
 });
 
@@ -371,7 +389,6 @@ Route::middleware('guest')->group(function () {
 | Authenticated Routes
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('auth')->group(function () use ($monitorRoutes, $activityLogRoutes, $settingsRoutes) {
     /*
     |--------------------------------------------------------------------------
@@ -496,24 +513,4 @@ Route::middleware('auth')->group(function () use ($monitorRoutes, $activityLogRo
         LoginController::class,
         'logout',
     ])->name('logout');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Profile Routes
-    |--------------------------------------------------------------------------
-    */
-    Route::post('/profile', [
-        UserController::class,
-        'updateProfile',
-    ])->name('profile.update');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Change Password
-    |--------------------------------------------------------------------------
-    */
-    Route::post('/change-password', [
-        UserController::class,
-        'changePassword',
-    ])->name('change-password');
 });

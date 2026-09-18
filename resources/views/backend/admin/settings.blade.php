@@ -2,6 +2,7 @@
 @section('title', $title)
 @section('content')
 
+@php $isAdmin = auth()->user()->hasRole('admin'); @endphp
 <!--begin::App Content Header-->
 <div class="app-content-header">
     <div class="container-fluid">

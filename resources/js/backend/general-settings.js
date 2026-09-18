@@ -1,56 +1,61 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* Pagination Limit */
-    const paginationSelect = document.getElementById('pagination-limit-select');
-    const statusEl = document.getElementById('pagination-limit-status');
+    /* Pagination Limit & Password Reset Expiry */
+    function bindAjaxSelect(selectId, statusId, fieldName) {
+        const select = document.getElementById(selectId);
+        const statusEl = document.getElementById(statusId);
 
-    if (!paginationSelect) {
-        return;
-    }
-
-    paginationSelect.addEventListener('change', function () {
-        const url = paginationSelect.dataset.url;
-        const value = paginationSelect.value;
-
-        paginationSelect.disabled = true;
-        if (statusEl) {
-            statusEl.textContent = 'Saving...';
+        if (!select) {
+            return;
         }
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({ pagination_limit: value })
-        })
-        .then(function (response) {
-            return response.json().then(function (data) {
-                return { ok: response.ok, data: data };
+        select.addEventListener('change', function () {
+            const url = select.dataset.url;
+            const value = select.value;
+
+            select.disabled = true;
+            if (statusEl) {
+                statusEl.textContent = 'Saving...';
+            }
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ [fieldName]: value })
+            })
+            .then(function (response) {
+                return response.json().then(function (data) {
+                    return { ok: response.ok, data: data };
+                });
+            })
+            .then(function ({ ok, data }) {
+                if (!ok || !data.status) {
+                    throw new Error(data.message || 'Unable to update setting.');
+                }
+                toastr.success(data.message);
+                if (statusEl) {
+                    statusEl.textContent = '';
+                }
+            })
+            .catch(function (error) {
+                toastr.error(error.message || 'Something went wrong.');
+                if (statusEl) {
+                    statusEl.textContent = '';
+                }
+            })
+            .finally(function () {
+                select.disabled = false;
             });
-        })
-        .then(function ({ ok, data }) {
-            if (!ok || !data.status) {
-                throw new Error(data.message || 'Unable to update pagination limit.');
-            }
-            toastr.success(data.message);
-            if (statusEl) {
-                statusEl.textContent = '';
-            }
-        })
-        .catch(function (error) {
-            toastr.error(error.message || 'Something went wrong.');
-            if (statusEl) {
-                statusEl.textContent = '';
-            }
-        })
-        .finally(function () {
-            paginationSelect.disabled = false;
         });
-    });
+    }
+
+    bindAjaxSelect('pagination-limit-select', 'pagination-limit-status', 'pagination_limit');
+    bindAjaxSelect('password-reset-expiry-select', 'password-reset-expiry-status', 'password_reset_expiry');
 
     /* Maintenance Mode */
     const maintenanceSelect = document.getElementById('maintenance-mode-select');

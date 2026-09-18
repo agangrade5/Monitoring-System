@@ -18,7 +18,7 @@
                     class="form-select"
                     data-url="{{ route('admin.settings.general') }}"
                 >
-                    @foreach([10, 15, 20, 25] as $limit)
+                    @foreach(config('constants.general_options.pagination_limit', []) as $limit)
                         <option value="{{ $limit }}" {{ (int) ($generalData['pagination_limit'] ?? 10) === $limit ? 'selected' : '' }}>
                             {{ $limit }}
                         </option>
@@ -27,6 +27,28 @@
             </div>
             <div class="col-sm-3">
                 <span id="pagination-limit-status" class="small text-muted"></span>
+            </div>
+        </div>
+
+        {{-- Password Reset Link Expiry --}}
+        <div class="row align-items-center mb-4 pb-4 border-bottom">
+            <label class="col-sm-4 col-form-label fw-semibold">Password Reset Link Expiry</label>
+            <div class="col-sm-5">
+                <select
+                    name="password_reset_expiry"
+                    id="password-reset-expiry-select"
+                    class="form-select"
+                    data-url="{{ route('admin.settings.general') }}"
+                >
+                    @foreach(config('constants.general_options.password_reset_expiry', []) as $minutes => $label)
+                        <option value="{{ $minutes }}" {{ (int) ($generalData['password_reset_expiry'] ?? 60) === $minutes ? 'selected' : '' }}>
+                            {{ $label }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <span id="password-reset-expiry-status" class="small text-muted"></span>
             </div>
         </div>
 

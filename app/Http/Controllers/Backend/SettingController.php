@@ -516,7 +516,7 @@ class SettingController extends Controller
     }
 
     /**
-     * Update general settings (pagination limit) via AJAX.
+     * Update general settings (pagination limit / password reset expiry) via AJAX.
      *
      * @param Request $request
      *
@@ -524,14 +524,29 @@ class SettingController extends Controller
      */
     public function updateGeneralSettings(Request $request): JsonResponse
     {
+        $paginationOptions = implode(',', config('constants.general_options.pagination_limit', []));
+        $expiryOptions = implode(',', array_keys(config('constants.general_options.password_reset_expiry', [])));
+
         $validated = $request->validate([
-            'pagination_limit' => 'required|integer|in:10,15,20,25',
+            'pagination_limit' => "sometimes|required|integer|in:{$paginationOptions}",
+            'password_reset_expiry' => "sometimes|required|integer|in:{$expiryOptions}",
         ]);
 
+        if (empty($validated)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No valid setting provided.',
+            ], 422);
+        }
+
         try {
-            $this->settingRepository->saveSetting('general', [
-                'pagination_limit' => (int) $validated['pagination_limit'],
-            ]);
+            $setting = $this->settingRepository->saveSetting(
+                'general',
+                array_merge(
+                    $this->settingRepository->getSettingArray('general', config('constants.settings.general', [])),
+                    $validated
+                )
+            );
 
             /*
             |--------------------------------------------------------------------------
@@ -540,8 +555,8 @@ class SettingController extends Controller
             */
             UtilityHelper::customActivityLog(
                 'setting',
-                'Updated pagination limit successfully.',
-                null,
+                'Updated setting successfully.',
+                $setting,
                 [
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),
@@ -550,12 +565,12 @@ class SettingController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Pagination limit updated successfully.',
+                'message' => 'Setting updated successfully.',
             ]);
         } catch (\Throwable $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Unable to update pagination limit.',
+                'message' => 'Unable to update setting.',
             ], 500);
         }
     }

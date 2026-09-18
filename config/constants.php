@@ -9,11 +9,28 @@ return [
     ],
 
     /**
+     * Dropdown option lists for General Settings
+     */
+    'general_options' => [
+        'pagination_limit' => [ 5, 10, 15, 20, 25],
+        'password_reset_expiry' => [
+            1    => '1 Minute',
+            5    => '5 Minutes',
+            15   => '15 Minutes',
+            30   => '30 Minutes',
+            60   => '60 Minutes',
+            120  => '2 Hours',
+            1440 => '24 Hours',
+        ],
+    ],
+
+    /**
      * System settings configuration
      */
     'settings' => [
         'general' => [
-            'pagination_limit' => 10,
+            'pagination_limit' => 10, // per page
+            'password_reset_expiry' => 60, // in minutes
         ],
         'twilio' => [
             'enable_twilio' => false,

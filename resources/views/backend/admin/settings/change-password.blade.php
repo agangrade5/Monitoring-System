@@ -9,7 +9,7 @@
     <div class="card-body">
         <form
             method="POST"
-            action="{{ route('change-password') }}"
+            action="{{ route('admin.settings.change-password') }}"
             id="change-password-form"
             class="row g-4 needs-validation"
             novalidate

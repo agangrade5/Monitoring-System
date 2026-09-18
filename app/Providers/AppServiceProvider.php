@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use App\Services\MailConfigService;
 use Illuminate\Support\Facades\Http;
+use App\Repositories\Contracts\SettingRepositoryInterface;
+use Illuminate\Support\Facades\Log;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -20,7 +23,8 @@ class AppServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot(
-        MailConfigService $mailConfigService
+        MailConfigService $mailConfigService,
+        SettingRepositoryInterface $settingRepository
     ): void
     {
         Paginator::useBootstrapFive();
@@ -35,11 +39,10 @@ class AppServiceProvider extends ServiceProvider
         | created the settings table yet.
         |
         */
-        
+
         if (! app()->runningInConsole()) {
             $mailConfigService->apply();
         }
-        
 
         /*
         |--------------------------------------------------------------------------
@@ -56,6 +59,24 @@ class AppServiceProvider extends ServiceProvider
                 'verify' => $caBundle,
             ]);
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Password reset expiry
+        |--------------------------------------------------------------------------
+        |
+        | Apply the password reset expiry from the settings table.
+        |
+        */
+        try {
+            $general = $settingRepository->getSettingArray('general', config('constants.settings.general', []));
+
+            if (!empty($general['password_reset_expiry'])) {
+                config(['auth.passwords.users.expire' => (int) $general['password_reset_expiry']]);
+            }
+        } catch (\Throwable $e) {
+            // Fail silently if settings table isn't migrated yet (e.g. during fresh install)
+            Log::channel('auth')->error('Failed to apply password reset expiry: ' . $e->getMessage());
+        }
     }
 }
- 
