@@ -37,7 +37,7 @@ class TwoFactorController extends Controller
     public function twoFaShow(): View|RedirectResponse
     {
         if (!session()->has('2fa_user_id')) {
-            return redirect()->route('admin.login.index');
+            return redirect()->route('admin.login');
         }
 
         return view('backend.auth.two-factor', [
@@ -59,7 +59,7 @@ class TwoFactorController extends Controller
         $userId = $request->session()->get('2fa_user_id');
 
         if (!$userId) {
-            return redirect()->route('admin.login.index')
+            return redirect()->route('admin.login')
                 ->withErrors(['login' => 'Your session has expired, please login again.']);
         }
 
@@ -68,7 +68,7 @@ class TwoFactorController extends Controller
         if (!$user || !$user->google2fa_enabled || !$user->google2fa_secret) {
             $request->session()->forget(['2fa_user_id', '2fa_remember']);
 
-            return redirect()->route('admin.login.index')
+            return redirect()->route('admin.login')
                 ->withErrors(['login' => 'Two factor authentication is not available for this account.']);
         }
 

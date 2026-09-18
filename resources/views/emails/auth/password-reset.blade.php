@@ -55,7 +55,7 @@
 >
     <strong>Important:</strong>
     This password reset link will expire in
-    <strong>10 minutes</strong>.
+    <strong>{{ $expireText }}</strong>.
 </div>
 
 <p style="margin-top: 25px">

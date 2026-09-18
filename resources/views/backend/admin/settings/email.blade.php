@@ -1,4 +1,4 @@
-<div class="card settings-card">
+<div class="card settings-card mb-4">
     <div class="card-header d-flex align-items-center">
         <i class="bi bi-envelope-paper-fill fs-4 me-2 text-primary"></i>
         <div>
