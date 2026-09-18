@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\MonitorRepositoryInterface;
+use App\Repositories\Contracts\{MonitorRepositoryInterface, SettingRepositoryInterface};
 use Illuminate\Http\Request;
 use App\Http\Requests\Backend\Monitor\MonitorUserRequest;
 use App\Services\MonitorService;
@@ -14,10 +14,12 @@ class MonitorController extends Controller
      * Constructor to inject the Monitor Repository and Monitor Service.
      *
      * @param MonitorRepositoryInterface $monitorRepository
+     * @param SettingRepositoryInterface $settingRepository
      * @param MonitorService $monitorService
      */
     public function __construct(
-        protected MonitorRepositoryInterface $monitorRepository,
+        private readonly MonitorRepositoryInterface $monitorRepository,
+        private readonly SettingRepositoryInterface $settingRepository,
         protected MonitorService $monitorService
     ) {}
 
@@ -34,9 +36,14 @@ class MonitorController extends Controller
     {
         $user = auth()->user();
         $userId = ($user && !$user->hasRole('admin')) ? $user->id : null;
-        $perPage = config('constants.pagination_limit.defaultPagination');
+        $generalSettings = $this->settingRepository->getSettingArray(
+            'general',
+            config('constants.settings.general', [])
+        );
+        $perPage = $generalSettings['pagination_limit'];
         $monitors = $this->monitorRepository->getAll(request('search'), $userId, $perPage);
         $title = 'Monitor Websites & Domains';
+
         return view(
             'backend.monitor.index',
             compact('monitors', 'title')

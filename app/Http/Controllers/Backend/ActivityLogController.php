@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Helpers\UtilityHelper;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\ActivityLogRepositoryInterface;
+use App\Repositories\Contracts\{ActivityLogRepositoryInterface, SettingRepositoryInterface};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,11 +16,13 @@ class ActivityLogController extends Controller
      * Create a new controller instance.
      *
      * @param ActivityLogRepositoryInterface $activityLogRepository
+     * @param SettingRepositoryInterface $settingRepository
      *
      * @return void
      */
     public function __construct(
-        private readonly ActivityLogRepositoryInterface $activityLogRepository
+        private readonly ActivityLogRepositoryInterface $activityLogRepository,
+        private readonly SettingRepositoryInterface $settingRepository
     ) {
     }
 
@@ -35,14 +37,18 @@ class ActivityLogController extends Controller
         Request $request
     ): View {
         $user = auth()->user();
-
         $isAdmin = $user->hasRole('admin');
+
+        $generalSettings = $this->settingRepository->getSettingArray(
+            'general',
+            config('constants.settings.general', [])
+        );
 
         $logs = $this->activityLogRepository->getLogs(
             userId: $user->id,
             isAdmin: $isAdmin,
             search: $request->input('search'),
-            perPage: config('constants.pagination_limit.defaultPagination')
+            perPage: $generalSettings['pagination_limit']
         );
 
         return view('backend.activity-logs.index', [

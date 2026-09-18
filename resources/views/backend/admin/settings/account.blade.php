@@ -1,6 +1,6 @@
-<div class="card settings-card">
+<div class="card settings-card mb-4">
     <div class="card-header d-flex align-items-center">
-        <i class="bi bi-person-circle fs-4 me-2 text-primary"></i>
+        <i class="bi bi-person-fill fs-4 me-2 text-primary"></i>
         <div>
             <h5 class="mb-0 fw-bold">Account Information</h5>
             <small class="text-muted">Update your profile details and preferences</small>

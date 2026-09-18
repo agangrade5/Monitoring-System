@@ -166,6 +166,37 @@ $settingsRoutes = function (bool $isAdmin = false) {
                         'twoFaDisable'
                     ])->name('disable');
                 });
+
+                /* general settings */
+                Route::post('/general', [
+                    SettingController::class,
+                    'updateGeneralSettings'
+                ])->name('general');
+
+                Route::post('/maintenance-mode', [
+                    SettingController::class,
+                    'toggleMaintenanceMode'
+                ])->name('maintenanceMode');
+
+                Route::post('/optimize-clear', [
+                    SettingController::class,
+                    'optimizeClear'
+                ])->name('optimizeClear');
+
+                Route::post('/config-cache', [
+                    SettingController::class,
+                    'configCache'
+                ])->name('configCache');
+
+                Route::post('/migrate', [
+                    SettingController::class,
+                    'runMigrate'
+                ])->name('migrate');
+
+                Route::post('/migrate-fresh-seed', [
+                    SettingController::class,
+                    'runMigrateFreshSeed'
+                ])->name('migrateFreshSeed');
             }
 
         });

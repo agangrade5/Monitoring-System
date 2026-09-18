@@ -1,9 +1,9 @@
-<div class="card settings-card">
+<div class="card settings-card mb-4">
     <div class="card-header d-flex align-items-center">
-        <i class="bi bi-bell fs-4 me-2 text-primary"></i>
+        <i class="bi bi-bell-fill fs-4 me-2 text-primary"></i>
         <div>
-            <h5 class="mb-0 fw-bold">Alert notification channels.</h5>
-            <small class="text-muted">Choose when and how you want to be notified</small>
+            <h5 class="mb-0 fw-bold">Alert notification channels</h5>
+            <small class="text-muted">Configure alert notification channels</small>
         </div>
     </div>
     <form id="notification-settings-form" action="{{ route('settings.notifications') }}" method="POST">

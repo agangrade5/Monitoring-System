@@ -68,6 +68,8 @@ function showConfirmation(button, callback) {
 
     });
 }
+// Add to window
+window.showConfirmation = showConfirmation;
 
 // ========================================
 // Logout Confirmation

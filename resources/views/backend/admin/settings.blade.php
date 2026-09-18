@@ -37,6 +37,9 @@
                                 <i class="bi bi-person me-2"></i>Account Settings
                             </a>
                             @role('admin')
+                                <a href="#general-setting" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
+                                    <i class="bi bi-gear me-2"></i>General Settings
+                                </a>
                                 <a href="#change-password" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab" aria-selected="false">
                                     <i class="bi bi-shield-lock me-2"></i>Change Password
                                 </a>
@@ -57,9 +60,9 @@
                                 </a>
                             @endrole
                             @role('user')
-                              <a  href="#notifications" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab"aria-selected="false">
-                                      <i class="bi bi-bell me-2"></i> Notifications & Reports
-                                   </a>
+                                <a  href="#notifications" class="settings-nav-link mb-1" data-bs-toggle="pill" role="tab"aria-selected="false">
+                                    <i class="bi bi-bell me-2"></i> Notifications & Reports
+                                </a>
                             @endrole
                         </div>
                     </div>
@@ -72,6 +75,10 @@
                     <!-- Account Tab -->
                     <div class="tab-pane fade show active" id="account" role="tabpanel">
                         @include('backend.admin.settings.account')
+                    </div>
+                    <!-- General Setting Tab -->
+                    <div class="tab-pane fade" id="general-setting" role="tabpanel">
+                        @include('backend.admin.settings.general')
                     </div>
                     <!-- Change Password Tab -->
                     <div class="tab-pane fade" id="change-password" role="tabpanel">
