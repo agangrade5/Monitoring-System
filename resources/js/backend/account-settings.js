@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 hiddenInput.value = code;
                 selectedCode.textContent = code;
-                selectedFlag.src = '{{ asset("assets/images/flags") }}/' + iso + '.svg';
+                selectedFlag.src = '/assets/images/flags/' + iso + '.svg';
                 selectedFlag.alt = name;
 
                 dropdown.classList.add('d-none');

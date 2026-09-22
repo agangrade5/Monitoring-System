@@ -345,7 +345,7 @@ body {
     background: var(--settings-bg-card, var(--bs-card-bg, #ffffff));
     box-shadow: var(--settings-shadow, 0 10px 30px -5px rgba(0, 0, 0, 0.05));
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
+    overflow: visible;
 }
 .settings-card:hover {
     box-shadow: var(--settings-shadow-hover, 0 20px 40px -5px rgba(0, 0, 0, 0.08));
@@ -556,6 +556,18 @@ body {
     overflow-y: auto !important;
     box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    background-color: var(--bs-card-bg, #ffffff) !important;
+}
+
+[data-bs-theme="dark"] .country-dropdown-menu {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-bs-theme="dark"] .country-dropdown-menu .country-option:hover,
+[data-bs-theme="dark"] .country-dropdown-menu .country-option.active {
+    background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* User directory helper styling */

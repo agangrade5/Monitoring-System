@@ -74,7 +74,7 @@
                     <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
                     <input type="text" class="form-control font-mono fw-bold" id="otp_default" name="otp_default" placeholder="e.g. {{ str_repeat('9', $otpData['otp_length'] ?? 6) }}" value="{{ $otpData['default'] ?? '999999' }}" maxlength="{{ $otpData['otp_length'] ?? 6 }}">
                 </div>
-                <small class="text-muted mt-1 d-block" id="otp_default_help">Static OTP code used when is_default is set to true.</small>
+                <small class="text-muted mt-1 d-block" id="otp_default_help">Static OTP code used when default is set to true.</small>
             </div>
 
             <div class="col-12">

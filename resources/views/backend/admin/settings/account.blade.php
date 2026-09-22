@@ -129,8 +129,8 @@
 
                         <div
                             id="accountCountryDropdown"
-                            class="country-dropdown-menu position-absolute bg-white rounded-3 d-none py-1 mt-1 start-0 shadow-lg border"
-                            style="top: 100%; z-index: 1050; max-height: 250px; overflow-y: auto; min-width: 240px;"
+                            class="country-dropdown-menu position-absolute rounded-3 d-none py-1 mt-1 start-0 shadow-lg border"
+                            style="top: 100%;"
                         >
                             @foreach ($countries as $country)
                                 <div
