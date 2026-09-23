@@ -93,71 +93,10 @@
             <div class="col-md-6">
                 <label class="form-label fw-semibold text-secondary small" for="phone_number">Phone number</label>
                 <div class="input-group">
-                    @php
-                        $countries = config('countries.countries', []);
-                        $selectedCode = old('country_code', $user->country_code ?? '+91');
-                        $selectedCountry = collect($countries)->firstWhere('code', $selectedCode) ?? ($countries[0] ?? ['code' => '+91', 'iso' => 'in', 'name' => 'India']);
-                    @endphp
-
-                    <div class="position-relative" style="width: 110px;">
-                        <input
-                            type="hidden"
-                            name="country_code"
-                            id="account_country_code"
-                            value="{{ $selectedCountry['code'] }}"
-                        >
-
-                        <button
-                            type="button"
-                            id="accountCountryDropdownBtn"
-                            class="form-select bg-light-subtle d-flex align-items-center justify-content-between rounded-end-0 h-100 px-2.5"
-                        >
-                            <div class="d-flex align-items-center gap-1.5 overflow-hidden">
-                                <img
-                                    id="accountSelectedFlag"
-                                    src="{{ asset('assets/images/flags/' . $selectedCountry['iso'] . '.svg') }}"
-                                    width="18"
-                                    height="14"
-                                    alt="{{ $selectedCountry['name'] }}"
-                                    class="rounded-1 border shadow-xs flex-shrink-0"
-                                >
-                                <span id="accountSelectedCode" class="fw-semibold text-dark small">
-                                    {{ $selectedCountry['code'] }}
-                                </span>
-                            </div>
-                        </button>
-
-                        <div
-                            id="accountCountryDropdown"
-                            class="country-dropdown-menu position-absolute bg-white rounded-3 d-none py-1 mt-1 start-0 shadow-lg border"
-                            style="top: 100%; z-index: 1050; max-height: 250px; overflow-y: auto; min-width: 240px;"
-                        >
-                            @foreach ($countries as $country)
-                                <div
-                                    class="account-country-option country-option d-flex align-items-center justify-content-between px-3 py-2 cursor-pointer"
-                                    data-code="{{ $country['code'] }}"
-                                    data-name="{{ $country['name'] }}"
-                                    data-iso="{{ $country['iso'] }}"
-                                >
-                                    <div class="d-flex align-items-center gap-2 overflow-hidden me-3">
-                                        <img
-                                            src="{{ asset('assets/images/flags/' . $country['iso'] . '.svg') }}"
-                                            width="18"
-                                            height="14"
-                                            alt="{{ $country['name'] }}"
-                                            class="rounded-1 border shadow-xs flex-shrink-0"
-                                        >
-                                        <span class="small fw-medium text-dark text-truncate">
-                                            {{ $country['name'] }}
-                                        </span>
-                                    </div>
-                                    <span class="small text-secondary font-mono fw-semibold flex-shrink-0">
-                                        {{ $country['code'] }}
-                                    </span>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
+                    @include('partials.country-code-dropdown', [
+                        'idPrefix'     => '',
+                        'selectedCode' => old('country_code', $user->country_code ?? '+91'),
+                    ])
 
                     <input
                         type="tel"
@@ -166,6 +105,7 @@
                         name="phone_number"
                         value="{{ old('phone_number', $user->phone_number) }}"
                         placeholder="Enter mobile number"
+                        inputmode="numeric"
                         maxlength="15"
                         required
                     >

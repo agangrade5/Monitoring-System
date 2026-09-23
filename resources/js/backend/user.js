@@ -68,9 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const editNameInput = document.getElementById('edit_user_name');
             const editEmailInput = document.getElementById('edit_user_email');
             const editPhoneInput = document.getElementById('edit_user_phone');
-            const editCountryCodeInput = document.getElementById('edit_country_code');
-            const editSelectedCode = document.getElementById('editSelectedCode');
-            const editSelectedFlag = document.getElementById('editSelectedFlag');
             const editStatusInput = document.getElementById('edit_user_status');
             const editPassInput = document.getElementById('edit_user_password');
 
@@ -79,16 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (editEmailInput) editEmailInput.value = email;
             if (editPhoneInput) editPhoneInput.value = phone || '';
 
-            if (editCountryCodeInput) editCountryCodeInput.value = countryCode;
-            if (editSelectedCode) editSelectedCode.textContent = countryCode;
-
-            // Match flag ISO from dropdown options if available
-            const matchingOption = document.querySelector(`#editCountryDropdown .edit-country-option[data-code="${countryCode}"]`);
-            if (matchingOption && editSelectedFlag) {
-                const iso = matchingOption.dataset.iso;
-                editSelectedFlag.src = `/assets/images/flags/${iso}.svg`;
-                editSelectedFlag.alt = matchingOption.dataset.name;
+            const editInstance = window.countryDropdownInstances['edit_countryDropdownWrapper'];
+            if (editInstance) {
+                const matchingOption = editInstance.dropdown.querySelector(`.country-option[data-code="${countryCode}"]`);
+                const iso = matchingOption?.dataset.iso;
+                const countryName = matchingOption?.dataset.name;
+                editInstance.setValue(countryCode, iso, countryName);
             }
+
 
             if (editStatusInput) editStatusInput.value = active;
             if (editPassInput) editPassInput.value = '';
@@ -197,46 +192,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     handleUserFormSubmit('add-user-form', 'addUserModal');
     handleUserFormSubmit('edit-user-form', 'editUserModal');
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-
-        function setupCountryDropdown(btnId, dropdownId, hiddenInputId, flagId, codeId, optionSelector) {
-        const button = document.getElementById(btnId);
-        const dropdown = document.getElementById(dropdownId);
-        const hiddenInput = document.getElementById(hiddenInputId);
-        const selectedFlag = document.getElementById(flagId);
-        const selectedCode = document.getElementById(codeId);
-
-        if (!button || !dropdown || !hiddenInput || !selectedFlag || !selectedCode) return;
-
-        button.addEventListener('click', function (e) {
-            e.stopPropagation();
-            dropdown.classList.toggle('d-none');
-        });
-
-        document.querySelectorAll(optionSelector).forEach(function (option) {
-            option.addEventListener('click', function () {
-                const code = this.dataset.code;
-                const iso = this.dataset.iso;
-                const name = this.dataset.name;
-
-                hiddenInput.value = code;
-                selectedCode.textContent = code;
-                selectedFlag.src = '/assets/images/flags/' + iso + '.svg';
-                selectedFlag.alt = name;
-
-                dropdown.classList.add('d-none');
-            });
-        });
-
-        document.addEventListener('click', function (e) {
-            if (!button.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.add('d-none');
-            }
-        });
-    }
-
-    setupCountryDropdown('countryDropdownBtn', 'countryDropdown', 'country_code', 'selectedFlag', 'selectedCode', '#countryDropdown .country-option');
-    setupCountryDropdown('editCountryDropdownBtn', 'editCountryDropdown', 'edit_country_code', 'editSelectedFlag', 'editSelectedCode', '#editCountryDropdown .edit-country-option');
 });

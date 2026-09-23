@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Backend\User;
 
 use App\Rules\NoScripts;
-use App\Rules\ValidMobile;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -38,7 +37,13 @@ class ProfileUpdateRequest extends FormRequest
                 'max:50',
                 new NoScripts(),
             ],
-
+            'country_iso' => [
+                'required',
+                'string',
+                'in:' . collect(config('countries.countries'))
+                    ->pluck('iso')
+                    ->implode(','),
+            ],
             'country_code' => [
                 'nullable',
                 'string',
@@ -46,21 +51,17 @@ class ProfileUpdateRequest extends FormRequest
                     ->pluck('code')
                     ->implode(','),
             ],
-
-         'phone_number' => [
+            'phone_number' => [
                 'required',
-                'digits:10',
+                'regex:/^[0-9]{10,15}$/',
                 Rule::unique('users', 'phone_number')->ignore($userId),
-                new ValidMobile($countryCode),
             ],
-
             'profile_image' => [
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,webp',
                 'max:2048', // 2MB
             ],
-
             'remove_profile_image' => [
                 'nullable',
                 'boolean',
