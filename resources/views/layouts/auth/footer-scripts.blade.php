@@ -4,6 +4,7 @@
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce("https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js") !!}
 
 {!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/admin.js')) !!}
+{!! \App\Helpers\UtilityHelper::returnScriptWithNonce(asset('assets/js/backend/country-code.js')) !!}
 
 <script nonce="{{ csp_nonce('script') }}">
     const SELECTOR_SIDEBAR_WRAPPER = ".sidebar-wrapper";

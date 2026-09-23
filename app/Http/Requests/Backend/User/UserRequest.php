@@ -4,7 +4,7 @@ namespace App\Http\Requests\Backend\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Rules\{NoScripts, ValidEmailDomain, ValidUrl, ValidMobile,WithoutSpacesRule,StrictPasswordRule};
+use App\Rules\{NoScripts, ValidEmailDomain, ValidUrl, WithoutSpacesRule, StrictPasswordRule};
 
 class UserRequest extends FormRequest
 {
@@ -32,7 +32,6 @@ class UserRequest extends FormRequest
                 'max:255',
                 new NoScripts(),
             ],
-
            'email' => [
                 'required',
                 'string',
@@ -42,21 +41,25 @@ class UserRequest extends FormRequest
                 new NoScripts(),
                 new ValidEmailDomain(),
             ],
-             'country_code' => [
-                        'required',
-                        'string',
-                        'in:' . collect(config('countries.countries'))
-                            ->pluck('code')
-                            ->implode(','),
+            'country_iso' => [
+                'required',
+                'string',
+                'in:' . collect(config('countries.countries'))
+                    ->pluck('iso')
+                    ->implode(','),
             ],
-
+             'country_code' => [
+                'required',
+                'string',
+                'in:' . collect(config('countries.countries'))
+                    ->pluck('code')
+                    ->implode(','),
+            ],
            'phone_number' => [
-                    'required',
-                    'digits_between:10,15',
-                    Rule::unique('users', 'phone_number')->ignore($userId),
-                    new ValidMobile($this->input('country_code')),
-                ],
-
+                'required',
+                'regex:/^[0-9]{10,15}$/',
+                Rule::unique('users', 'phone_number')->ignore($userId),
+            ],
             'is_active' => [
                 'nullable',
                 'boolean',
@@ -83,6 +86,6 @@ class UserRequest extends FormRequest
 
         return $rules;
     }
-    
-    
+
+
 }

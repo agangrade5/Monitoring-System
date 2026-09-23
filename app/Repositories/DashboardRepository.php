@@ -19,7 +19,7 @@ class DashboardRepository implements DashboardRepositoryInterface
      * Get all dashboard metrics and data for admin.
      *
      * @param User $user
-     * 
+     *
      * @return array
      */
     public function getAdminDashboardData(User $user): array
@@ -30,7 +30,11 @@ class DashboardRepository implements DashboardRepositoryInterface
         $data['activeMonitorsCount'] = $monitors->where('is_active', true)->count();
         $data['totalMonitorsCount'] = $monitors->count();
 
-        $data['totalUsersCount'] = User::count();
+        $data['totalUsersCount'] = User::where('id', '!=', 1)
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'admin');
+            })
+            ->count();
         $data['activeUsersCount'] = User::where('is_active', true)->count();
 
         $validResponseTimes = $monitors->filter(fn($m) => !empty($m->response_time) && $m->response_time > 0);
@@ -68,7 +72,7 @@ class DashboardRepository implements DashboardRepositoryInterface
      * Get all dashboard metrics and data for user.
      *
      * @param User $user
-     * 
+     *
      * @return array
      */
     public function getUserDashboardData(User $user): array
