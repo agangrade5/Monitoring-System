@@ -9,26 +9,31 @@
             <img
                 src="{{ asset('assets/images/backend/logo/monitoring-48.png') }}"
                 alt="{{ config('app.name') }}"
+                class="brand-logo-img"
             >
-            <b>{{ config('app.name') }}</b>
+            <span class="brand-title">{{ config('app.name') }}</span>
         </a>
     </div>
     <!-- /.login-logo -->
 
-    <div class="card">
+    <div class="card auth-card">
         <div class="card-body login-card-body">
-            <h5 class="login-box-msg">
-                {{ $title }}
-            </h5>
+            <div class="text-center mb-4">
+                <h4 class="auth-card-title mb-1">
+                    {{ $title }}
+                </h4>
+                <p class="auth-card-subtitle text-secondary small mb-0">
+                    Choose your sign-in method to continue
+                </p>
+            </div>
 
             @if ($errors->has('login'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-circle me-1"></i>
-                    {{ $errors->first('login') }}
-
+                <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 py-2.5 px-3" role="alert">
+                    <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
+                    <div class="small flex-grow-1">{{ $errors->first('login') }}</div>
                     <button
                         type="button"
-                        class="btn-close"
+                        class="btn-close btn-close-white ms-auto"
                         data-bs-dismiss="alert"
                         aria-label="Close"
                     ></button>
@@ -42,60 +47,44 @@
                 class="needs-validation"
                 novalidate
             >
-
                 @csrf
 
-                <!-- Login Type -->
-                <div class="mb-3">
-
-                    <label class="form-label fw-semibold text-secondary-emphasis small">
-                        Login Type
+                <!-- Login Type Segmented Toggle -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold small text-secondary">
+                        Login Method
                     </label>
 
-                    <div>
-
-                        <!-- Email -->
-                        <div class="form-check form-check-inline">
-
+                    <div class="login-type-nav">
+                        <label class="login-type-tab" for="login-email">
                             <input
-                                class="form-check-input"
                                 type="radio"
                                 name="login_type"
                                 id="login-email"
                                 value="email"
+                                class="login-type-input visually-hidden"
                                 {{ old('login_type', 'email') === 'email' ? 'checked' : '' }}
                             >
+                            <span class="login-type-btn">
+                                <i class="bi bi-envelope"></i>
+                                <span>Email</span>
+                            </span>
+                        </label>
 
-                            <label
-                                class="form-check-label"
-                                for="login-email"
-                            >
-                                Email
-                            </label>
-
-                        </div>
-
-                        <!-- Phone -->
-                        <div class="form-check form-check-inline">
-
+                        <label class="login-type-tab" for="login-phone">
                             <input
-                                class="form-check-input"
                                 type="radio"
                                 name="login_type"
                                 id="login-phone"
                                 value="phone"
+                                class="login-type-input visually-hidden"
                                 {{ old('login_type') === 'phone' ? 'checked' : '' }}
                             >
-
-                            <label
-                                class="form-check-label"
-                                for="login-phone"
-                            >
-                                Phone Number
-                            </label>
-
-                        </div>
-
+                            <span class="login-type-btn">
+                                <i class="bi bi-telephone"></i>
+                                <span>Phone Number</span>
+                            </span>
+                        </label>
                     </div>
 
                     @error('login_type')
@@ -104,17 +93,16 @@
                             {{ $message }}
                         </div>
                     @enderror
-
                 </div>
 
                 <!-- Email Section -->
                 <div
                     id="email-section"
-                    class="mb-3"
+                    class="mb-3 auth-input-section"
                 >
                     <label
                         for="email"
-                        class="form-label fw-semibold text-secondary-emphasis small"
+                        class="form-label fw-semibold small"
                     >
                         Email Address
                     </label>
@@ -129,11 +117,11 @@
                             name="email"
                             id="email"
                             class="form-control"
-                            placeholder="Email Address"
+                            placeholder="Enter your email address"
                             value="{{ old('email') }}"
                             autocomplete="email"
+                            autofocus
                         >
-
                     </div>
 
                     @error('email')
@@ -142,43 +130,41 @@
                             {{ $message }}
                         </div>
                     @enderror
-
                 </div>
 
                 <!-- Phone Section -->
                 <div
                     id="phone-section"
-                    class="mb-3"
+                    class="mb-3 auth-input-section"
                     style="display: none;"
                 >
                     <label
                         for="phone"
-                        class="form-label fw-semibold text-secondary-emphasis small"
+                        class="form-label fw-semibold small"
                     >
                         Phone Number
                     </label>
                     <div class="input-group">
-
                         <!-- Country Code -->
                         @include('partials.country-code-dropdown', [
                             'idPrefix'      => 'login_',
                             'selectedCode'  => old('country_code', '+91'),
-                            'buttonClass'   => 'btn border-0 bg-transparent text-white d-flex align-items-center justify-content-between h-100 px-2.5 w-100',
+                            'buttonClass'   => 'btn border-0 bg-transparent text-white d-flex align-items-center justify-content-between h-100 px-3 w-100',
                             'buttonStyle'   => 'border-right: 1px solid rgba(255,255,255,.12) !important;',
                             'codeTextClass' => 'fw-semibold text-white small',
                             'flagClass'     => 'rounded-1 border border-secondary shadow-xs flex-shrink-0',
                             'showChevron'   => true,
-                            'wrapperWidth'  => '110px',
-                            'dropdownWidth' => '250px',
+                            'wrapperWidth'  => '105px',
+                            'dropdownWidth' => '280px',
                         ])
 
                         <!-- Phone -->
                         <input
-                            type="text"
+                            type="tel"
                             name="phone"
                             id="phone"
-                            class="form-control"
-                            placeholder="Phone Number"
+                            class="form-control ps-3"
+                            placeholder="Enter mobile number"
                             value="{{ old('phone') }}"
                             inputmode="numeric"
                             autocomplete="tel"
@@ -201,17 +187,23 @@
                 </div>
 
                 <!-- Send OTP -->
-                <div class="mb-3">
+                <div class="mt-4 mb-3">
                     <button
                         type="submit"
-                        class="btn btn-primary w-100"
+                        class="btn btn-primary w-100 py-2.5 d-flex align-items-center justify-content-center gap-2"
                         id="send-otp-btn"
                     >
-                        <i class="bi bi-shield-lock me-1"></i>
-                        Send OTP
+                        <i class="bi bi-shield-lock"></i>
+                        <span>Send OTP Verification</span>
                     </button>
                 </div>
             </form>
+
+            <!-- <div class="text-center mt-4 pt-3 border-top border-white-10">
+                <a href="{{ route('admin.login') }}" class="text-secondary small text-decoration-none auth-footer-link">
+                    <i class="bi bi-person-gear me-1"></i> Sign in as Administrator
+                </a>
+            </div> -->
         </div>
     </div>
 </main>

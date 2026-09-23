@@ -15,70 +15,29 @@ runWhenReady(function () {
     const phoneInput = document.getElementById('phone');
 
     if (emailRadio && phoneRadio && emailSection && phoneSection && emailInput && phoneInput) {
-        function toggleLoginType() {
+        function toggleLoginType(isUserAction = false) {
             if (emailRadio.checked) {
                 emailSection.style.display = 'block';
                 phoneSection.style.display = 'none';
                 emailInput.disabled = false;
                 phoneInput.disabled = true;
+                if (isUserAction) {
+                    setTimeout(() => emailInput.focus(), 50);
+                }
             } else {
                 emailSection.style.display = 'none';
                 phoneSection.style.display = 'block';
                 emailInput.disabled = true;
                 phoneInput.disabled = false;
+                if (isUserAction) {
+                    setTimeout(() => phoneInput.focus(), 50);
+                }
             }
         }
 
-        emailRadio.addEventListener('change', toggleLoginType);
-        phoneRadio.addEventListener('change', toggleLoginType);
-        toggleLoginType();
+        emailRadio.addEventListener('change', () => toggleLoginType(true));
+        phoneRadio.addEventListener('change', () => toggleLoginType(true));
+        toggleLoginType(false);
     }
-
-    // Country Dropdown handler
-    function setupCountryDropdown(btnId, dropdownId, hiddenInputId, flagId, codeId, optionSelector) {
-        const button = document.getElementById(btnId);
-        const dropdown = document.getElementById(dropdownId);
-        const hiddenInput = document.getElementById(hiddenInputId);
-        const selectedFlag = document.getElementById(flagId);
-        const selectedCode = document.getElementById(codeId);
-
-        if (!button || !dropdown || !hiddenInput || !selectedFlag || !selectedCode) return;
-
-        button.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            dropdown.classList.toggle('d-none');
-        });
-
-        document.querySelectorAll(optionSelector).forEach(function (option) {
-            option.addEventListener('click', function (e) {
-                e.stopPropagation();
-                const code = this.dataset.code;
-                const iso = this.dataset.iso;
-                const name = this.dataset.name;
-
-                hiddenInput.value = code;
-                selectedCode.textContent = code;
-                selectedFlag.src = '/assets/images/flags/' + iso + '.svg';
-                selectedFlag.alt = name;
-
-                dropdown.classList.add('d-none');
-            });
-        });
-
-        document.addEventListener('click', function (e) {
-            if (!button.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.add('d-none');
-            }
-        });
-    }
-
-    setupCountryDropdown(
-        'loginCountryDropdownBtn',
-        'loginCountryDropdown',
-        'country_code',
-        'loginSelectedFlag',
-        'loginSelectedCode',
-        '#loginCountryDropdown .country-option'
-    );
 });
+

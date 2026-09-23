@@ -2,13 +2,13 @@
     $countries = config('countries.countries');
     $selectedCountry = collect($countries)->firstWhere('code', $selectedCode ?? '+91') ?? $countries[0];
 
-    $wrapperId  = $idPrefix . 'countryDropdownWrapper';
-    $btnId      = $idPrefix . 'countryDropdownBtn';
-    $dropdownId = $idPrefix . 'countryDropdown';
+    $wrapperId   = $idPrefix . 'countryDropdownWrapper';
+    $btnId       = $idPrefix . 'countryDropdownBtn';
+    $dropdownId  = $idPrefix . 'countryDropdown';
     $hiddenIsoId = $idPrefix . 'country_iso';
-    $hiddenId   = $idPrefix . 'country_code';
-    $flagId     = $idPrefix . 'selectedFlag';
-    $codeId     = $idPrefix . 'selectedCode';
+    $hiddenId    = $idPrefix . 'country_code';
+    $flagId      = $idPrefix . 'selectedFlag';
+    $codeId      = $idPrefix . 'selectedCode';
 
     // ---- Theming (all optional, sensible light-modal defaults) ----
     $buttonClass   = $buttonClass   ?? 'form-select bg-light-subtle d-flex align-items-center justify-content-between rounded-end-0 h-100 px-2.5';
@@ -52,7 +52,7 @@
         data-flag="{{ $flagId }}"
         data-code-text="{{ $codeId }}"
     >
-        <div class="d-flex align-items-center gap-1.5 overflow-hidden">
+        <div class="d-flex align-items-center gap-2 overflow-hidden">
             <img
                 id="{{ $flagId }}"
                 src="{{ asset('assets/images/flags/' . $selectedCountry['iso'] . '.svg') }}"
@@ -66,24 +66,27 @@
             </span>
         </div>
         @if($showChevron)
-            <i class="bi bi-chevron-down ms-1 text-secondary small"></i>
+            <i class="bi bi-chevron-down ms-1 text-secondary small country-chevron"></i>
         @endif
     </button>
 
-    {{-- Dropdown panel (always light/white - it's a popover, not part of the dark bar) --}}
+    {{-- Dropdown panel --}}
     <div
         id="{{ $dropdownId }}"
-        class="country-dropdown-menu position-absolute bg-white rounded-3 d-none mt-1 start-0 js-country-dropdown"
-        style="top: 100%; width: {{ $dropdownWidth }}; max-height: 320px; overflow-y: auto; z-index: 1060; box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.15);"
+        class="country-dropdown-menu position-absolute rounded-3 d-none mt-1 start-0 js-country-dropdown shadow-lg"
+        style="top: 100%; width: {{ $dropdownWidth }}; max-height: 300px; overflow-y: auto; z-index: 1060;"
     >
         {{-- Search box --}}
-        <div class="p-2 border-bottom bg-white" style="position: sticky; top: 0;">
-            <input
-                type="text"
-                class="form-control form-control-sm country-search-input"
-                placeholder="Search country or code..."
-                autocomplete="off"
-            >
+        <div class="p-2 border-bottom country-search-header" style="position: sticky; top: 0; z-index: 5;">
+            <div class="position-relative">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2.5 country-search-icon small"></i>
+                <input
+                    type="text"
+                    class="form-control form-control-sm country-search-input ps-4"
+                    placeholder="Search country or code..."
+                    autocomplete="off"
+                >
+            </div>
         </div>
 
         <div class="py-1 country-options-list">
@@ -104,11 +107,11 @@
                             decoding="async"
                             class="rounded-1 border shadow-xs flex-shrink-0 country-flag-lazy"
                         >
-                        <span class="small fw-medium text-dark text-truncate">
+                        <span class="small fw-medium country-option-name text-truncate">
                             {{ $country['name'] }}
                         </span>
                     </div>
-                    <span class="small text-secondary font-mono fw-semibold flex-shrink-0">
+                    <span class="small country-option-code font-mono fw-semibold flex-shrink-0">
                         {{ $country['code'] }}
                     </span>
                 </div>

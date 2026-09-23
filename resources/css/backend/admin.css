@@ -540,34 +540,145 @@ body {
     color: #0d6efd !important;
 }
 
-/* Country Code Select Dropdown */
-.country-option {
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
-}
-.country-option:hover,
-.country-option.active {
-    background-color: rgba(13, 110, 253, 0.08) !important;
-}
+/* ==========================================================================
+   Country Code Dropdown Component
+   ========================================================================== */
 .country-dropdown-menu {
     z-index: 1065 !important;
-    min-width: 250px !important;
-    max-height: 230px !important;
+    min-width: 260px !important;
+    max-height: 280px !important;
     overflow-y: auto !important;
-    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.2) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
     background-color: var(--bs-card-bg, #ffffff) !important;
 }
 
-[data-bs-theme="dark"] .country-dropdown-menu {
-    background-color: #1e293b !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4) !important;
+.country-dropdown-menu .country-search-header {
+    background-color: var(--bs-card-bg, #ffffff) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.country-dropdown-menu .country-search-input {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    color: #1e293b !important;
+    font-size: 0.85rem !important;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+}
+
+.country-dropdown-menu .country-search-input:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15) !important;
+    background-color: #ffffff !important;
+}
+
+.country-dropdown-menu .country-search-icon {
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.country-dropdown-menu .country-option {
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+    padding: 0.5rem 0.85rem;
+}
+
+.country-dropdown-menu .country-option:hover,
+.country-dropdown-menu .country-option.active {
+    background-color: rgba(13, 110, 253, 0.08) !important;
+}
+
+.country-dropdown-menu .country-option .country-option-name {
+    color: #1e293b;
+}
+
+.country-dropdown-menu .country-option .country-option-code {
+    color: #0284c7;
+}
+
+/* Dark Mode Country Dropdown */
+[data-bs-theme="dark"] .country-dropdown-menu,
+.login-box .country-dropdown-menu,
+.register-box .country-dropdown-menu {
+    background-color: #162032 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 1px rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .country-dropdown-menu .country-search-header,
+.login-box .country-dropdown-menu .country-search-header,
+.register-box .country-dropdown-menu .country-search-header {
+    background-color: #162032 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .country-dropdown-menu .country-search-input,
+.login-box .country-dropdown-menu .country-search-input,
+.register-box .country-dropdown-menu .country-search-input {
+    background-color: rgba(11, 17, 30, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    color: #f8fafc !important;
+    caret-color: #38bdf8 !important;
+}
+
+[data-bs-theme="dark"] .country-dropdown-menu .country-search-input::placeholder,
+.login-box .country-dropdown-menu .country-search-input::placeholder,
+.register-box .country-dropdown-menu .country-search-input::placeholder {
+    color: #94a3b8 !important;
+    opacity: 1 !important;
+}
+
+[data-bs-theme="dark"] .country-dropdown-menu .country-search-input:focus,
+.login-box .country-dropdown-menu .country-search-input:focus,
+.register-box .country-dropdown-menu .country-search-input:focus {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
+    background-color: rgba(15, 23, 42, 0.95) !important;
+}
+
+[data-bs-theme="dark"] .country-dropdown-menu .country-search-icon,
+.login-box .country-dropdown-menu .country-search-icon,
+.register-box .country-dropdown-menu .country-search-icon {
+    color: #94a3b8 !important;
 }
 
 [data-bs-theme="dark"] .country-dropdown-menu .country-option:hover,
-[data-bs-theme="dark"] .country-dropdown-menu .country-option.active {
-    background-color: rgba(255, 255, 255, 0.08) !important;
+[data-bs-theme="dark"] .country-dropdown-menu .country-option.active,
+.login-box .country-dropdown-menu .country-option:hover,
+.login-box .country-dropdown-menu .country-option.active,
+.register-box .country-dropdown-menu .country-option:hover,
+.register-box .country-dropdown-menu .country-option.active {
+    background-color: rgba(56, 189, 248, 0.16) !important;
+}
+
+[data-bs-theme="dark"] .country-dropdown-menu .country-option .country-option-name,
+.login-box .country-dropdown-menu .country-option .country-option-name,
+.register-box .country-dropdown-menu .country-option .country-option-name {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .country-dropdown-menu .country-option .country-option-code,
+.login-box .country-dropdown-menu .country-option .country-option-code,
+.register-box .country-dropdown-menu .country-option .country-option-code {
+    color: #38bdf8 !important;
+}
+
+/* Custom Scrollbar for Country Dropdown */
+.country-dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+.country-dropdown-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+.country-dropdown-menu::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.25);
+    border-radius: 4px;
+}
+.country-dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.45);
 }
 
 /* User directory helper styling */
@@ -585,97 +696,190 @@ body {
     justify-content: center;
 }
 
-/* Authentication views (Login & Register) styling */
-body.login-page, body.register-page, body.forgot-password-page, body.reset-password-page {
-    background-color: #0b0f19 !important;
+/* ==========================================================================
+   Authentication Views (Login, Register, OTP, 2FA, Password Reset)
+   ========================================================================== */
+body.login-page,
+body.register-page,
+body.forgot-password-page,
+body.reset-password-page {
+    background-color: #070b14 !important;
     background-image:
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(244, 63, 94, 0.12) 0px, transparent 50%),
-        radial-gradient(at 50% 0%, rgba(13, 110, 253, 0.12) 0px, transparent 50%) !important;
+        radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.18) 0px, transparent 45%),
+        radial-gradient(at 85% 85%, rgba(14, 165, 233, 0.16) 0px, transparent 45%),
+        radial-gradient(at 50% 50%, rgba(59, 130, 246, 0.1) 0px, transparent 60%) !important;
     background-size: cover;
+    background-attachment: fixed;
     position: relative;
     overflow-x: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    padding: 1.5rem 1rem;
 }
 
 .login-box, .register-box {
-    width: 420px !important;
-    margin: 2rem auto;
+    width: 100% !important;
+    max-width: 440px !important;
+    margin: auto !important;
 }
 
-.login-box .card, .register-box .card {
+.login-logo, .register-logo {
+    margin-bottom: 1.75rem !important;
+    text-align: center;
+}
+
+.login-logo a, .register-logo a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-decoration: none;
+}
+
+.login-logo .brand-logo-img, .register-logo .brand-logo-img {
+    width: 44px;
+    height: 44px;
+    filter: drop-shadow(0 4px 14px rgba(56, 189, 248, 0.45));
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.login-logo a:hover .brand-logo-img, .register-logo a:hover .brand-logo-img {
+    transform: scale(1.08) rotate(-4deg);
+}
+
+.login-logo .brand-title, .register-logo .brand-title {
+    background: linear-gradient(135deg, #ffffff 40%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800 !important;
+    letter-spacing: -0.03em;
+    font-size: 2.1rem;
+    display: inline-block;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.4));
+}
+
+.login-box .card, .register-box .card, .auth-card {
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    background: rgba(30, 41, 59, 0.65) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
+    background: rgba(20, 29, 48, 0.78) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
     border-radius: 24px !important;
-    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), 0 0 50px rgba(13, 110, 253, 0.04) !important;
+    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 50px rgba(13, 110, 253, 0.08) !important;
     color: #f8fafc !important;
     overflow: visible !important;
 }
 
-.login-logo, .register-logo {
-    margin-bottom: 1.5rem !important;
-    text-align: center;
-}
-.login-logo a, .register-logo a {
-    background: linear-gradient(135deg, #ffffff 30%, #38bdf8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 850 !important;
-    letter-spacing: -0.04em;
-    font-size: 2.3rem;
-    display: inline-block;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-}
-
 .login-card-body, .register-card-body {
     background: transparent !important;
-    padding: 2.5rem 2rem !important;
+    padding: 2.25rem 2rem !important;
     overflow: visible !important;
+}
+
+.auth-card-title {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: #f8fafc !important;
+    letter-spacing: -0.02em;
+}
+
+.auth-card-subtitle {
+    color: #94a3b8 !important;
 }
 
 .login-box-msg, .register-box-msg {
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     color: #f1f5f9 !important;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     text-align: center;
     letter-spacing: -0.01em;
 }
 
+/* Modern Segmented Login Method Toggle */
+.login-type-nav {
+    background: rgba(11, 17, 30, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 4px;
+    display: flex;
+    gap: 4px;
+    position: relative;
+}
+
+.login-type-tab {
+    flex: 1;
+    margin: 0;
+    cursor: pointer;
+}
+
+.login-type-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 9px;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    border: 1px solid transparent;
+}
+
+.login-type-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.login-type-input:checked + .login-type-btn {
+    background: linear-gradient(135deg, #0d6efd 0%, #0284c7 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.38);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Input Group and Inputs */
 .login-box .input-group, .register-box .input-group {
-    background: rgba(15, 23, 42, 0.4) !important;
+    background: rgba(11, 17, 30, 0.55) !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-radius: 12px !important;
-    transition: all 0.25s ease-in-out !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     overflow: visible !important;
+    min-height: 48px;
 }
 
 .login-box .input-group:focus-within, .register-box .input-group:focus-within {
-    border-color: #0d6efd !important;
-    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2) !important;
-    background: rgba(15, 23, 42, 0.6) !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2) !important;
+    background: rgba(11, 17, 30, 0.85) !important;
 }
 
 .login-box .form-control, .register-box .form-control {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    color: #fff !important;
-    padding: 0.8rem 1.2rem 0.8rem 0.5rem !important;
+    color: #ffffff !important;
+    padding: 0.75rem 1rem !important;
     font-size: 0.95rem !important;
     transition: none !important;
+}
+
+.login-box .form-control::placeholder,
+.register-box .form-control::placeholder {
+    color: #94a3b8 !important;
+    opacity: 0.9 !important;
+    font-size: 0.92rem;
 }
 
 .login-box .input-group-text, .register-box .input-group-text {
     background: transparent !important;
     border: none !important;
     color: #94a3b8 !important;
-    padding: 0.8rem 0.5rem 0.8rem 1.2rem !important;
+    padding: 0.75rem 0.5rem 0.75rem 1.1rem !important;
+    font-size: 1.05rem;
 }
 
 .login-box .btn-primary, .register-box .btn-primary {
@@ -684,12 +888,19 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
     border-radius: 12px !important;
     padding: 0.8rem 1.5rem !important;
     font-weight: 600 !important;
-    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.25) !important;
+    font-size: 0.95rem !important;
+    box-shadow: 0 4px 16px rgba(13, 110, 253, 0.35) !important;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
+
 .login-box .btn-primary:hover, .register-box .btn-primary:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4) !important;
+    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.5) !important;
+    filter: brightness(1.05);
+}
+
+.login-box .btn-primary:active, .register-box .btn-primary:active {
+    transform: translateY(0) scale(0.99) !important;
 }
 
 .login-card-body a, .register-card-body a {
@@ -699,12 +910,26 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
     font-weight: 500;
     transition: color 0.2s ease;
 }
+
 .login-card-body a:hover, .register-card-body a:hover {
     color: #7dd3fc !important;
     text-decoration: underline !important;
 }
 
-/* Override autofill background color in dark forms */
+.border-white-10 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.auth-footer-link {
+    color: #94a3b8 !important;
+    transition: color 0.2s ease !important;
+}
+.auth-footer-link:hover {
+    color: #f8fafc !important;
+    text-decoration: none !important;
+}
+
+/* Autofill styling */
 .login-box input:-webkit-autofill,
 .register-box input:-webkit-autofill,
 .login-box input:-webkit-autofill:hover,
@@ -712,7 +937,7 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
 .register-box input:-webkit-autofill:hover,
 .register-box input:-webkit-autofill:focus {
     -webkit-text-fill-color: #fff !important;
-    -webkit-box-shadow: 0 0 0px 1000px #0b0f19 inset !important;
+    -webkit-box-shadow: 0 0 0px 1000px #0b111e inset !important;
     transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -731,37 +956,17 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
 
 .login-box .form-check-input, .register-box .form-check-input {
     background-color: rgba(15, 23, 42, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+.login-box .form-check-input[type="checkbox"], .register-box .form-check-input[type="checkbox"] {
     border-radius: 4px !important;
+}
+.login-box .form-check-input[type="radio"], .register-box .form-check-input[type="radio"] {
+    border-radius: 50% !important;
 }
 .login-box .form-check-input:checked, .register-box .form-check-input:checked {
     background-color: #0d6efd !important;
     border-color: #0d6efd !important;
-}
-
-/* Login & Register Country Dropdown Menu */
-.login-box .country-dropdown-menu,
-.register-box .country-dropdown-menu {
-    background-color: #1e293b !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
-}
-
-.login-box .country-dropdown-menu .country-option:hover,
-.login-box .country-dropdown-menu .country-option.active,
-.register-box .country-dropdown-menu .country-option:hover,
-.register-box .country-dropdown-menu .country-option.active {
-    background-color: rgba(56, 189, 248, 0.15) !important;
-}
-
-.login-box .country-dropdown-menu .country-option span,
-.register-box .country-dropdown-menu .country-option span {
-    color: #f8fafc !important;
-}
-
-.login-box .country-dropdown-menu .country-option .text-secondary,
-.register-box .country-dropdown-menu .country-option .text-secondary {
-    color: #94a3b8 !important;
 }
 
 /* User Profile Menu Dropdown styling */
@@ -1111,36 +1316,6 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
 .quick-action-arrow {
     transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
 }
-.country-option {
-    cursor: pointer;
-}
-
-.country-option:hover {
-    background-color: #f8f9fa;
-}
-
-.dropdown-event-item {
-    transition: background-color 0.15s ease-in-out;
-    user-select: none;
-}
-.dropdown-event-item:hover {
-    background-color: #2b3548;
-}
-.custom-notify-events-dropdown .dropdown-toggle::after {
-    margin-left: auto;
-    vertical-align: middle;
-}
-.custom-notify-events-dropdown .form-check-input {
-    width: 1.1em;
-    height: 1.1em;
-    border-color: #4a5568;
-    background-color: #2d3748;
-}
-.custom-notify-events-dropdown .form-check-input:checked {
-    background-color: #3182ce;
-    border-color: #3182ce;
-}
-
 /* 2FA */
 .two-factor-title {
     color: #cbd5e1;
@@ -1153,13 +1328,3 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
     opacity: 1;
 }
 
-/* Country Dropdown */
-.js-country-dropdown-wrapper .country-search-input {
-    color: #212529 !important;
-    caret-color: #212529 !important;
-    background-color: #fff !important;
-}
-.js-country-dropdown-wrapper .country-search-input::placeholder {
-    color: #6c757d !important;
-    opacity: 1 !important;
-}
