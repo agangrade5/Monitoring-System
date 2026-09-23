@@ -59,6 +59,7 @@ export default defineConfig({
                 'resources/js/backend/account-settings.js',
                 'resources/js/backend/google2fa-settings.js',
                 'resources/js/backend/general-settings.js',
+                'resources/js/backend/country-code.js',
             ],
             buildDirectory: 'assets',
             refresh: true,

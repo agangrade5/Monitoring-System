@@ -1,10 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const button = document.getElementById('accountCountryDropdownBtn');
-    const dropdown = document.getElementById('accountCountryDropdown');
-    const hiddenInput = document.getElementById('account_country_code');
-    const selectedFlag = document.getElementById('accountSelectedFlag');
-    const selectedCode = document.getElementById('accountSelectedCode');
 
+<<<<<<< HEAD
     if (button && dropdown && hiddenInput && selectedFlag && selectedCode) {
         button.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -33,3 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+=======
+});
+>>>>>>> bdf7495170109f506a561e0979777dc1a028702e

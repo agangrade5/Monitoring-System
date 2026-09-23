@@ -1152,3 +1152,14 @@ body.login-page, body.register-page, body.forgot-password-page, body.reset-passw
     color: #cbd5e1;
     opacity: 1;
 }
+
+/* Country Dropdown */
+.js-country-dropdown-wrapper .country-search-input {
+    color: #212529 !important;
+    caret-color: #212529 !important;
+    background-color: #fff !important;
+}
+.js-country-dropdown-wrapper .country-search-input::placeholder {
+    color: #6c757d !important;
+    opacity: 1 !important;
+}

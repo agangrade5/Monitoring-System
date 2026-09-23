@@ -108,7 +108,13 @@
                                             </td>
                                             <!-- Mobile Number -->
                                             <td>
-                                                {{ $user['phone_number'] }}
+                                                {{-- <img
+                                                    src="{{ asset('assets/images/flags/' . $user['country_iso'] . '.svg') }}"
+                                                    width="18"
+                                                    height="14"
+                                                    alt="{{ $user['country_iso'] }}"
+                                                    class="rounded-1 border shadow-xs flex-shrink-0"
+                                                > --}} {{ $user['country_code'] }}-{{ $user['phone_number'] }}
                                             </td>
                                             <!-- Email -->
                                             <td>

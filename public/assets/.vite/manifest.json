@@ -38,6 +38,12 @@
     "src": "resources/js/backend/change-password.js",
     "isEntry": true
   },
+  "resources/js/backend/country-code.js": {
+    "file": "js/backend/country-code.js",
+    "name": "country-code",
+    "src": "resources/js/backend/country-code.js",
+    "isEntry": true
+  },
   "resources/js/backend/create-monitor.js": {
     "file": "js/backend/create-monitor.js",
     "name": "create-monitor",
