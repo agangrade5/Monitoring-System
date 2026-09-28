@@ -126,7 +126,7 @@
                         <div class="card-body p-4">
                             <div class="row g-3">
                                 <div class="col-md-6 col-lg-4">
-                                    <label for="check_uptime" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                    <label for="check_uptime" class="border rounded-3 p-3 h-100 d-block w-100 user-select-none" style="cursor: pointer;">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox" name="check_uptime" id="check_uptime" value="1" {{ old('check_uptime') ? 'checked' : '' }}>
                                             <span class="form-check-label fw-bold ms-2">
@@ -138,7 +138,7 @@
                                 </div>
 
                                 <div class="col-md-6 col-lg-4">
-                                    <label for="check_ssl" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                    <label for="check_ssl" class="border rounded-3 p-3 h-100 d-block w-100 user-select-none" style="cursor: pointer;">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox" name="check_ssl" id="check_ssl" value="1" {{ old('check_ssl') ? 'checked' : '' }}>
                                             <span class="form-check-label fw-bold ms-2">
@@ -150,7 +150,7 @@
                                 </div>
 
                                 <div class="col-md-6 col-lg-4">
-                                    <label for="check_php" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                    <label for="check_php" class="border rounded-3 p-3 h-100 d-block w-100 user-select-none" style="cursor: pointer;">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox" name="check_php" id="check_php" value="1" {{ old('check_php') ? 'checked' : '' }}>
                                             <span class="form-check-label fw-bold ms-2">
@@ -162,7 +162,7 @@
                                 </div>
 
                                 <div class="col-md-6 col-lg-4">
-                                    <label for="check_domain" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                    <label for="check_domain" class="border rounded-3 p-3 h-100 d-block w-100 user-select-none" style="cursor: pointer;">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox" name="check_domain" id="check_domain" value="1" {{ old('check_domain') ? 'checked' : '' }}>
                                             <span class="form-check-label fw-bold ms-2">
@@ -174,7 +174,7 @@
                                 </div>
 
                                 <div class="col-md-6 col-lg-4">
-                                    <label for="check_security_headers" class="border rounded-3 p-3 bg-light-subtle h-100 d-block w-100 user-select-none" style="cursor: pointer;">
+                                    <label for="check_security_headers" class="border rounded-3 p-3 h-100 d-block w-100 user-select-none" style="cursor: pointer;">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox" name="check_security_headers" id="check_security_headers" value="1" {{ old('check_security_headers') ? 'checked' : '' }}>
                                             <span class="form-check-label fw-bold ms-2">

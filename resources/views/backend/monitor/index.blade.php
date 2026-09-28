@@ -107,7 +107,7 @@
                                         </div>
                                         @if(auth()->check() && auth()->user()->hasRole('admin') && $monitor->user)
                                             <div class="mt-1">
-                                                <span class="badge bg-light text-secondary border small" title="Created by {{ $monitor->user->name }}">
+                                                <span class="badge text-secondary border small" title="Created by {{ $monitor->user->name }}">
                                                     <i class="bi bi-person me-1"></i>{{ $monitor->user->name }}
                                                 </span>
                                             </div>

@@ -118,7 +118,7 @@
                                             </td>
                                             <!-- Email -->
                                             <td>
-                                                <span class="text-secondary">{{ Str::ucfirst($user->getRoleNames()->first() ?? 'No Role'); }}</span>
+                                                <span class="badge text-bg-primary">{{ Str::ucfirst($user->getRoleNames()->first() ?? 'No Role'); }}</span>
                                             </td>
                                             <!-- Created Date -->
                                             <td>

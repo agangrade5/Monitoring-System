@@ -12,7 +12,7 @@
 
             <div class="col-md-6">
                 <label class="form-label fw-semibold text-secondary small">Default Static OTP</label>
-                <div class="p-2 bg-light rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2" style="min-height: 38px;">
+                <div class="p-2 rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2" style="min-height: 38px;">
                     <!-- <span class="fw-semibold text-body-emphasis small ms-2">Use Default OTP:</span> -->
                     <div class="d-flex align-items-center gap-3 me-2">
                         <div class="form-check mb-0">
