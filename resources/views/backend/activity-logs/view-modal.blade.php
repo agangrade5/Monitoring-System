@@ -114,7 +114,7 @@
                             </div>
                             <pre
                                 id="log-properties"
-                                class="bg-light border rounded p-3 mb-0"
+                                class="border rounded p-3 mb-0"
                                 style="
                                     max-height:350px;
                                     overflow:auto;

@@ -11,7 +11,7 @@
     $codeId     = $idPrefix . 'selectedCode';
 
     // ---- Theming (all optional, sensible light-modal defaults) ----
-    $buttonClass   = $buttonClass   ?? 'form-select bg-light-subtle d-flex align-items-center justify-content-between rounded-end-0 h-100 px-2.5';
+    $buttonClass   = $buttonClass   ?? 'form-select d-flex align-items-center justify-content-between rounded-end-0 h-100 px-2.5';
     $buttonStyle   = $buttonStyle   ?? null;
     $codeTextClass = $codeTextClass ?? 'fw-semibold text-dark small';
     $flagClass     = $flagClass     ?? 'rounded-1 border shadow-xs flex-shrink-0';
